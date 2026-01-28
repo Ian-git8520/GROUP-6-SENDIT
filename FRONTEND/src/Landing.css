@@ -142,3 +142,24 @@
   transform: translateY(-8px);
   box-shadow: 0 0 35px rgba(0, 242, 255, 0.4);
 }
+
+
+.about-section {
+  padding: 6rem 2rem;
+  text-align: center;
+  background: #000;
+}
+
+.about-section h2 {
+  font-size: 2.4rem;
+  color: #00f2ff;
+  margin-bottom: 2rem;
+}
+
+.about-section p {
+  max-width: 900px;
+  margin: 0 auto 1.2rem;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #ccefff;
+}

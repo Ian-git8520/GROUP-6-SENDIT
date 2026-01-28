@@ -107,3 +107,19 @@ const Landing = () => {
           <div className="mvp-card">Email notifications on status updates</div>
         </div>
       </section>
+
+
+       {/* PRICING PREVIEW */}
+      <section className="pricing-section">
+        <h2>Simple & Transparent Pricing</h2>
+        <div className="pricing-card">
+          <p>Base Fee</p>
+          <h3>KES 300</h3>
+          <p>+ Distance (per km)</p>
+          <p>+ Weight & Size Factors</p>
+          <p className="pricing-note">
+            Final price is calculated automatically when creating your order.
+          </p>
+          <Link to="/signup" className="btn-primary">Start Sending Now</Link>
+        </div>
+      </section>

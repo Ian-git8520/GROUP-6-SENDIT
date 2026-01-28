@@ -44,4 +44,12 @@ const Dashboard = () => {
           </>
         )}
       </div>
+
+       <button onClick={handleLogout} className="logout-btn">Logout</button>
+    </div>
+  );
+};
+
+export default Dashboard;
+
       

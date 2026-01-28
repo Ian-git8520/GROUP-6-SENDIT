@@ -216,3 +216,40 @@
   transform: translateY(-10px);
   box-shadow: 0 0 40px rgba(0, 242, 255, 0.35);
 }
+
+
+
+.mvp-section {
+  padding: 6rem 2rem;
+  background: #000;
+  text-align: center;
+}
+
+.mvp-section h2 {
+  font-size: 2.4rem;
+  color: #00f2ff;
+  margin-bottom: 3rem;
+}
+
+.mvp-grid {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.mvp-card {
+  background: rgba(0, 242, 255, 0.08);
+  border: 1px solid rgba(0, 242, 255, 0.25);
+  border-radius: 14px;
+  padding: 1.8rem;
+  font-weight: 500;
+  color: #d4f7ff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mvp-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 25px rgba(0, 242, 255, 0.35);
+}

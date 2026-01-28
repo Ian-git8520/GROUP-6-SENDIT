@@ -40,3 +40,18 @@ const Landing = () => {
           </Link>
         </div>
       </section>
+
+
+      {/* ABOUT */}
+      <section className="about-section">
+        <h2>What is SendIT?</h2>
+        <p>
+          SendIT is a modern courier service that allows users to create parcel
+          delivery orders, track them in real-time, and receive notifications as
+          their parcels move through the delivery pipeline.
+        </p>
+        <p>
+          Whether you are sending documents, packages, or heavy items, SendIT
+          ensures fast, transparent, and secure deliveries across cities.
+        </p>
+      </section>

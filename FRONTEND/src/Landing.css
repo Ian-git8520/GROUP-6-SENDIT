@@ -11,3 +11,47 @@
   color: #ffffff;
   overflow-x: hidden;
 }
+
+/* HERO */
+.hero-section {
+  position: relative;
+  height: 100vh;
+  background: url("https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1600&q=80")
+    center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(0,0,0,0.9), rgba(0,0,0,0.4));
+}
+
+.hero-content {
+  position: relative;
+  text-align: center;
+  max-width: 800px;
+  padding: 2rem;
+  animation: fadeInUp 1.2s ease forwards;
+}
+
+.hero-content h1 {
+  font-size: 4rem;
+  font-weight: 800;
+  color: #00f2ff;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-size: 1.3rem;
+  color: #d4f7ff;
+  margin-bottom: 2rem;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}

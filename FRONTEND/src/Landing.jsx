@@ -123,3 +123,27 @@ const Landing = () => {
           <Link to="/signup" className="btn-primary">Start Sending Now</Link>
         </div>
       </section>
+
+
+      {/* CTA */}
+      <section className="cta-section">
+        <h2>Ready to Send Your First Parcel?</h2>
+        <p>
+          Join SendIT today and experience fast, reliable, and transparent
+          courier delivery.
+        </p>
+        <div className="cta-buttons">
+          <Link to="/signup" className="btn-primary">Create Account</Link>
+          <Link to="/login" className="btn-secondary">Login</Link>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <p>© {new Date().getFullYear()} SendIT Courier Services. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+};
+
+export default Landing;

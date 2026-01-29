@@ -2,7 +2,7 @@ from flask_restful import Resource
 from flask import request
 from database import SessionLocal
 from crud.crud import create_delivery, get_all_deliveries
-from utils.pricing import calculate_price
+from pricing import calculate_price
 from models import PriceIndex
 
 class DeliveryListResource(Resource):

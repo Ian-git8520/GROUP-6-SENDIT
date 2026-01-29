@@ -23,3 +23,6 @@ const Driver = () => {
       "_blank"
     );
   };
+  return (
+    <div className="driver-container">
+      <h2>Driver Dashboard</h2>

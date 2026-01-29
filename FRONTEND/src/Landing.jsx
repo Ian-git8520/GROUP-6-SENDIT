@@ -107,3 +107,6 @@ const Landing = () => {
           <div className="mvp-card">Email notifications on status updates</div>
         </div>
       </section>
+</div>
+  );
+};

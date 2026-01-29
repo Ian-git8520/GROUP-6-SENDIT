@@ -28,8 +28,17 @@ const Driver = () => {
   }, []);
 
   const markDelivered = (id) => {
-    const updated = orders.map((o) =>
-      o.id === id ? { ...o, status: "Delivered" } : o
+    const updatedOrders = orders.map((order) =>
+      order.id === id ? { ...order, status: "Delivered" } : order
+    );
+    setOrders(updatedOrders);
+    localStorage.setItem("orders", JSON.stringify(updatedOrders));
+  };
+
+  const openInMaps = (lat, lng) => {
+    window.open(
+      `https://www.google.com/maps?q=${lat},${lng}`,
+      "_blank"
     );
     setOrders(updated);
     localStorage.setItem("orders", JSON.stringify(updated));

@@ -107,3 +107,43 @@ const Landing = () => {
           <div className="mvp-card">Email notifications on status updates</div>
         </div>
       </section>
+
+
+       {/* PRICING PREVIEW */}
+      <section className="pricing-section">
+        <h2>Simple & Transparent Pricing</h2>
+        <div className="pricing-card">
+          <p>Base Fee</p>
+          <h3>KES 300</h3>
+          <p>+ Distance (per km)</p>
+          <p>+ Weight & Size Factors</p>
+          <p className="pricing-note">
+            Final price is calculated automatically when creating your order.
+          </p>
+          <Link to="/signup" className="btn-primary">Start Sending Now</Link>
+        </div>
+      </section>
+
+
+      {/* CTA */}
+      <section className="cta-section">
+        <h2>Ready to Send Your First Parcel?</h2>
+        <p>
+          Join SendIT today and experience fast, reliable, and transparent
+          courier delivery.
+        </p>
+        <div className="cta-buttons">
+          <Link to="/signup" className="btn-primary">Create Account</Link>
+          <Link to="/login" className="btn-secondary">Login</Link>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <p>© {new Date().getFullYear()} SendIT Courier Services. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+};
+
+export default Landing;

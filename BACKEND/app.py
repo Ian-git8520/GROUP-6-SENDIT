@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, User, UserRole, Delivery
-from services.pricing import calculate_price
+from pricing import calculate_price
 from models import Delivery, PriceIndex
 
 

@@ -32,7 +32,9 @@ const Signup = () => {
             value={name} 
             onChange={(e) => setName(e.target.value)} 
           />
+          <label htmlFor="email">Email Address</label>
           <input 
+            id="email"
             type="email" 
             placeholder="Email" 
             required 

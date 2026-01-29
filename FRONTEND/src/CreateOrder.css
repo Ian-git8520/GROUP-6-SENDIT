@@ -1,16 +1,27 @@
 .order-container {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 2rem auto;
   background: #0f172a;
   padding: 2rem;
   border-radius: 16px;
   color: white;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
 .order-container h2 {
   text-align: center;
   margin-bottom: 1.5rem;
+}
+
+.order-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1.5rem;
+}
+
+.form-left {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 12px;
 }
 
 .order-form input {
@@ -20,6 +31,11 @@
   border-radius: 8px;
   border: none;
   outline: none;
+}
+
+.map-center {
+  display: flex;
+  flex-direction: column;
 }
 
 .route-btn,
@@ -39,10 +55,35 @@
   background: #0ea5e9;
 }
 
+.map-wrapper {
+  width: 100%;
+  height: 420px;
+  margin-top: 1rem;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
 .price-box {
   background: rgba(0, 0, 0, 0.5);
   padding: 1rem;
   margin-top: 1rem;
   border-radius: 8px;
   text-align: center;
+}
+
+
+@media (max-width: 768px) {
+  .order-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .map-wrapper {
+    height: 300px;
+  }
 }

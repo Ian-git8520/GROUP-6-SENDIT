@@ -2,10 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./Landing.css";
 
-   
 const Landing = () => {
   return (
     <div className="landing-container">
+        
       {/* HERO */}
       <section className="hero-section">
         <div className="hero-overlay" />
@@ -41,7 +41,6 @@ const Landing = () => {
         </div>
       </section>
 
-
       {/* ABOUT */}
       <section className="about-section">
         <h2>What is SendIT?</h2>
@@ -55,7 +54,6 @@ const Landing = () => {
           ensures fast, transparent, and secure deliveries across cities.
         </p>
       </section>
-
 
       {/* FEATURES */}
       <section className="features-section">
@@ -92,8 +90,7 @@ const Landing = () => {
         </div>
       </section>
 
-
-       {/* MVP HIGHLIGHT */}
+      {/* MVP HIGHLIGHT */}
       <section className="mvp-section">
         <h2>What You Can Do with SendIT</h2>
         <div className="mvp-grid">
@@ -108,8 +105,7 @@ const Landing = () => {
         </div>
       </section>
 
-
-       {/* PRICING PREVIEW */}
+      {/* PRICING PREVIEW */}
       <section className="pricing-section">
         <h2>Simple & Transparent Pricing</h2>
         <div className="pricing-card">
@@ -123,7 +119,6 @@ const Landing = () => {
           <Link to="/signup" className="btn-primary">Start Sending Now</Link>
         </div>
       </section>
-
 
       {/* CTA */}
       <section className="cta-section">

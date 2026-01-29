@@ -1,4 +1,4 @@
-import Login from "./login.jsx";
+import Login from "./Login.jsx";
 //import "./Login.css"
 //import "./index.css"
 //import "./Auth.css"

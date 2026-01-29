@@ -1,8 +1,10 @@
 from sqlalchemy import ( Column,Integer, String, Float, ForeignKey, DateTime )
+
 from sqlalchemy.orm import declarative_base, relationship
 from datetime import datetime
 
 Base = declarative_base()
+
 
 class UserRole(Base):
     __tablename__ = "user_roles"

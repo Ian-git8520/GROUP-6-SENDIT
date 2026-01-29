@@ -1,11 +1,7 @@
 from flask_restful import Resource
 from flask import request
 from database import SessionLocal
-from crud.crud import (
-    create_user,
-    get_all_users,
-    get_user
-)
+from crud.crud import create_user, get_user, get_all_users, update_user, delete_user
 
 class UserListResource(Resource):
     def get(self):

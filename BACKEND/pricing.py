@@ -4,3 +4,4 @@ def calculate_price(distance, weight, size, price_index):
     size_cost = size * price_index.price_per_cm
 
     return distance_cost + weight_cost + size_cost
+

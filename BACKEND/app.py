@@ -9,9 +9,10 @@ api = Api(app)
 
 init_db()
 
-api.add_resource(UserListResource, "/users")
-api.add_resource(UserResource, "/users/<int:user_id>")
-api.add_resource(DeliveryListResource, "/deliveries")
+api.add_resource(UserListResource, "/users", strict_slashes=False)
+api.add_resource(UserResource, "/users/<int:user_id>", strict_slashes=False)
+api.add_resource(DeliveryListResource, "/deliveries", strict_slashes=False)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

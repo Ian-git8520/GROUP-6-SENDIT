@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from models import UserRole, User, Rider, PriceIndex, Delivery
 
 
+
 def create_user_role(db: Session, name: str) -> UserRole:
     role = UserRole(name=name)
     db.add(role)
@@ -41,6 +42,7 @@ def delete_user_role(db: Session, role_id: int) -> bool:
     return True
 
 
+
 def create_user(
     db: Session,
     name: str,
@@ -78,11 +80,9 @@ def update_user(db: Session, user_id: int, **kwargs) -> User | None:
     user = get_user(db, user_id)
     if not user:
         return None
-
     for field, value in kwargs.items():
         if value is not None:
             setattr(user, field, value)
-
     db.commit()
     db.refresh(user)
     return user
@@ -95,6 +95,7 @@ def delete_user(db: Session, user_id: int) -> bool:
     db.delete(user)
     db.commit()
     return True
+
 
 
 def create_rider(
@@ -121,11 +122,9 @@ def update_rider(db: Session, rider_id: int, **kwargs) -> Rider | None:
     rider = get_rider(db, rider_id)
     if not rider:
         return None
-
     for field, value in kwargs.items():
         if value is not None:
             setattr(rider, field, value)
-
     db.commit()
     db.refresh(rider)
     return rider
@@ -138,6 +137,7 @@ def delete_rider(db: Session, rider_id: int) -> bool:
     db.delete(rider)
     db.commit()
     return True
+
 
 
 def create_price_index(
@@ -169,11 +169,9 @@ def update_price_index(db: Session, index_id: int, **kwargs) -> PriceIndex | Non
     index = get_price_index(db, index_id)
     if not index:
         return None
-
     for field, value in kwargs.items():
         if value is not None:
             setattr(index, field, value)
-
     db.commit()
     db.refresh(index)
     return index
@@ -188,6 +186,7 @@ def delete_price_index(db: Session, index_id: int) -> bool:
     return True
 
 
+
 def create_delivery(
     db: Session,
     user_id: int,
@@ -197,6 +196,7 @@ def create_delivery(
     size: float,
     pickup_location: str,
     drop_off_location: str,
+    total_price: float,        
     rider_id: int | None = None,
     status: str = "pending"
 ) -> Delivery:
@@ -209,12 +209,14 @@ def create_delivery(
         size=size,
         pickup_location=pickup_location,
         drop_off_location=drop_off_location,
+        total_price=total_price,   
         status=status
     )
     db.add(delivery)
     db.commit()
     db.refresh(delivery)
     return delivery
+
 
 
 def get_delivery(db: Session, delivery_id: int) -> Delivery | None:
@@ -237,11 +239,9 @@ def update_delivery(db: Session, delivery_id: int, **kwargs) -> Delivery | None:
     delivery = get_delivery(db, delivery_id)
     if not delivery:
         return None
-
     for field, value in kwargs.items():
         if value is not None:
             setattr(delivery, field, value)
-
     db.commit()
     db.refresh(delivery)
     return delivery

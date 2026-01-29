@@ -285,6 +285,12 @@
   border-radius: 20px;
   padding: 3rem 2.5rem;
   box-shadow: 0 0 40px rgba(0, 242, 255, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 0 60px rgba(0, 242, 255, 0.5);
 }
 
 .pricing-card h3 {

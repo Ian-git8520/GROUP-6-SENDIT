@@ -15,6 +15,14 @@ const Driver = () => {
     );
     setOrders(updatedOrders);
     localStorage.setItem("orders", JSON.stringify(updatedOrders));
+  
   };
-
-}
+    const openInMaps = (lat, lng) => {
+    window.open(
+      `https://www.google.com/maps?q=${lat},${lng}`,
+      "_blank"
+    );
+  };
+  return (
+    <div className="driver-container">
+      <h2>Driver Dashboard</h2>

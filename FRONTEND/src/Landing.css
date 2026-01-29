@@ -16,10 +16,8 @@
 .hero-section {
   position: relative;
   height: 100vh;
-  background: 
-    
-    url("https://kardinal.ai/wp-content/uploads/2021/10/Visuels-14-1.png")
-      center/cover no-repeat;
+  background: url("https://kardinal.ai/wp-content/uploads/2021/10/Visuels-14-1.png")
+    center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;

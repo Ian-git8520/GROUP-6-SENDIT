@@ -48,4 +48,6 @@ class DeliveryListResource(Resource):
         return {
             "delivery_id": delivery.id,
             "price": price
+
         }, 201
+

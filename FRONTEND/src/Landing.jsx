@@ -5,7 +5,7 @@ import "./Landing.css";
 const Landing = () => {
   return (
     <div className="landing-container">
-        
+
       {/* HERO */}
       <section className="hero-section">
         <div className="hero-overlay" />

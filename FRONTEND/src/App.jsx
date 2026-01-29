@@ -8,6 +8,7 @@ import CreateOrder from "./CreateOrder";
 import ViewOrders from "./ViewOrders";
 import TrackOrder from "./TrackOrder";
 import AdminPanel from "./AdminPanel";
+import Driver from "./Driver";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/dashboard/create-order" element={<CreateOrder />} />
+      <Route path="/driver/dashboard" element={<Driver />} />
       <Route path="/dashboard/view-orders" element={<ViewOrders />} />
       <Route path="/dashboard/track-order" element={<TrackOrder />} />
       <Route path="/dashboard/admin" element={<AdminPanel />} />

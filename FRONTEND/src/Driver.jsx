@@ -26,3 +26,10 @@ const Driver = () => {
   return (
     <div className="driver-container">
       <h2>Driver Dashboard</h2>
+      {orders.length === 0 ? (
+        <p className="empty">No deliveries available.</p>
+      ) : (
+        <div className="orders-list">
+          {orders.map((order) => (
+            <div key={order.id} className="order-card">
+              <h3>{order.itemType}</h3>

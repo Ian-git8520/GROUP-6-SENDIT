@@ -1,0 +1,23 @@
+.track-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  color: white;
+  text-align: center;
+}
+
+.track-container select {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  margin-bottom: 1rem;
+}
+
+.track-map {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 1.5rem;
+  border-radius: 16px;
+}
+
+.track-info {
+  margin-top: 1rem;
+}

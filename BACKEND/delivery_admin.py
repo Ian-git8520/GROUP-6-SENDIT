@@ -2,7 +2,7 @@ from flask_restful import Resource
 from flask import request
 from database import SessionLocal
 from models import Delivery, User
-from authorization import require_role
+from role_authorization import require_role
 
 class DeliveryAdmin(Resource):
     def patch(self, delivery_id):
@@ -38,7 +38,6 @@ class DeliveryAdmin(Resource):
         if "size" in data:
             delivery.size = data["size"]
 
-        # Optional: recalculate price
         if any(k in data for k in ["distance", "weight", "size"]):
             price_index = delivery.price_index
             delivery.total_price = (

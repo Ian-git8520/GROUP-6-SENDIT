@@ -82,42 +82,4 @@ const Driver = () => {
 };
 
 export default Driver;
-              ]}
-              zoom={12}
-              scrollWheelZoom={false}
-            >
-              <TileLayer
-                attribution="&copy; OpenStreetMap contributors"
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
 
-              <Marker
-                position={[
-                  activeOrder.pickup.lat,
-                  activeOrder.pickup.lng,
-                ]}
-              >
-                <Popup>Pickup Location</Popup>
-              </Marker>
-
-              <Marker
-                position={[
-                  activeOrder.destination.lat,
-                  activeOrder.destination.lng,
-                ]}
-              >
-                <Popup>Destination</Popup>
-              </Marker>
-            </MapContainer>
-          ) : (
-            <p className="empty">Select an order to view route</p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default Driver;
-
-            

@@ -24,29 +24,29 @@ const Signup = () => {
         <h2>Signup</h2>
         <form className="auth-form" onSubmit={handleSignup}>
           <label htmlFor="name">Full Name</label>
-          <input 
+          <input
             id="name"
-            type="text" 
-            placeholder="Full Name" 
-            required 
-            value={name} 
-            onChange={(e) => setName(e.target.value)} 
+            type="text"
+            placeholder="Full Name"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
           <label htmlFor="email">Email Address</label>
-          <input 
+          <input
             id="email"
-            type="email" 
-            placeholder="Email" 
-            required 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
+            type="email"
+            placeholder="Email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
-          <input 
-            type="password" 
-            placeholder="Password" 
-            required 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
+          <input
+            type="password"
+            placeholder="Password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <select value={role} onChange={(e) => setRole(e.target.value)}>
             <option value="user">User</option>

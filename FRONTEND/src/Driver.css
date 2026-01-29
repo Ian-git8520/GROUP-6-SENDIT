@@ -1,32 +1,45 @@
-.driver-container {
-  max-width: 1000px;
-  margin: 2rem auto;
-  padding: 2rem;
+/* PAGE */
+.driver-page {
+  min-height: 100vh;
+  padding: 1.5rem;
   background: #020617;
   color: white;
-  border-radius: 16px;
 }
 
-.driver-container h2 {
+.driver-page h2 {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-.orders-list {
+/* GRID */
+.driver-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+  height: calc(100vh - 120px);
+}
+
+/* ORDERS LIST */
+.driver-orders {
+  overflow-y: auto;
+  background: #020617;
 }
 
 .order-card {
   background: #0f172a;
-  padding: 1.2rem;
+  padding: 1rem;
   border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  margin-bottom: 0.8rem;
+  cursor: pointer;
+  transition: transform 0.1s ease, border 0.1s ease;
 }
 
-.order-card h3 {
-  margin-bottom: 0.5rem;
+.order-card:hover {
+  transform: scale(1.01);
+}
+
+.order-card.active {
+  border: 2px solid #38bdf8;
 }
 
 .pending {
@@ -37,30 +50,31 @@
   color: #22c55e;
 }
 
-.location-buttons {
+/* MAP CARD */
+.driver-map-card {
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 1rem;
   display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  flex-direction: column;
 }
 
-.location-buttons button {
+.driver-map-card h3 {
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.driver-map-card .leaflet-container {
   flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #38bdf8;
-  font-weight: bold;
-  cursor: pointer;
+  width: 100%;
+  border-radius: 12px;
 }
 
-.location-buttons button:hover {
-  background: #0ea5e9;
-}
-
+/* BUTTON */
 .deliver-btn {
   width: 100%;
-  margin-top: 0.7rem;
-  padding: 12px;
+  margin-top: 0.5rem;
+  padding: 10px;
   border: none;
   border-radius: 8px;
   background: #22c55e;
@@ -74,5 +88,17 @@
 
 .empty {
   text-align: center;
-  opacity: 0.7;
+  opacity: 0.6;
+  margin-top: 2rem;
+}
+
+@media (max-width: 900px) {
+  .driver-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .driver-map-card {
+    height: 320px;
+  }
 }

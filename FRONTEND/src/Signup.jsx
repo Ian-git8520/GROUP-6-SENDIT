@@ -23,7 +23,9 @@ const Signup = () => {
       <div className="auth-card">
         <h2>Signup</h2>
         <form className="auth-form" onSubmit={handleSignup}>
+          <label htmlFor="name">Full Name</label>
           <input 
+            id="name"
             type="text" 
             placeholder="Full Name" 
             required 

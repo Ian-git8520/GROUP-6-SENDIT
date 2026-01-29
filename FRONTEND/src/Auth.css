@@ -1,0 +1,92 @@
+/* Auth.css */
+/* Auth.css */
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+
+.auth-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Poppins", sans-serif;
+}
+
+.auth-card {
+  background: rgba(0, 0, 0, 0.65);
+  padding: 3rem 2.5rem;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  color: #fff;
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.35);
+  animation: fadeIn 0.9s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 0.4rem;
+  color: #00e5ff;
+  font-weight: 600;
+}
+
+.auth-subtitle {
+  text-align: center;
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  color: #cfefff;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.auth-form input,
+.auth-form select {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  background: #f4fbff;
+}
+
+.auth-form input:focus,
+.auth-form select:focus {
+  outline: 2px solid #00e5ff;
+}
+
+.auth-btn {
+  margin-top: 1.2rem;
+  padding: 12px;
+  border-radius: 30px;
+  border: none;
+  background: linear-gradient(135deg, #00e5ff, #00bcd4);
+  color: #003344;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.8);
+}
+
+.auth-btn:active {
+  transform: scale(0.97);
+}

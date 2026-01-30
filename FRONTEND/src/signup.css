@@ -53,13 +53,22 @@
 .auth-form select {
   padding: 12px 14px;
   border-radius: 8px;
-  border: none;
+  border: 2px solid transparent;
   outline: none;
   font-size: 0.95rem;
+  background-color: #f0faff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-form input:focus,
+.auth-form select:focus {
+  border-color: #00e5ff;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
 }
 
 .auth-form select {
   background-color: #f0faff;
+  cursor: pointer;
 }
 
 .auth-btn {
@@ -77,6 +86,11 @@
 .auth-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 0 18px rgba(0, 229, 255, 0.7);
+  background-color: #00d9ff;
+}
+
+.auth-btn:active {
+  transform: scale(0.98);
 }
 
 .auth-footer {

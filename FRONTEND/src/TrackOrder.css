@@ -1,23 +1,58 @@
 .track-container {
-  max-width: 900px;
-  margin: 2rem auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  padding: 3rem;
   color: white;
   text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.track-container h2 {
+  color: #38bdf8;
+  margin-bottom: 1.5rem;
 }
 
 .track-container select {
-  padding: 10px;
+  padding: 10px 14px;
   border-radius: 8px;
   border: none;
-  margin-bottom: 1rem;
+  outline: none;
+  margin-bottom: 2rem;
+}
+
+.track-card {
+  max-width: 900px;
+  margin: 0 auto;
+  background: rgba(15, 23, 42, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
 }
 
 .track-map {
-  background: rgba(0, 0, 0, 0.5);
-  padding: 1.5rem;
-  border-radius: 16px;
+  height: 400px;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .track-info {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.track-info p {
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .track-container {
+    padding: 2rem 1rem;
+  }
+
+  .track-map {
+    height: 300px;
+  }
 }

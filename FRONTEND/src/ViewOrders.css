@@ -1,17 +1,24 @@
 .orders-container {
-    max-width: 1000px;
-    margin: 2rem auto;
-    color: white;
+  min-height: 100vh;
+  padding: 3rem 1.5rem;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: #e5e7eb;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .orders-container h2 {
-    text-align: center;
-    margin-bottom: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #38bdf8;
 }
 
 .order-card {
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  padding: 1.8rem;
+  background: rgba(15, 23, 42, 0.65);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.45);
 }

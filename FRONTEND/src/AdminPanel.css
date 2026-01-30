@@ -1,20 +1,78 @@
 .admin-container {
-  max-width: 900px;
-  margin: 2rem auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  padding: 3rem;
   color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.admin-container h2 {
+  color: #38bdf8;
   text-align: center;
+  margin-bottom: 2rem;
 }
 
 .admin-order-card {
-  background: rgba(0, 0, 0, 0.5);
-  padding: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto 2rem auto;
+  background: rgba(15, 23, 42, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border-radius: 16px;
-  margin-bottom: 1.5rem;
+  padding: 1.8rem;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+}
+
+.admin-order-card h4 {
+  color: #38bdf8;
+  margin-bottom: 1rem;
+}
+
+.admin-order-card p {
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+}
+
+.admin-order-card strong {
+  color: #e5e7eb;
+}
+
+.admin-order-card label {
+  display: block;
+  margin-top: 1.2rem;
+  margin-bottom: 0.4rem;
+  font-weight: bold;
 }
 
 .admin-order-card select {
-  padding: 8px;
+  width: 100%;
+  padding: 10px 14px;
   border-radius: 8px;
   border: none;
-  margin-top: 0.5rem;
+  outline: none;
+  font-weight: bold;
 }
+
+.admin-container p {
+  text-align: center;
+}
+
+/* ACCESS DENIED */
+.admin-container p,
+.admin-container h2 {
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 2rem 1rem;
+  }
+
+  .admin-order-card {
+    padding: 1.4rem;
+  }
+}
+
+
+
+

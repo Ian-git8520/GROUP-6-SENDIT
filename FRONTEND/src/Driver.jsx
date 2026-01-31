@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMap,
+} from "react-leaflet";
 import L from "leaflet";
 import "./Driver.css";
 import "leaflet/dist/leaflet.css";
 
+/* Fix Leaflet marker icons */
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -13,6 +20,24 @@ L.Icon.Default.mergeOptions({
   shadowUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
+
+/* 🔹 Auto-center map when order changes */
+const FitRoute = ({ pickup, destination }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!pickup || !destination) return;
+
+    const bounds = L.latLngBounds([
+      [pickup.lat, pickup.lng],
+      [destination.lat, destination.lng],
+    ]);
+
+    map.fitBounds(bounds, { padding: [60, 60] });
+  }, [pickup, destination, map]);
+
+  return null;
+};
 
 const Driver = () => {
   const [orders, setOrders] = useState([]);
@@ -39,14 +64,17 @@ const Driver = () => {
               onClick={() => setSelectedOrder(order)}
             >
               <h3>{order.itemType}</h3>
+
               <p>
                 <strong>Status:</strong>{" "}
                 <span className="pending">{order.status}</span>
               </p>
+
               <p>
                 <strong>Distance:</strong>{" "}
                 {order.distance?.toFixed(2)} km
               </p>
+
               <p>
                 <strong>Price:</strong> KES {order.price}
               </p>
@@ -54,18 +82,11 @@ const Driver = () => {
           ))}
         </div>
 
-        {/* RIGHT MAP SPACE (ALWAYS PRESENT) */}
+        {/* RIGHT MAP (ALWAYS PRESENT) */}
         <div className="driver-view">
           <div className="map-card">
             <MapContainer
-              center={
-                selectedOrder
-                  ? [
-                      selectedOrder.pickup.lat,
-                      selectedOrder.pickup.lng,
-                    ]
-                  : [-1.286389, 36.817223]
-              }
+              center={[-1.286389, 36.817223]}
               zoom={12}
               scrollWheelZoom={false}
             >
@@ -76,13 +97,19 @@ const Driver = () => {
 
               {selectedOrder && (
                 <>
+                  {/* AUTO-FIT PICKUP + DESTINATION */}
+                  <FitRoute
+                    pickup={selectedOrder.pickup}
+                    destination={selectedOrder.destination}
+                  />
+
                   <Marker
                     position={[
                       selectedOrder.pickup.lat,
                       selectedOrder.pickup.lng,
                     ]}
                   >
-                    <Popup>Pickup</Popup>
+                    <Popup>Pickup Location</Popup>
                   </Marker>
 
                   <Marker
@@ -100,7 +127,7 @@ const Driver = () => {
 
           {!selectedOrder && (
             <p className="map-placeholder">
-              Select an order to view details
+              Select an order to view pickup & destination
             </p>
           )}
         </div>
@@ -110,6 +137,7 @@ const Driver = () => {
 };
 
 export default Driver;
+
 
 
 

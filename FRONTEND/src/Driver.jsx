@@ -23,95 +23,66 @@ const Driver = () => {
     setOrders(storedOrders);
   }, []);
 
-  const markDelivered = (id) => {
-    const updatedOrders = orders.map((order) =>
-      order.id === id ? { ...order, status: "Delivered" } : order
-    );
-    setOrders(updatedOrders);
-    localStorage.setItem("orders", JSON.stringify(updatedOrders));
-  };
-
   return (
     <div className="driver-container">
       <h2 className="driver-title">Driver Dashboard</h2>
 
       <div className="driver-layout">
-        {/* ORDERS LIST */}
+        {/* LEFT FLOATING CARDS */}
         <div className="driver-orders">
-          {orders.length === 0 ? (
-            <p className="empty">No deliveries available.</p>
-          ) : (
-            orders.map((order) => (
-              <div
-                key={order.id}
-                className={`order-card ${
-                  selectedOrder?.id === order.id ? "active" : ""
-                }`}
-                onClick={() => setSelectedOrder(order)}
-              >
-                <h3>{order.itemType}</h3>
-                <p>
-                  <strong>Status:</strong>{" "}
-                  <span
-                    className={
-                      order.status === "Delivered" ? "done" : "pending"
-                    }
-                  >
-                    {order.status}
-                  </span>
-                </p>
-                <p>
-                  <strong>Distance:</strong>{" "}
-                  {order.distance?.toFixed(2)} km
-                </p>
-                <p>
-                  <strong>Price:</strong> KES {order.price}
-                </p>
-
-                {order.status !== "Delivered" && (
-                  <button
-                    className="deliver-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      markDelivered(order.id);
-                    }}
-                  >
-                    Mark as Delivered
-                  </button>
-                )}
-              </div>
-            ))
-          )}
+          {orders.map((order) => (
+            <div
+              key={order.id}
+              className={`order-card ${
+                selectedOrder?.id === order.id ? "active" : ""
+              }`}
+              onClick={() => setSelectedOrder(order)}
+            >
+              <h3>{order.itemType}</h3>
+              <p>
+                <strong>Status:</strong>{" "}
+                <span className="pending">{order.status}</span>
+              </p>
+              <p>
+                <strong>Distance:</strong>{" "}
+                {order.distance?.toFixed(2)} km
+              </p>
+              <p>
+                <strong>Price:</strong> KES {order.price}
+              </p>
+            </div>
+          ))}
         </div>
 
-        {/* MAP + DETAILS CARD */}
+        {/* RIGHT MAP SPACE (ALWAYS PRESENT) */}
         <div className="driver-view">
-          {!selectedOrder ? (
-            <p className="map-placeholder">
-              Select an order to view details
-            </p>
-          ) : (
-            <div className="map-card">
-              <div className="map-section">
-                <MapContainer
-                  center={[
-                    selectedOrder.pickup.lat,
-                    selectedOrder.pickup.lng,
-                  ]}
-                  zoom={12}
-                >
-                  <TileLayer
-                    attribution="&copy; OpenStreetMap contributors"
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
+          <div className="map-card">
+            <MapContainer
+              center={
+                selectedOrder
+                  ? [
+                      selectedOrder.pickup.lat,
+                      selectedOrder.pickup.lng,
+                    ]
+                  : [-1.286389, 36.817223]
+              }
+              zoom={12}
+              scrollWheelZoom={false}
+            >
+              <TileLayer
+                attribution="&copy; OpenStreetMap contributors"
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
 
+              {selectedOrder && (
+                <>
                   <Marker
                     position={[
                       selectedOrder.pickup.lat,
                       selectedOrder.pickup.lng,
                     ]}
                   >
-                    <Popup>Pickup Location</Popup>
+                    <Popup>Pickup</Popup>
                   </Marker>
 
                   <Marker
@@ -122,29 +93,15 @@ const Driver = () => {
                   >
                     <Popup>Destination</Popup>
                   </Marker>
-                </MapContainer>
-              </div>
+                </>
+              )}
+            </MapContainer>
+          </div>
 
-              <div className="order-details">
-                <h3>Order Details</h3>
-                <p>
-                  <strong>Item:</strong> {selectedOrder.itemType}
-                </p>
-                <p>
-                  <strong>Status:</strong> {selectedOrder.status}
-                </p>
-                <p>
-                  <strong>Distance:</strong>{" "}
-                  {selectedOrder.distance?.toFixed(2)} km
-                </p>
-                <p>
-                  <strong>Price:</strong> KES {selectedOrder.price}
-                </p>
-                <p>
-                  <strong>Created:</strong> {selectedOrder.createdAt}
-                </p>
-              </div>
-            </div>
+          {!selectedOrder && (
+            <p className="map-placeholder">
+              Select an order to view details
+            </p>
           )}
         </div>
       </div>
@@ -154,3 +111,6 @@ const Driver = () => {
 
 export default Driver;
 
+
+
+            

@@ -27,6 +27,7 @@
   gap: 20px;
 }
 
+<<<<<<< HEAD
 .card {
   background: rgba(15, 23, 42, 0.85);
   -webkit-backdrop-filter: blur(8px);
@@ -44,6 +45,20 @@
   border: 1px solid #1e293b;
   background: #020617;
   color: #ffffff;
+=======
+.order-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order-form input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+>>>>>>> 19288d4 (errors debugging)
 }
 
 .form-left input::placeholder {
@@ -89,6 +104,7 @@
 .leaflet-container {
   height: 100%;
   width: 100%;
+<<<<<<< HEAD
 }
 
 /* ===========================
@@ -98,6 +114,12 @@
   margin-top: 12px;
   padding: 10px;
   background: #020617;
+=======
+  padding: 14px;
+  margin-top: 10px;
+  background: #38bdf8;
+  border: none;
+>>>>>>> 19288d4 (errors debugging)
   border-radius: 8px;
   border: 1px solid #1e293b;
 }
@@ -121,4 +143,27 @@
   opacity: 0.9;
 }
 
+<<<<<<< HEAD
 
+=======
+.map-wrapper {
+  margin-top: 1rem;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #1e293b;
+  background: #020617;
+}
+
+.leaflet-map {
+  height: 350px;
+  width: 100%;
+}
+
+.price-box {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+>>>>>>> 19288d4 (errors debugging)

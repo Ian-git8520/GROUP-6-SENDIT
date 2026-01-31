@@ -96,6 +96,7 @@ const TrackOrder = () => {
                 <Popup>Destination</Popup>
               </Marker>
 
+<<<<<<< HEAD
               <Routing
                 from={selectedOrder.pickup}
                 to={selectedOrder.destination}
@@ -120,6 +121,18 @@ const TrackOrder = () => {
                 </p>
               )}
             </div>
+=======
+            <Routing
+              from={selectedOrder.pickup}
+              to={selectedOrder.destination}
+            />
+          </MapContainer>
+
+          <div className="track-info">
+            <p><strong>Status:</strong> {selectedOrder.status}</p>
+            <p><strong>Distance:</strong> {selectedOrder.distance?.toFixed(2)} km</p>
+            <p><strong>Price:</strong> KES {selectedOrder.price}</p>
+>>>>>>> 19288d4 (errors debugging)
           </div>
         )}
     </div>
@@ -127,4 +140,7 @@ const TrackOrder = () => {
 };
 
 export default TrackOrder;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 19288d4 (errors debugging)

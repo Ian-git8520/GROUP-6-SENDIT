@@ -6,13 +6,13 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem("currentUser"));
 
+  const [user, setUser] = useState(storedUser);
+  const [editing, setEditing] = useState(false);
+
   if (!storedUser) {
     navigate("/login");
     return null;
   }
-
-  const [user, setUser] = useState(storedUser);
-  const [editing, setEditing] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser");

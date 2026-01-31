@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
+import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "./TrackOrder.css";
 
+// Fix leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -17,10 +20,10 @@ L.Icon.Default.mergeOptions({
 const Routing = ({ from, to }) => {
   const map = useMap();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!from || !to) return;
 
-    const routingControl = L.Routing.control({
+    const control = L.Routing.control({
       waypoints: [L.latLng(from.lat, from.lng), L.latLng(to.lat, to.lng)],
       routeWhileDragging: false,
       show: false,
@@ -29,23 +32,26 @@ const Routing = ({ from, to }) => {
       fitSelectedRoutes: true,
     }).addTo(map);
 
-    return () => map.removeControl(routingControl);
-  }, [from, to]);
+    return () => map.removeControl(control);
+  }, [from, to, map]);
 
   return null;
 };
-const TrackParcel = () => {
+
+const TrackOrder = () => {
   const orders = JSON.parse(localStorage.getItem("orders")) || [];
-  const [selectedOrderId, setSelectedOrderId] = useState("");
-  const selectedOrder = orders.find((o) => o.id === Number(selectedOrderId));
+  const [selectedId, setSelectedId] = useState("");
+  const selectedOrder = orders.find(
+    (order) => order.id === Number(selectedId)
+  );
 
   return (
     <div className="track-container">
       <h2>Track Your Order</h2>
 
       <select
-        value={selectedOrderId}
-        onChange={(e) => setSelectedOrderId(e.target.value)}
+        value={selectedId}
+        onChange={(e) => setSelectedId(e.target.value)}
       >
         <option value="">Select an Order</option>
         {orders.map((order) => (
@@ -55,40 +61,70 @@ const TrackParcel = () => {
         ))}
       </select>
 
-      {selectedOrder && selectedOrder.pickup && selectedOrder.destination && (
-        <div className="track-map">
-          <MapContainer
-            center={[selectedOrder.pickup.lat, selectedOrder.pickup.lng]}
-            zoom={12}
-            style={{ height: "400px", width: "100%" }}
-          >
-            <TileLayer
-              attribution="&copy; OpenStreetMap contributors"
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
+      {selectedOrder &&
+        selectedOrder.pickup &&
+        selectedOrder.destination && (
+          <div className="track-card">
+            <MapContainer
+              center={[
+                selectedOrder.pickup.lat,
+                selectedOrder.pickup.lng,
+              ]}
+              zoom={12}
+              className="track-map"
+            >
+              <TileLayer
+                attribution="&copy; OpenStreetMap contributors"
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
 
-            <Marker position={[selectedOrder.pickup.lat, selectedOrder.pickup.lng]}>
-              <Popup>Pickup</Popup>
-            </Marker>
+              <Marker
+                position={[
+                  selectedOrder.pickup.lat,
+                  selectedOrder.pickup.lng,
+                ]}
+              >
+                <Popup>Pickup</Popup>
+              </Marker>
 
-            <Marker position={[selectedOrder.destination.lat, selectedOrder.destination.lng]}>
-              <Popup>Destination</Popup>
-            </Marker>
+              <Marker
+                position={[
+                  selectedOrder.destination.lat,
+                  selectedOrder.destination.lng,
+                ]}
+              >
+                <Popup>Destination</Popup>
+              </Marker>
 
-            <Routing
-              from={selectedOrder.pickup}
-              to={selectedOrder.destination}
-            />
-          </MapContainer>
-           <div className="track-info">
-            <p><strong>Status:</strong> {selectedOrder.status}</p>
-            <p><strong>Distance:</strong> {selectedOrder.distance?.toFixed(2)} km</p>
-            <p><strong>Price:</strong> KES {selectedOrder.price}</p>
+              <Routing
+                from={selectedOrder.pickup}
+                to={selectedOrder.destination}
+              />
+            </MapContainer>
+
+            <div className="track-info">
+              <p>
+                <strong>Status:</strong> {selectedOrder.status}
+              </p>
+              <p>
+                <strong>Distance:</strong>{" "}
+                {selectedOrder.distance?.toFixed(2)} km
+              </p>
+              <p>
+                <strong>Price:</strong> KES {selectedOrder.price}
+              </p>
+              {selectedOrder.currentLocation && (
+                <p>
+                  <strong>Current Location:</strong>{" "}
+                  {selectedOrder.currentLocation}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };
 
-export default TrackParcel;
+export default TrackOrder;
+

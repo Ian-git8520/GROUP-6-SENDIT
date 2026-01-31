@@ -1,124 +1,70 @@
 .driver-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #020617, #0f172a);
-  padding: 2rem;
-  color: white;
-  font-family: Arial, Helvetica, sans-serif;
+  background: radial-gradient(
+    circle at top,
+    #0e1629 0%,
+    #0c1426 35%,
+    #060b1c 70%,
+    #020617 100%
+  );
+  padding: 20px;
+  color: #fff;
 }
 
 .driver-title {
   text-align: center;
   color: #38bdf8;
-  margin-bottom: 2rem;
+  margin-bottom: 30px;
 }
-
 
 .driver-layout {
   display: grid;
   grid-template-columns: 320px 1fr;
-  gap: 2rem;
+  gap: 40px;
 }
 
+/* LEFT FLOATING CARDS */
 .driver-orders {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 20px;
 }
 
 .order-card {
-  background: rgba(15, 23, 42, 0.6);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  padding: 1.2rem;
-  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.85);
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
   cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.order-card:hover {
-  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
 }
 
 .order-card.active {
-  border: 2px solid #38bdf8;
+  border: 1px solid #38bdf8;
 }
 
-.done {
-  color: #22c55e;
-  font-weight: bold;
-}
-
-.pending {
-  color: #facc15;
-  font-weight: bold;
-}
-
-.deliver-btn {
-  margin-top: 1rem;
-  width: 100%;
-  padding: 8px;
-  border-radius: 999px;
-  border: none;
-  background: #22c55e;
-  color: #020617;
-  font-weight: bold;
-  cursor: pointer;
-}
-
+/* MAP AREA */
 .driver-view {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: 420px;
 }
 
 .map-card {
-  width: 100%;
-  background: rgba(15, 23, 42, 0.6);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  height: 420px;
   border-radius: 16px;
-  padding: 1.5rem;
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 1.5rem;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
-}
-
-.map-section {
-  height: 350px;
-  border-radius: 12px;
   overflow: hidden;
+  background: rgba(15, 23, 42, 0.85);
 }
 
-.map-section .leaflet-container {
+.leaflet-container {
   height: 100%;
   width: 100%;
 }
 
-.order-details h3 {
-  color: #38bdf8;
-  margin-bottom: 1rem;
-}
-
-.order-details p {
-  margin-bottom: 0.6rem;
-}
-
 .map-placeholder {
+  text-align: center;
   color: #94a3b8;
-  font-size: 1.1rem;
+  margin-top: 20px;
 }
 
-@media (max-width: 900px) {
-  .driver-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .map-card {
-    grid-template-columns: 1fr;
-  }
-
-  .map-section {
-    height: 300px;
-  }
+.pending {
+  color: #facc15;
 }

@@ -5,7 +5,7 @@ import "leaflet-routing-machine";
 import "leaflet/dist/leaflet.css";
 import "./CreateOrder.css";
 
-// Fix marker icons
+/* Fix leaflet marker icons */
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -16,79 +16,88 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
+/* ROUTING */
 const Routing = ({ from, to, setDistance }) => {
   const map = useMap();
 
   useEffect(() => {
     if (!from || !to) return;
 
-    const routingControl = L.Routing.control({
+    const routing = L.Routing.control({
       waypoints: [L.latLng(from.lat, from.lng), L.latLng(to.lat, to.lng)],
-      routeWhileDragging: false,
       addWaypoints: false,
       draggableWaypoints: false,
       fitSelectedRoutes: true,
+      show: false,
     })
       .on("routesfound", (e) => {
-        const route = e.routes[0];
-        setDistance(route.summary.totalDistance / 1000);
+        setDistance(e.routes[0].summary.totalDistance / 1000);
       })
       .addTo(map);
 
-    return () => map.removeControl(routingControl);
+    return () => map.removeControl(routing);
   }, [from, to, map, setDistance]);
 
   return null;
 };
+
+let searchTimeout;
 
 const CreateOrder = () => {
   const [itemType, setItemType] = useState("");
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
   const [length, setLength] = useState("");
+
   const [pickup, setPickup] = useState(null);
   const [destination, setDestination] = useState(null);
   const [distance, setDistance] = useState(null);
+
   const [searchPickup, setSearchPickup] = useState("");
   const [searchDestination, setSearchDestination] = useState("");
 
-  const geocode = async (address, setter) => {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-        address
-      )}`
-    );
-    const data = await res.json();
-    if (data.length > 0) {
-      setter({ lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) });
-    } else {
-      alert("Location not found");
-    }
-  };
+  const [pickupSuggestions, setPickupSuggestions] = useState([]);
+  const [destinationSuggestions, setDestinationSuggestions] = useState([]);
 
-  const handleRoute = async () => {
-    if (!searchPickup || !searchDestination) {
-      alert("Please enter both pickup and destination");
+  /* AUTOCOMPLETE */
+  const searchLocations = (query, setSuggestions) => {
+    clearTimeout(searchTimeout);
+
+    if (query.length < 3) {
+      setSuggestions([]);
       return;
     }
-    await geocode(searchPickup, setPickup);
-    await geocode(searchDestination, setDestination);
+
+    searchTimeout = setTimeout(async () => {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=ke&q=${encodeURIComponent(
+          query
+        )}`
+      );
+      const data = await res.json();
+      setSuggestions(data);
+    }, 400);
   };
 
   const computedPrice = useMemo(() => {
-    if (distance && weight && height && length) {
-      return Math.round(
-        300 +
-          distance * 50 +
-          Number(weight) * 10 +
-          (Number(height) + Number(length)) * 2
-      );
-    }
-    return null;
+    if (!distance || !weight || !height || !length) return null;
+
+    return Math.round(
+      300 +
+        distance * 50 +
+        Number(weight) * 10 +
+        (Number(height) + Number(length)) * 2
+    );
   }, [distance, weight, height, length]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!pickup || !destination) {
+      alert("Select pickup and destination from suggestions");
+      return;
+    }
+
     const orders = JSON.parse(localStorage.getItem("orders")) || [];
     orders.push({
       id: Date.now(),
@@ -103,116 +112,174 @@ const CreateOrder = () => {
       status: "Pending",
       createdAt: new Date().toLocaleString(),
     });
+
     localStorage.setItem("orders", JSON.stringify(orders));
     alert("Order created successfully!");
   };
 
   return (
-    <div className="order-container">
-      <h2>Create Parcel Delivery Order</h2>
+    <div className="order-dashboard">
+      <div className="order-container">
+        <h2>Create Parcel Delivery Order</h2>
 
-      <form className="order-form" onSubmit={handleSubmit}>
-        <div className="order-grid">
-          {/* LEFT SIDE */}
-          <div className="form-left">
-            <input
-              type="text"
-              placeholder="Item Type"
-              value={itemType}
-              onChange={(e) => setItemType(e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              placeholder="Weight (kg)"
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              placeholder="Height (cm)"
-              value={height}
-              onChange={(e) => setHeight(e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              placeholder="Length (cm)"
-              value={length}
-              onChange={(e) => setLength(e.target.value)}
-              required
-            />
-            <input
-              type="text"
-              placeholder="Pickup Location"
-              value={searchPickup}
-              onChange={(e) => setSearchPickup(e.target.value)}
-              required
-            />
-            <input
-              type="text"
-              placeholder="Destination"
-              value={searchDestination}
-              onChange={(e) => setSearchDestination(e.target.value)}
-              required
-            />
-          </div>
+        <form onSubmit={handleSubmit}>
+          <div className="order-grid">
+            {/* LEFT CARD */}
+            <div className="card form-left">
+              <input
+                type="text"
+                placeholder="Item Type"
+                value={itemType}
+                onChange={(e) => setItemType(e.target.value)}
+                required
+              />
 
-          {/* CENTER MAP */}
-          <div className="map-center">
-            <button type="button" onClick={handleRoute} className="route-btn">
-              Show Route & Calculate Price
-            </button>
+              <input
+                type="number"
+                placeholder="Weight (kg)"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                required
+              />
 
-            <div className="map-wrapper">
-              <MapContainer
-                center={[-1.286389, 36.817223]}
-                zoom={12}
-                scrollWheelZoom={false}
-              >
-                <TileLayer
-                  attribution="&copy; OpenStreetMap contributors"
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              <input
+                type="number"
+                placeholder="Height (cm)"
+                value={height}
+                onChange={(e) => setHeight(e.target.value)}
+                required
+              />
+
+              <input
+                type="number"
+                placeholder="Length (cm)"
+                value={length}
+                onChange={(e) => setLength(e.target.value)}
+                required
+              />
+
+              {/* PICKUP */}
+              <div className="autocomplete-wrapper">
+                <input
+                  type="text"
+                  placeholder="Pickup Location"
+                  value={searchPickup}
+                  onChange={(e) => {
+                    setSearchPickup(e.target.value);
+                    searchLocations(e.target.value, setPickupSuggestions);
+                  }}
                 />
 
-                {pickup && (
-                  <Marker position={[pickup.lat, pickup.lng]}>
-                    <Popup>Pickup Location</Popup>
-                  </Marker>
+                {pickupSuggestions.length > 0 && (
+                  <ul className="autocomplete-list">
+                    {pickupSuggestions.map((p) => (
+                      <li
+                        key={p.place_id}
+                        onClick={() => {
+                          setSearchPickup(p.display_name);
+                          setPickup({ lat: +p.lat, lng: +p.lon });
+                          setPickupSuggestions([]);
+                        }}
+                      >
+                        {p.display_name}
+                      </li>
+                    ))}
+                  </ul>
                 )}
+              </div>
 
-                {destination && (
-                  <Marker position={[destination.lat, destination.lng]}>
-                    <Popup>Destination</Popup>
-                  </Marker>
-                )}
+              {/* DESTINATION */}
+              <div className="autocomplete-wrapper">
+                <input
+                  type="text"
+                  placeholder="Destination"
+                  value={searchDestination}
+                  onChange={(e) => {
+                    setSearchDestination(e.target.value);
+                    searchLocations(
+                      e.target.value,
+                      setDestinationSuggestions
+                    );
+                  }}
+                />
 
-                {pickup && destination && (
-                  <Routing
-                    from={pickup}
-                    to={destination}
-                    setDistance={setDistance}
-                  />
+                {destinationSuggestions.length > 0 && (
+                  <ul className="autocomplete-list">
+                    {destinationSuggestions.map((p) => (
+                      <li
+                        key={p.place_id}
+                        onClick={() => {
+                          setSearchDestination(p.display_name);
+                          setDestination({ lat: +p.lat, lng: +p.lon });
+                          setDestinationSuggestions([]);
+                        }}
+                      >
+                        {p.display_name}
+                      </li>
+                    ))}
+                  </ul>
                 )}
-              </MapContainer>
+              </div>
+
+              {/* SUBMIT BUTTON */}
+              <button type="submit" className="submit-btn">
+                Submit Order
+              </button>
             </div>
 
-            {distance && (
-              <div className="price-box">
-                <p><strong>Distance:</strong> {distance.toFixed(2)} km</p>
-                <p><strong>Estimated Price:</strong> KES {computedPrice}</p>
-              </div>
-            )}
+            {/* RIGHT CARD */}
+            <div className="card">
+              <div className="map-wrapper">
+                <MapContainer
+                  center={[-1.286389, 36.817223]}
+                  zoom={12}
+                  scrollWheelZoom={false}
+                >
+                  <TileLayer
+                    attribution="&copy; OpenStreetMap contributors"
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
 
-            <button type="submit" className="submit-btn">
-              Submit Order
-            </button>
+                  {pickup && (
+                    <Marker position={[pickup.lat, pickup.lng]}>
+                      <Popup>Pickup</Popup>
+                    </Marker>
+                  )}
+
+                  {destination && (
+                    <Marker position={[destination.lat, destination.lng]}>
+                      <Popup>Destination</Popup>
+                    </Marker>
+                  )}
+
+                  {pickup && destination && (
+                    <Routing
+                      from={pickup}
+                      to={destination}
+                      setDistance={setDistance}
+                    />
+                  )}
+                </MapContainer>
+              </div>
+
+              {distance && (
+                <div className="price-box">
+                  <p>
+                    <strong>Distance:</strong> {distance.toFixed(2)} km
+                  </p>
+                  <p>
+                    <strong>Estimated Price:</strong> KES {computedPrice}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };
 
 export default CreateOrder;
+
+

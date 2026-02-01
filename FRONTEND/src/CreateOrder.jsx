@@ -2,11 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet-routing-machine";
-<<<<<<< HEAD
 import "leaflet/dist/leaflet.css";
-=======
-import "leaflet/dist/leaflet.css"; // ✅ REQUIRED
->>>>>>> 19288d4 (errors debugging)
 import "./CreateOrder.css";
 
 /* Fix leaflet marker icons */
@@ -45,11 +41,8 @@ const Routing = ({ from, to, setDistance }) => {
   return null;
 };
 
-<<<<<<< HEAD
 let searchTimeout;
 
-=======
->>>>>>> 19288d4 (errors debugging)
 const CreateOrder = () => {
   const [itemType, setItemType] = useState("");
   const [weight, setWeight] = useState("");
@@ -63,29 +56,8 @@ const CreateOrder = () => {
   const [searchPickup, setSearchPickup] = useState("");
   const [searchDestination, setSearchDestination] = useState("");
 
-<<<<<<< HEAD
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
-=======
-  const geocode = async (address, setter) => {
-    try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          address
-        )}`
-      );
-      const data = await res.json();
-      if (data.length > 0) {
-        setter({ lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) });
-      } else {
-        alert("Location not found. Please try another place.");
-      }
-    } catch (error) {
-      console.error("Geocoding error:", error);
-      alert("Failed to fetch location. Check your internet connection.");
-    }
-  };
->>>>>>> 19288d4 (errors debugging)
 
   /* AUTOCOMPLETE */
   const searchLocations = (query, setSuggestions) => {
@@ -231,7 +203,6 @@ const CreateOrder = () => {
                   }}
                 />
 
-<<<<<<< HEAD
                 {destinationSuggestions.length > 0 && (
                   <ul className="autocomplete-list">
                     {destinationSuggestions.map((p) => (
@@ -302,47 +273,6 @@ const CreateOrder = () => {
                 </div>
               )}
             </div>
-=======
-        {/* ✅ MAP FIXED & LOCKED BELOW FORM */}
-        <div className="map-wrapper">
-          <MapContainer
-            center={[-1.286389, 36.817223]}
-            zoom={12}
-            scrollWheelZoom={false}
-            className="leaflet-map"
-          >
-            <TileLayer
-              attribution="&copy; OpenStreetMap contributors"
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-
-            {pickup && (
-              <Marker position={[pickup.lat, pickup.lng]}>
-                <Popup>Pickup Location</Popup>
-              </Marker>
-            )}
-
-            {destination && (
-              <Marker position={[destination.lat, destination.lng]}>
-                <Popup>Destination</Popup>
-              </Marker>
-            )}
-
-            {pickup && destination && (
-              <Routing from={pickup} to={destination} setDistance={setDistance} />
-            )}
-          </MapContainer>
-        </div>
-
-        {distance && (
-          <div className="price-box">
-            <p>
-              <strong>Distance:</strong> {distance.toFixed(2)} km
-            </p>
-            <p>
-              <strong>Estimated Price:</strong> KES {computedPrice}
-            </p>
->>>>>>> 19288d4 (errors debugging)
           </div>
         </form>
       </div>
@@ -351,8 +281,5 @@ const CreateOrder = () => {
 };
 
 export default CreateOrder;
-<<<<<<< HEAD
 
 
-=======
->>>>>>> 19288d4 (errors debugging)

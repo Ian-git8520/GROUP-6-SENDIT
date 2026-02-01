@@ -5,8 +5,8 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "./TrackOrder.css";
+import { deliveryAPI } from "./services/api";
 
-// Fix leaflet marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -39,8 +39,24 @@ const Routing = ({ from, to }) => {
 };
 
 const TrackOrder = () => {
-  const orders = JSON.parse(localStorage.getItem("orders")) || [];
+  const [orders, setOrders] = useState([]);
   const [selectedId, setSelectedId] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      try {
+        const data = await deliveryAPI.getOrders();
+        setOrders(data);
+      } catch (err) {
+        setError("Failed to load orders.");
+        console.error("Load orders error:", err);
+      }
+    };
+
+    loadOrders();
+  }, []);
+
   const selectedOrder = orders.find(
     (order) => order.id === Number(selectedId)
   );
@@ -49,6 +65,8 @@ const TrackOrder = () => {
     <div className="track-container">
       <h2>Track Your Order</h2>
 
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
       <select
         value={selectedId}
         onChange={(e) => setSelectedId(e.target.value)}
@@ -56,19 +74,21 @@ const TrackOrder = () => {
         <option value="">Select an Order</option>
         {orders.map((order) => (
           <option key={order.id} value={order.id}>
-            {order.itemType} — {order.status}
+            {order.item_type ? `${order.item_type} — ` : ""}{order.pickup_location} → {order.drop_off_location} — {order.status}
           </option>
         ))}
       </select>
 
       {selectedOrder &&
-        selectedOrder.pickup &&
-        selectedOrder.destination && (
+        selectedOrder.pickup_latitude &&
+        selectedOrder.pickup_longitude &&
+        selectedOrder.destination_latitude &&
+        selectedOrder.destination_longitude && (
           <div className="track-card">
             <MapContainer
               center={[
-                selectedOrder.pickup.lat,
-                selectedOrder.pickup.lng,
+                selectedOrder.pickup_latitude,
+                selectedOrder.pickup_longitude,
               ]}
               zoom={12}
               className="track-map"
@@ -80,29 +100,40 @@ const TrackOrder = () => {
 
               <Marker
                 position={[
-                  selectedOrder.pickup.lat,
-                  selectedOrder.pickup.lng,
+                  selectedOrder.pickup_latitude,
+                  selectedOrder.pickup_longitude,
                 ]}
               >
-                <Popup>Pickup</Popup>
+                <Popup>Pickup: {selectedOrder.pickup_location}</Popup>
               </Marker>
 
               <Marker
                 position={[
-                  selectedOrder.destination.lat,
-                  selectedOrder.destination.lng,
+                  selectedOrder.destination_latitude,
+                  selectedOrder.destination_longitude,
                 ]}
               >
-                <Popup>Destination</Popup>
+                <Popup>Destination: {selectedOrder.drop_off_location}</Popup>
               </Marker>
 
               <Routing
-                from={selectedOrder.pickup}
-                to={selectedOrder.destination}
+                from={{
+                  lat: selectedOrder.pickup_latitude,
+                  lng: selectedOrder.pickup_longitude,
+                }}
+                to={{
+                  lat: selectedOrder.destination_latitude,
+                  lng: selectedOrder.destination_longitude,
+                }}
               />
             </MapContainer>
 
             <div className="track-info">
+              {selectedOrder.item_type && (
+                <p>
+                  <strong>Item:</strong> {selectedOrder.item_type}
+                </p>
+              )}
               <p>
                 <strong>Status:</strong> {selectedOrder.status}
               </p>
@@ -111,14 +142,8 @@ const TrackOrder = () => {
                 {selectedOrder.distance?.toFixed(2)} km
               </p>
               <p>
-                <strong>Price:</strong> KES {selectedOrder.price}
+                <strong>Price:</strong> KES {selectedOrder.total_price}
               </p>
-              {selectedOrder.currentLocation && (
-                <p>
-                  <strong>Current Location:</strong>{" "}
-                  {selectedOrder.currentLocation}
-                </p>
-              )}
             </div>
           </div>
         )}
@@ -127,4 +152,3 @@ const TrackOrder = () => {
 };
 
 export default TrackOrder;
-

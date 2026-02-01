@@ -68,6 +68,8 @@ class Delivery(Base):
     weight = Column(Float, nullable=False)
     size = Column(Float, nullable=False)
 
+    item_type = Column(String, nullable=True)
+
     
     pickup_location = Column(String, nullable=False)
     drop_off_location = Column(String, nullable=False)

@@ -2,37 +2,48 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Auth.css";
 import "./Login.css";
+import { authAPI } from "./services/api";
 
 const Login = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const roleFromLanding =
-    new URLSearchParams(location.search).get("role") || "user";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(roleFromLanding);
 
-  const handleLogin = (e) => {
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    // 🔐 Fake auth (NO backend yet)
-    const loggedInUser = {
-      name: email.split("@")[0], // helps profile/dashboard
-      email,
-      role,
-    };
+    try {
+      // Call backend API
+      const response = await authAPI.login(email, password);
 
-    localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
+      const loggedInUser = {
+        id: response.id,
+        name: response.name || email.split("@")[0],
+        email: response.email || email,
+        phone: response.phone || "",
+        role: response.role,
+      };
 
-    // 🔁 Role-based redirect
-    if (role === "admin") {
-      navigate("/admin/dashboard");
-    } else if (role === "driver") {
-      navigate("/driver/dashboard");
-    } else {
-      navigate("/dashboard");
+      localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
+
+      // Role-based redirect
+      if (loggedInUser.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (loggedInUser.role === "driver") {
+        navigate("/driver/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      setError("Login failed. Please check your credentials.");
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,6 +52,8 @@ const Login = () => {
       <div className="auth-card">
         <h2>Login</h2>
         <p className="auth-subtitle">Welcome back, please login</p>
+
+        {error && <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>}
 
         <form className="auth-form" onSubmit={handleLogin}>
           <input
@@ -59,14 +72,8 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="user">User</option>
-            <option value="driver">Driver</option>
-            <option value="admin">Admin</option>
-          </select>
-
           <button type="submit" className="auth-btn">
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>

@@ -57,6 +57,53 @@
   text-align: center;
 }
 
+.admin-rider-form {
+  max-width: 900px;
+  margin: 0 auto 2rem auto;
+  background: rgba(15, 23, 42, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.4rem;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  display: grid;
+  gap: 0.8rem;
+}
+
+.admin-rider-form h3 {
+  margin: 0 0 0.5rem 0;
+  color: #38bdf8;
+}
+
+.admin-rider-form input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+}
+
+.admin-rider-form button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #38bdf8;
+  color: #0f172a;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-rider-form button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.admin-assign-label {
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 0.6rem;
+  font-weight: bold;
+}
+
 /* ACCESS DENIED */
 .admin-container p,
 .admin-container h2 {

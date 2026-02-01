@@ -197,7 +197,13 @@ def create_delivery(
     size: float,
     pickup_location: str,
     drop_off_location: str,
+    item_type: str | None = None,
+    pickup_latitude: float | None = None,
+    pickup_longitude: float | None = None,
+    destination_latitude: float | None = None,
+    destination_longitude: float | None = None,
     rider_id: int | None = None,
+    total_price: float | None = None,
     status: str = "pending"
 ) -> Delivery:
     delivery = Delivery(
@@ -207,8 +213,14 @@ def create_delivery(
         distance=distance,
         weight=weight,
         size=size,
+        item_type=item_type,
         pickup_location=pickup_location,
         drop_off_location=drop_off_location,
+        pickup_latitude=pickup_latitude,
+        pickup_longitude=pickup_longitude,
+        destination_latitude=destination_latitude,
+        destination_longitude=destination_longitude,
+        total_price=total_price,
         status=status
     )
     db.add(delivery)

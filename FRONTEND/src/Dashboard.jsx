@@ -35,7 +35,7 @@ const Dashboard = () => {
         <h3 className="logo">SendIT</h3>
 
         <div className="nav-links">
-          {user.role === "user" && (
+          {(user.role === "user" || user.role === "customer") && (
             <>
               <Link to="/dashboard/create-order">Create Order</Link>
               <Link to="/dashboard/view-orders">View Orders</Link>
@@ -65,7 +65,7 @@ const Dashboard = () => {
 
       {/* CONTENT */}
       <div className="dashboard-content">
-        <h2>Welcome, {user.role.toUpperCase()}</h2>
+        <h2>Welcome, {user.role === "customer" ? "CUSTOMER" : user.role.toUpperCase()}</h2>
 
         {/* PROFILE CARD */}
         <div className="profile-summary">

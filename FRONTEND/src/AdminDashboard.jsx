@@ -6,7 +6,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const admin = JSON.parse(localStorage.getItem("currentUser"));
 
-  // 🔐 Route protection
+  
   if (!admin) {
     navigate("/login");
     return null;

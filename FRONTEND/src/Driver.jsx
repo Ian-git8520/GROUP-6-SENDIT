@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "./Driver.css";
 import "leaflet/dist/leaflet.css";
+import { deliveryAPI, riderAPI } from "./services/api";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -17,18 +18,69 @@ L.Icon.Default.mergeOptions({
 const Driver = () => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedOrders = JSON.parse(localStorage.getItem("orders")) || [];
-    setOrders(storedOrders);
+    const loadDriverOrders = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser || currentUser.role !== "driver") {
+          setOrders([]);
+          setSelectedOrder(null);
+          setLoading(false);
+          return;
+        }
+
+        const riders = await riderAPI.getRiders();
+        const matchedRider = riders.find(
+          (rider) =>
+            rider.name?.toLowerCase() === currentUser.name?.toLowerCase()
+        );
+
+        let riderId = matchedRider?.id;
+        if (!riderId) {
+          const createdRider = await riderAPI.createRider({
+            name: currentUser.name,
+            phone_number: currentUser.phone || null,
+          });
+          riderId = createdRider.id;
+        }
+
+        const allOrders = await deliveryAPI.getOrders();
+        const assigned = allOrders.filter((order) => order.rider?.id === riderId);
+        setOrders(assigned);
+        setSelectedOrder(assigned[0] || null);
+      } catch (err) {
+        setError("Failed to load assigned deliveries.");
+        console.error("Driver load error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDriverOrders();
   }, []);
 
-  const markDelivered = (id) => {
-    const updatedOrders = orders.map((order) =>
-      order.id === id ? { ...order, status: "Delivered" } : order
-    );
-    setOrders(updatedOrders);
-    localStorage.setItem("orders", JSON.stringify(updatedOrders));
+  const markDelivered = async (id) => {
+    try {
+      await deliveryAPI.updateStatus(id, "delivered");
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === id ? { ...order, status: "delivered" } : order
+        )
+      );
+      if (selectedOrder?.id === id) {
+        setSelectedOrder((prev) =>
+          prev ? { ...prev, status: "delivered" } : prev
+        );
+      }
+    } catch (err) {
+      setError("Failed to update delivery status.");
+      console.error("Update status error:", err);
+    }
   };
 
   return (
@@ -38,7 +90,9 @@ const Driver = () => {
       <div className="driver-layout">
         {/* ORDERS LIST */}
         <div className="driver-orders">
-          {orders.length === 0 ? (
+          {loading && <p className="empty">Loading deliveries...</p>}
+          {error && <p className="empty" style={{ color: "red" }}>{error}</p>}
+          {!loading && !error && orders.length === 0 ? (
             <p className="empty">No deliveries available.</p>
           ) : (
             orders.map((order) => (
@@ -49,12 +103,12 @@ const Driver = () => {
                 }`}
                 onClick={() => setSelectedOrder(order)}
               >
-                <h3>{order.itemType}</h3>
+                <h3>{order.item_type || "Delivery"}</h3>
                 <p>
                   <strong>Status:</strong>{" "}
                   <span
                     className={
-                      order.status === "Delivered" ? "done" : "pending"
+                      order.status === "delivered" ? "done" : "pending"
                     }
                   >
                     {order.status}
@@ -65,10 +119,10 @@ const Driver = () => {
                   {order.distance?.toFixed(2)} km
                 </p>
                 <p>
-                  <strong>Price:</strong> KES {order.price}
+                  <strong>Price:</strong> KES {order.total_price}
                 </p>
 
-                {order.status !== "Delivered" && (
+                {order.status !== "delivered" && (
                   <button
                     className="deliver-btn"
                     onClick={(e) => {
@@ -95,8 +149,8 @@ const Driver = () => {
               <div className="map-section">
                 <MapContainer
                   center={[
-                    selectedOrder.pickup.lat,
-                    selectedOrder.pickup.lng,
+                    selectedOrder.pickup_latitude,
+                    selectedOrder.pickup_longitude,
                   ]}
                   zoom={12}
                 >
@@ -107,8 +161,8 @@ const Driver = () => {
 
                   <Marker
                     position={[
-                      selectedOrder.pickup.lat,
-                      selectedOrder.pickup.lng,
+                      selectedOrder.pickup_latitude,
+                      selectedOrder.pickup_longitude,
                     ]}
                   >
                     <Popup>Pickup Location</Popup>
@@ -116,8 +170,8 @@ const Driver = () => {
 
                   <Marker
                     position={[
-                      selectedOrder.destination.lat,
-                      selectedOrder.destination.lng,
+                      selectedOrder.destination_latitude,
+                      selectedOrder.destination_longitude,
                     ]}
                   >
                     <Popup>Destination</Popup>
@@ -128,7 +182,7 @@ const Driver = () => {
               <div className="order-details">
                 <h3>Order Details</h3>
                 <p>
-                  <strong>Item:</strong> {selectedOrder.itemType}
+                  <strong>Item:</strong> {selectedOrder.item_type || "Delivery"}
                 </p>
                 <p>
                   <strong>Status:</strong> {selectedOrder.status}
@@ -138,10 +192,13 @@ const Driver = () => {
                   {selectedOrder.distance?.toFixed(2)} km
                 </p>
                 <p>
-                  <strong>Price:</strong> KES {selectedOrder.price}
+                  <strong>Price:</strong> KES {selectedOrder.total_price}
                 </p>
                 <p>
-                  <strong>Created:</strong> {selectedOrder.createdAt}
+                  <strong>Created:</strong>{" "}
+                  {selectedOrder.created_at
+                    ? new Date(selectedOrder.created_at).toLocaleString()
+                    : "N/A"}
                 </p>
               </div>
             </div>

@@ -96,8 +96,6 @@ const Landing = () => {
         <div className="mvp-grid">
           <div className="mvp-card">Create an account and log in</div>
           <div className="mvp-card">Create a parcel delivery order</div>
-          <div className="mvp-card">Change the destination of an order</div>
-          <div className="mvp-card">Cancel a parcel delivery order</div>
           <div className="mvp-card">View order details and routes</div>
           <div className="mvp-card">Admins update order status & location</div>
           <div className="mvp-card">Live map with pickup & destination</div>

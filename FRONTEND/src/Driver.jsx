@@ -51,13 +51,10 @@ const Route = ({ pickup, destination }) => {
 };
 
 const Driver = () => {
-  const [orders, setOrders] = useState([]);
+  const [orders] = useState(() => {
+    return JSON.parse(localStorage.getItem("orders")) || [];
+  });
   const [selectedOrder, setSelectedOrder] = useState(null);
-
-  useEffect(() => {
-    const storedOrders = JSON.parse(localStorage.getItem("orders")) || [];
-    setOrders(storedOrders);
-  }, []);
 
   return (
     <div className="driver-container">

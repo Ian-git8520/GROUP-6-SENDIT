@@ -1,5 +1,5 @@
 .orders-container {
-  height: 100vh;
+  min-height: 100vh;
   padding: 2rem;
   background: radial-gradient(
     circle at top,
@@ -19,6 +19,7 @@
   margin-bottom: 1.5rem;
   color: #e5e7eb;
 }
+
 
 .order-card {
   width: 100%;

@@ -102,18 +102,29 @@ const TrackOrder = () => {
                 destination={activeOrder.destination}
               />
             </MapContainer>
-          ) : (
-            <div className="empty-map">Select an order to track</div>
-          )}
-        </div>
-      </div>
+
+            <div className="track-info">
+              <p>
+                <strong>Status:</strong> {selectedOrder.status}
+              </p>
+              <p>
+                <strong>Distance:</strong>{" "}
+                {selectedOrder.distance?.toFixed(2)} km
+              </p>
+              <p>
+                <strong>Price:</strong> KES {selectedOrder.price}
+              </p>
+              {selectedOrder.currentLocation && (
+                <p>
+                  <strong>Current Location:</strong>{" "}
+                  {selectedOrder.currentLocation}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
     </div>
   );
 };
 
 export default TrackOrder;
-
-
-
-
-

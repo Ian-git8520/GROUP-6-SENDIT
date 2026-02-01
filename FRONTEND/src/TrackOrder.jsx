@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -6,99 +6,100 @@ import "leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "./TrackOrder.css";
 
-// Fix leaflet marker icons
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-});
-
-const Routing = ({ from, to }) => {
+const Routing = ({ pickup, destination }) => {
   const map = useMap();
 
   useEffect(() => {
-    if (!from || !to) return;
+    if (!pickup || !destination) return;
 
-    const control = L.Routing.control({
-      waypoints: [L.latLng(from.lat, from.lng), L.latLng(to.lat, to.lng)],
-      routeWhileDragging: false,
-      show: false,
+    const routingControl = L.Routing.control({
+      waypoints: [
+        L.latLng(pickup.lat, pickup.lng),
+        L.latLng(destination.lat, destination.lng),
+      ],
+      lineOptions: {
+        styles: [{ color: "#38bdf8", weight: 5 }],
+      },
       addWaypoints: false,
       draggableWaypoints: false,
       fitSelectedRoutes: true,
+      show: false,
     }).addTo(map);
 
-    return () => map.removeControl(control);
-  }, [from, to, map]);
+    return () => map.removeControl(routingControl);
+  }, [pickup, destination, map]);
 
   return null;
 };
 
 const TrackOrder = () => {
-  const orders = JSON.parse(localStorage.getItem("orders")) || [];
-  const [selectedId, setSelectedId] = useState("");
-  const selectedOrder = orders.find(
-    (order) => order.id === Number(selectedId)
-  );
+  const [orders, setOrders] = useState([]);
+  const [activeOrder, setActiveOrder] = useState(null);
+
+  useEffect(() => {
+    const storedOrders = JSON.parse(localStorage.getItem("orders")) || [];
+    setOrders(storedOrders);
+    if (storedOrders.length > 0) setActiveOrder(storedOrders[0]);
+  }, []);
 
   return (
-    <div className="track-container">
-      <h2>Track Your Order</h2>
+    <div className="track-page">
+      <div className="track-sidebar">
+        <h2>My Orders</h2>
 
-      <select
-        value={selectedId}
-        onChange={(e) => setSelectedId(e.target.value)}
-      >
-        <option value="">Select an Order</option>
         {orders.map((order) => (
-          <option key={order.id} value={order.id}>
-            {order.itemType} — {order.status}
-          </option>
+          <div
+            key={order.id}
+            className={`track-order-card ${
+              activeOrder?.id === order.id ? "active" : ""
+            }`}
+            onClick={() => setActiveOrder(order)}
+          >
+            <p><strong>Item:</strong> {order.itemType}</p>
+            <p>
+              <strong>Status:</strong>{" "}
+              <span
+                className={`status ${
+                  order.status === "Delivered" ? "delivered" : "pending"
+                }`}
+              >
+                {order.status}
+              </span>
+            </p>
+            <p><strong>Price:</strong> KES {order.price}</p>
+          </div>
         ))}
-      </select>
+      </div>
 
-      {selectedOrder &&
-        selectedOrder.pickup &&
-        selectedOrder.destination && (
-          <div className="track-card">
+      <div className="track-main">
+        <div className="map-card">
+          {activeOrder ? (
             <MapContainer
-              center={[
-                selectedOrder.pickup.lat,
-                selectedOrder.pickup.lng,
-              ]}
+              center={[activeOrder.pickup.lat, activeOrder.pickup.lng]}
               zoom={12}
-              className="track-map"
+              scrollWheelZoom={false}
             >
               <TileLayer
                 attribution="&copy; OpenStreetMap contributors"
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
 
-              <Marker
-                position={[
-                  selectedOrder.pickup.lat,
-                  selectedOrder.pickup.lng,
-                ]}
-              >
-                <Popup>Pickup</Popup>
+              <Marker position={[activeOrder.pickup.lat, activeOrder.pickup.lng]}>
+                <Popup>Pickup Location</Popup>
               </Marker>
 
               <Marker
                 position={[
-                  selectedOrder.destination.lat,
-                  selectedOrder.destination.lng,
+                  activeOrder.destination.lat,
+                  activeOrder.destination.lng,
                 ]}
               >
                 <Popup>Destination</Popup>
               </Marker>
 
               <Routing
-                from={selectedOrder.pickup}
-                to={selectedOrder.destination}
+                pickup={activeOrder.pickup}
+                destination={activeOrder.destination}
               />
             </MapContainer>
 

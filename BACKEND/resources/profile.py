@@ -9,17 +9,24 @@ import jwt
 SECRET_KEY = "your_super_secret_key"
 
 def decode_token(token: str):
+    """Decode JWT token and return payload or None if invalid/expired."""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         return payload
     except jwt.ExpiredSignatureError:
         return None
+    except jwt.InvalidTokenError:
+        return None
 
 class Profile(Resource):
     def get(self):
+        """Get logged-in user's profile."""
         token = request.headers.get("Authorization")
         if not token:
             return {"error": "Token missing"}, 401
+
+        # Remove 'Bearer ' if present
+        token = token.replace("Bearer ", "")
         payload = decode_token(token)
         if not payload:
             return {"error": "Invalid or expired token"}, 401
@@ -40,9 +47,13 @@ class Profile(Resource):
         }, 200
 
     def patch(self):
+        """Update logged-in user's profile fields."""
         token = request.headers.get("Authorization")
         if not token:
             return {"error": "Token missing"}, 401
+
+        # Remove 'Bearer ' if present
+        token = token.replace("Bearer ", "")
         payload = decode_token(token)
         if not payload:
             return {"error": "Invalid or expired token"}, 401
@@ -54,6 +65,7 @@ class Profile(Resource):
             session.close()
             return {"error": "User not found"}, 404
 
+        # Update only the fields provided
         if "name" in data:
             user.name = data["name"]
         if "phone_number" in data:

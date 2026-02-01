@@ -1,58 +1,93 @@
-.track-container {
+.track-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #020617, #0f172a);
-  padding: 3rem;
-  color: white;
+  background: radial-gradient(circle at top, #0b1d33, #020617);
+  padding: 24px;
+  color: #ffffff;
+  box-sizing: border-box;
+}
+
+.page-title {
   text-align: center;
-  font-family: Arial, Helvetica, sans-serif;
+  margin-bottom: 16px;
+  font-size: 26px;
+  font-weight: 600;
 }
 
-.track-container h2 {
-  color: #38bdf8;
-  margin-bottom: 1.5rem;
-}
-
-.track-container select {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  margin-bottom: 2rem;
-}
-
-.track-card {
-  max-width: 900px;
+.track-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+  max-width: 1200px;
   margin: 0 auto;
-  background: rgba(15, 23, 42, 0.6);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  align-items: start;
 }
 
-.track-map {
-  height: 400px;
-  width: 100%;
+.order-list {
+  background: #0b1220;
+  padding: 14px;
+  border-radius: 14px;
+  max-height: calc(100vh - 160px); 
+  overflow-y: auto;
+}
+
+.order-item {
+  background: #020617;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+.order-item:hover {
+  background: #111827;
+}
+
+.order-item.active {
+  border: 2px solid #38bdf8;
+}
+
+.map-section {
+  background: #0b1220;
+  padding: 14px;
+  border-radius: 14px;
+}
+
+
+.order-summary {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+
+.map-box {
+  height: 450px;
   border-radius: 12px;
   overflow: hidden;
 }
 
-.track-info {
-  margin-top: 1.5rem;
-  text-align: left;
+
+.map-box .leaflet-container {
+  width: 100%;
+  height: 100%;
 }
 
-.track-info p {
-  margin-bottom: 0.5rem;
-}
 
-@media (max-width: 768px) {
-  .track-container {
-    padding: 2rem 1rem;
+@media (max-width: 900px) {
+  .track-layout {
+    grid-template-columns: 1fr;
   }
 
-  .track-map {
-    height: 300px;
+  .order-list {
+    max-height: 220px;
+  }
+
+  .map-box {
+    height: 380px;
   }
 }
+
+
+

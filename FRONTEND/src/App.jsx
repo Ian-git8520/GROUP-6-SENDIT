@@ -14,21 +14,15 @@ import Driver from "./Driver";
 function App() {
   return (
     <Routes>
-      {/* PUBLIC */}
+      
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-
-      {/* USER */}
+      <Route path="/signup" element={<Signup />} />     
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/dashboard/create-order" element={<CreateOrder />} />
       <Route path="/dashboard/view-orders" element={<ViewOrders />} />
-      <Route path="/dashboard/track-order" element={<TrackOrder />} />
-
-      {/* DRIVER */}
-      <Route path="/driver/dashboard" element={<Driver />} />
-
-      {/* ADMIN */}
+      <Route path="/dashboard/track-order" element={<TrackOrder />} /> 
+      <Route path="/driver/dashboard" element={<Driver />} />  
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/dashboard/admin" element={<AdminPanel />} />
     </Routes>

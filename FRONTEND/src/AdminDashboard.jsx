@@ -27,15 +27,18 @@ const AdminDashboard = () => {
       {/* NAVBAR */}
       <nav className="admin-dashboard-navbar">
         <h3 className="logo">SendIT — Admin</h3>
-        <button onClick={handleLogout} className="logout-btn">
-          Logout
-        </button>
+
+        <div className="nav-right">
+          <span className="welcome-text">
+            Welcome, {admin.name || "Admin"}
+          </span>
+          <button onClick={handleLogout} className="logout-btn">
+            Logout
+          </button>
+        </div>
       </nav>
 
-      {/* CENTERED WELCOME */}
-      <h2 className="admin-welcome">Welcome, Admin</h2>
-
-      {/* CONTENT */}
+      {/* CENTER CONTENT */}
       <div className="admin-dashboard-content">
         <div className="admin-profile-card">
           <h3>My Profile</h3>

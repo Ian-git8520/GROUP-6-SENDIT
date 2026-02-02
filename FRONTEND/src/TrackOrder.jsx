@@ -33,14 +33,13 @@ const Routing = ({ pickup, destination }) => {
 };
 
 const TrackOrder = () => {
-  const [orders, setOrders] = useState([]);
-  const [activeOrder, setActiveOrder] = useState(null);
-
-  useEffect(() => {
+  const [orders] = useState(() => JSON.parse(localStorage.getItem("orders")) || []);
+  const [activeOrder, setActiveOrder] = useState(() => {
     const stored = JSON.parse(localStorage.getItem("orders")) || [];
-    setOrders(stored);
-    if (stored.length) setActiveOrder(stored[0]);
-  }, []);
+    return stored.length ? stored[0] : null;
+  });
+
+  // Remove the useEffect since initialization is handled in useState
 
   return (
     <div className="track-page">

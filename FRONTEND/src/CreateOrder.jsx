@@ -59,6 +59,9 @@ const CreateOrder = () => {
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
 
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingOrder, setPendingOrder] = useState(null);
+
   /* AUTOCOMPLETE */
   const searchLocations = (query, setSuggestions) => {
     clearTimeout(searchTimeout);
@@ -98,8 +101,7 @@ const CreateOrder = () => {
       return;
     }
 
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    orders.push({
+    const newOrder = {
       id: Date.now(),
       itemType,
       weight,
@@ -111,10 +113,37 @@ const CreateOrder = () => {
       price: computedPrice,
       status: "Pending",
       createdAt: new Date().toLocaleString(),
-    });
+    };
 
+    setPendingOrder(newOrder);
+    setShowConfirm(true);
+  };
+
+  const confirmOrder = () => {
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    orders.push(pendingOrder);
     localStorage.setItem("orders", JSON.stringify(orders));
-    alert("Order created successfully!");
+
+    setShowConfirm(false);
+    setPendingOrder(null);
+
+    alert("Order placed successfully!");
+
+    // Optional: Reset form
+    setItemType("");
+    setWeight("");
+    setHeight("");
+    setLength("");
+    setPickup(null);
+    setDestination(null);
+    setDistance(null);
+    setSearchPickup("");
+    setSearchDestination("");
+  };
+
+  const cancelOrder = () => {
+    setShowConfirm(false);
+    setPendingOrder(null);
   };
 
   return (
@@ -276,10 +305,27 @@ const CreateOrder = () => {
           </div>
         </form>
       </div>
+
+      {/* CONFIRMATION MODAL */}
+      {showConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3>Confirm Order</h3>
+            <p>Are you sure you want to place this order?</p>
+
+            <div className="modal-actions">
+              <button className="modal-confirm-btn" onClick={confirmOrder}>
+                Confirm
+              </button>
+              <button className="modal-cancel-btn" onClick={cancelOrder}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default CreateOrder;
-
-

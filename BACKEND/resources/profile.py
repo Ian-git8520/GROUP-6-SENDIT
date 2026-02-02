@@ -1,71 +1,32 @@
-from flask import request, jsonify
 from flask_restful import Resource
-from sqlalchemy.orm import Session
-from models import User
+from flask import request
 from database import SessionLocal
+from models import User
 from utils.security import hash_password
-import jwt
-
-SECRET_KEY = "your_super_secret_key"
-
-def decode_token(token: str):
-    """Decode JWT token and return payload or None if invalid/expired."""
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        return payload
-    except jwt.ExpiredSignatureError:
-        return None
-    except jwt.InvalidTokenError:
-        return None
+from utils.auth import token_required
 
 class Profile(Resource):
-    def get(self):
-        """Get logged-in user's profile."""
-        token = request.headers.get("Authorization")
-        if not token:
-            return {"error": "Token missing"}, 401
 
-        # Remove 'Bearer ' if present
-        token = token.replace("Bearer ", "")
-        payload = decode_token(token)
-        if not payload:
-            return {"error": "Invalid or expired token"}, 401
-
-        session: Session = SessionLocal()
-        user = session.query(User).filter_by(id=payload["user_id"]).first()
-        session.close()
-
-        if not user:
-            return {"error": "User not found"}, 404
-
+    @token_required
+    def get(self, current_user):
         return {
-            "id": user.id,
-            "name": user.name,
-            "email": user.email,
-            "phone_number": user.phone_number,
-            "role_id": user.role_id
+            "id": current_user.id,
+            "name": current_user.name,
+            "email": current_user.email,
+            "phone_number": current_user.phone_number,
+            "role_id": current_user.role_id
         }, 200
 
-    def patch(self):
-        """Update logged-in user's profile fields."""
-        token = request.headers.get("Authorization")
-        if not token:
-            return {"error": "Token missing"}, 401
-
-        # Remove 'Bearer ' if present
-        token = token.replace("Bearer ", "")
-        payload = decode_token(token)
-        if not payload:
-            return {"error": "Invalid or expired token"}, 401
-
+    @token_required
+    def patch(self, current_user):
         data = request.json
-        session: Session = SessionLocal()
-        user = session.query(User).filter_by(id=payload["user_id"]).first()
+        session = SessionLocal()
+        user = session.query(User).filter_by(id=current_user.id).first()
+
         if not user:
             session.close()
             return {"error": "User not found"}, 404
 
-        # Update only the fields provided
         if "name" in data:
             user.name = data["name"]
         if "phone_number" in data:

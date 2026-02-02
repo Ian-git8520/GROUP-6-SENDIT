@@ -1,17 +1,21 @@
 from flask import Flask, request, jsonify
+from flask_restful import Api
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, User, UserRole, Delivery
 from pricing import calculate_price
 from models import Delivery, PriceIndex
+from resources.auth import LoginResource
 
 
 app = Flask(__name__)
+api = Api(app)
 
 
 DATABASE_URL = "sqlite:///sendit.db"  
 engine = create_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(bind=engine)
+api.add_resource(LoginResource, "/auth/login")
 
 
 Base.metadata.create_all(engine)

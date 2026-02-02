@@ -1,58 +1,99 @@
-.track-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #020617, #0f172a);
-  padding: 3rem;
-  color: white;
-  text-align: center;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.track-container h2 {
-  color: #38bdf8;
-  margin-bottom: 1.5rem;
-}
-
-.track-container select {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  margin-bottom: 2rem;
-}
-
-.track-card {
-  max-width: 900px;
-  margin: 0 auto;
-  background: rgba(15, 23, 42, 0.6);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
-}
-
-.track-map {
-  height: 400px;
-  width: 100%;
-  border-radius: 12px;
+.track-page {
+  height: 100vh;
+  display: flex;
+  background: radial-gradient(
+    circle at top,
+    #0b1224 0%,
+    #050b1c 45%,
+    #020617 100%
+  );
   overflow: hidden;
 }
 
+.track-sidebar {
+  width: 320px;
+  padding: 1.5rem;
+  background: rgba(15, 23, 42, 0.9);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  overflow-y: auto;
+}
+
+.track-sidebar h2 {
+  margin-bottom: 1.2rem;
+  font-size: 1.5rem;
+  color: #e5e7eb;
+}
+
+.track-order-card {
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+.track-order-card:hover {
+  background: rgba(51, 65, 85, 0.9);
+}
+
+.track-order-card.active {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+}
+
+.track-order-card p {
+  margin: 0.35rem 0;
+  font-size: 0.9rem;
+  color: #cbd5f5;
+}
+
+.track-main {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  overflow: hidden;
+}
+
+.map-card {
+  height: 420px;
+  background: rgba(15, 23, 42, 0.85);
+  border-radius: 16px;
+  padding: 0.75rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  margin-top: -10px;
+}
+
+.map-card .leaflet-container {
+  height: 100%;
+  width: 100%;
+  border-radius: 12px;
+}
+
 .track-info {
-  margin-top: 1.5rem;
-  text-align: left;
+  background: rgba(15, 23, 42, 0.85);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .track-info p {
-  margin-bottom: 0.5rem;
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #e5e7eb;
 }
 
-@media (max-width: 768px) {
-  .track-container {
-    padding: 2rem 1rem;
-  }
+.status {
+  font-weight: 600;
+}
 
-  .track-map {
-    height: 300px;
-  }
+.status.pending {
+  color: #facc15;
+}
+
+.status.delivered {
+  color: #22c55e;
 }

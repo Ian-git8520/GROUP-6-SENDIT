@@ -5,6 +5,7 @@ import "./Landing.css";
 const Landing = () => {
   return (
     <div className="landing-container">
+
       {/* HERO */}
       <section className="hero-section">
         <div className="hero-overlay" />
@@ -95,8 +96,6 @@ const Landing = () => {
         <div className="mvp-grid">
           <div className="mvp-card">Create an account and log in</div>
           <div className="mvp-card">Create a parcel delivery order</div>
-          <div className="mvp-card">Change the destination of an order</div>
-          <div className="mvp-card">Cancel a parcel delivery order</div>
           <div className="mvp-card">View order details and routes</div>
           <div className="mvp-card">Admins update order status & location</div>
           <div className="mvp-card">Live map with pickup & destination</div>
@@ -107,15 +106,39 @@ const Landing = () => {
       {/* PRICING PREVIEW */}
       <section className="pricing-section">
         <h2>Simple & Transparent Pricing</h2>
-        <div className="pricing-card">
-          <p>Base Fee</p>
-          <h3>KES 300</h3>
-          <p>+ Distance (per km)</p>
-          <p>+ Weight & Size Factors</p>
-          <p className="pricing-note">
-            Final price is calculated automatically when creating your order.
-          </p>
-          <Link to="/signup" className="btn-primary">Start Sending Now</Link>
+        <div className="pricing-cards-container">
+          <div className="pricing-card">
+            <p>Economy</p>
+            <h3>KES 150</h3>
+            <p>+ Distance (per km)</p>
+            <p>+ Weight & Size Factors</p>
+            <p className="pricing-note">
+              Budget-friendly option for small items.
+            </p>
+            <Link to="/signup" className="btn-primary">Choose Plan</Link>
+          </div>
+
+          <div className="pricing-card">
+            <p>Standard</p>
+            <h3>KES 300</h3>
+            <p>+ Distance (per km)</p>
+            <p>+ Weight & Size Factors</p>
+            <p className="pricing-note">
+              Most popular for everyday deliveries.
+            </p>
+            <Link to="/signup" className="btn-primary">Start Sending Now</Link>
+          </div>
+
+          <div className="pricing-card">
+            <p>Premium</p>
+            <h3>KES 500</h3>
+            <p>+ Distance (per km)</p>
+            <p>+ Weight & Size Factors</p>
+            <p className="pricing-note">
+              Priority handling and faster delivery.
+            </p>
+            <Link to="/signup" className="btn-primary">Choose Plan</Link>
+          </div>
         </div>
       </section>
 

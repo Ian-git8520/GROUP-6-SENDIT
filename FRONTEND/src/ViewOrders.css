@@ -1,17 +1,92 @@
 .orders-container {
-    max-width: 1000px;
-    margin: 2rem auto;
-    color: white;
+  min-height: 100vh;
+  padding: 2rem;
+  background: radial-gradient(
+    circle at top,
+    #0b1224 0%,
+    #050b1c 45%,
+    #020617 100%
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
 }
 
 .orders-container h2 {
-    text-align: center;
-    margin-bottom: 2rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #e5e7eb;
 }
 
+
 .order-card {
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
+  width: 100%;
+  max-width: 600px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+.order-card p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+  color: #cbd5f5;
+}
+
+.order-card strong {
+  color: #e5e7eb;
+}
+
+.pending {
+  color: #facc15;
+  font-weight: 600;
+}
+
+.delivered {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.confirm-btn {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #020617;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
+}
+
+.confirm-btn:disabled {
+  background: #475569;
+  color: #cbd5e1;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.orders-container > p {
+  color: #94a3b8;
+  font-size: 1rem;
+  margin-top: 2rem;
 }

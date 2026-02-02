@@ -75,6 +75,7 @@ class DeliveryListResource(Resource):
                 total_price=total_price
             )
 
+
             return {
                 "delivery_id": delivery.id,
                 "total_price": delivery.total_price,
@@ -82,3 +83,4 @@ class DeliveryListResource(Resource):
             }, 201
         finally:
             db.close()
+

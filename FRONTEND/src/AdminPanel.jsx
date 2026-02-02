@@ -1,12 +1,15 @@
 import React, { useState } from "react";
+
 import "./AdminPanel.css";
 
 const AdminPanel = () => {
+  
   const user = JSON.parse(localStorage.getItem("currentUser"));
   const [orders, setOrders] = useState(
     JSON.parse(localStorage.getItem("orders")) || []
   );
 
+  // 🔐 Route protection
   if (!user || user.role !== "admin") {
     return (
       <div className="admin-container">
@@ -26,27 +29,75 @@ const AdminPanel = () => {
 
   return (
     <div className="admin-container">
-      <h2>Admin Control Panel</h2>
+      {/* HEADER */}
+      <div className="admin-header">
+        <h2>Admin Control Panel</h2>
+       
+      </div>
 
-      {orders.length === 0 && <p>No orders found.</p>}
-
-      {orders.map((order) => (
-        <div className="admin-order-card" key={order.id}>
-          <p><strong>Item:</strong> {order.itemType}</p>
-          <p><strong>Status:</strong> {order.status}</p>
-          <p><strong>Created At:</strong> {order.createdAt}</p>
-
-          <select
-            value={order.status}
-            onChange={(e) => updateStatus(order.id, e.target.value)}
-          >
-            <option value="Pending">Pending</option>
-            <option value="In-Transit">In-Transit</option>
-            <option value="Delivered">Delivered</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
+      {orders.length === 0 ? (
+        <p className="no-orders">No orders found.</p>
+      ) : (
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Item</th>
+                <th>Pickup</th>
+                <th>Destination</th>
+                <th>Distance (km)</th>
+                <th>Price (KES)</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order, index) => (
+                <tr key={order.id}>
+                  <td>{index + 1}</td>
+                  <td>{order.itemType}</td>
+                  <td>
+                    {order.pickup
+                      ? `${order.pickup.lat.toFixed(3)}, ${order.pickup.lng.toFixed(3)}`
+                      : "N/A"}
+                  </td>
+                  <td>
+                    {order.destination
+                      ? `${order.destination.lat.toFixed(3)}, ${order.destination.lng.toFixed(3)}`
+                      : "N/A"}
+                  </td>
+                  <td>{order.distance ? order.distance.toFixed(2) : "—"}</td>
+                  <td>{order.price ? `KES ${order.price}` : "—"}</td>
+                  <td>
+                    <span className={`status-badge ${order.status?.toLowerCase()}`}>
+                      {order.status}
+                    </span>
+                  </td>
+                  <td>{order.createdAt}</td>
+                  <td>
+                    <div className="action-btn-group">
+                      <button
+                        className="approve-btn"
+                        onClick={() => updateStatus(order.id, "Approved")}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        className="cancel-btn"
+                        onClick={() => updateStatus(order.id, "Cancelled")}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      ))}
+      )}
     </div>
   );
 };

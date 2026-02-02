@@ -16,10 +16,7 @@
 .hero-section {
   position: relative;
   height: 100vh;
-  background: 
-    
-    url("https://kardinal.ai/wp-content/uploads/2021/10/Visuels-14-1.png")
-      center/cover no-repeat;
+  background: url("https://kardinal.ai/wp-content/uploads/2021/10/Visuels-14-1.png") center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -28,7 +25,7 @@
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, rgba(0,0,0,0.9), rgba(0,0,0,0.4));
+  background: linear-gradient(120deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.4));
 }
 
 .hero-content {
@@ -188,7 +185,7 @@
   max-width: 1100px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 2.5rem;
 }
 
@@ -270,6 +267,16 @@
   margin-bottom: 2.5rem;
 }
 
+.pricing-cards-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
 .pricing-card {
   max-width: 420px;
   margin: 0 auto;
@@ -278,6 +285,12 @@
   border-radius: 20px;
   padding: 3rem 2.5rem;
   box-shadow: 0 0 40px rgba(0, 242, 255, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 0 60px rgba(0, 242, 255, 0.5);
 }
 
 .pricing-card h3 {
@@ -340,6 +353,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

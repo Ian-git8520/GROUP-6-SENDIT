@@ -1,0 +1,104 @@
+.admin-dashboard-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* NAVBAR */
+.admin-dashboard-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo {
+  color: #38bdf8;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.logout-btn {
+  background: #f87171;
+  color: #020617;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* WELCOME TEXT */
+.admin-welcome {
+  text-align: center;
+  margin-top: 2rem;
+  color: #38bdf8;
+}
+
+/* CONTENT */
+.admin-dashboard-content {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* PROFILE CARD */
+.admin-profile-card {
+  background: rgba(15, 23, 42, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 16px;
+  width: 360px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  text-align: left;
+}
+
+.admin-profile-card h3 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #38bdf8;
+}
+
+.role-badge.admin {
+  background: #f87171;
+  color: #020617;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+/* BUTTON */
+.admin-panel-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 10px;
+  border-radius: 999px;
+  border: none;
+  background: #38bdf8;
+  color: #020617;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.welcome-text {
+  color: #4cc9f0;
+  font-weight: 600;
+  font-size: 16px;
+}
+.admin-profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}

@@ -1,0 +1,10 @@
+# SQLite databases
+*.db
+*.db-journal
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment
+.env

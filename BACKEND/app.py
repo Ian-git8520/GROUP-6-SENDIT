@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from database import init_db
+from flask_cors import CORS
 
 from resources.user import UserListResource, UserResource
 from resources.delivery import DeliveryListResource
@@ -14,6 +15,7 @@ from resources.rider import RiderListResource
 
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 

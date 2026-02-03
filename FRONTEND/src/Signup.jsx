@@ -12,10 +12,39 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(roleFromLanding);
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    localStorage.setItem("currentUser", JSON.stringify({ name, email, role }));
-    navigate("/dashboard");
+  
+    try {
+      const res = await fetch("http://127.0.0.1:5000/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          roleFromLanding, // or role_id if backend uses role_id
+        }),
+      });
+  
+      const data = await res.json();
+  
+      if (!res.ok) {
+        alert(data.error || "Signup failed");
+        return;
+      }
+  
+      // optional: save token/user returned by backend
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("currentUser", JSON.stringify(data.user));
+  
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
+    }
   };
 
   return (

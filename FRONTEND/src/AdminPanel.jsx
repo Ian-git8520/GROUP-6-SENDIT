@@ -24,6 +24,28 @@ const AdminPanel = () => {
     localStorage.setItem("orders", JSON.stringify(updatedOrders));
   };
 
+  const updateDelivery = async (deliveryId, updateData) => {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`http://127.0.0.1:5000/admin/deliveries/${id}`, {
+  method: "PATCH",
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ status: "delivered" })
+});
+
+  const data = await response.json();
+
+  if (response.ok) {
+    alert("Delivery updated successfully");
+  } else {
+    alert(data.error || "Update failed");
+  }
+};
+
+
   return (
     <div className="admin-container">
       <h2>Admin Control Panel</h2>

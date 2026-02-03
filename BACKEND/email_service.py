@@ -30,6 +30,9 @@ def send_email(to_email: str, subject: str, message: str) -> bool:
         print("Email error:", e)
         return False
 
+def send_delivery_email(email, delivery_id):
+    print(f"[EMAIL] Delivery {delivery_id} delivered → {email}")
+
 def send_delivery_status_email(to_email, delivery_id, status):
     print(f"[EMAIL] Sending email to {to_email} | Delivery {delivery_id} → {status}")
 

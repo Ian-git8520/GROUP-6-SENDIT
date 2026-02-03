@@ -15,20 +15,40 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(roleFromLanding);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Fake auth (replace with API later)
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify({ email, role })
-    );
+  try {
+    const response = await fetch('http://localhost:5000/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
 
-    // Role-based navigation 
-    if (role === "admin") navigate("/admin/dashboard");
-    else if (role === "driver") navigate("/driver/dashboard");
-    else navigate("/dashboard");
-  };
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem('token', data.access_token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      alert("Login Successful!");
+      if (data.user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (data.user.role === "driver") {
+        navigate("/driver/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
+
+    } else {
+      alert(data.error || "Invalid Credentials");
+    }
+
+  } catch (error) {
+    console.error("Connection error:", error);
+    alert("Cannot connect to server");
+  }
+};
 
   return (
     <div className="auth-container">

@@ -3,8 +3,9 @@ from flask import request
 from database import SessionLocal
 from models import Delivery, User
 from role_authorization import require_role
+from email_service import send_delivery_email
 
-class DeliveryAdmin(Resource):
+class AdminDeliveryUpdate(Resource):
     def patch(self, delivery_id):
         auth = require_role("admin")
         if isinstance(auth, tuple):
@@ -18,15 +19,17 @@ class DeliveryAdmin(Resource):
             return {"error": "Delivery not found"}, 404
 
         data = request.json
+        previous_status = delivery.status
 
         if "status" in data:
             delivery.status = data["status"]
 
+
         if "rider_id" in data:
             rider = db.query(User).get(data["rider_id"])
-            if not rider or rider.role.name != "rider":
+            if not rider or rider.role.name != "driver":
                 db.close()
-                return {"error": "Invalid rider"}, 400
+                return {"error": "Invalid driver"}, 400
             delivery.rider_id = rider.id
 
         if "distance" in data:
@@ -38,6 +41,7 @@ class DeliveryAdmin(Resource):
         if "size" in data:
             delivery.size = data["size"]
 
+
         if any(k in data for k in ["distance", "weight", "size"]):
             price_index = delivery.price_index
             delivery.total_price = (
@@ -47,9 +51,18 @@ class DeliveryAdmin(Resource):
             )
 
         db.commit()
+
+    
+        if previous_status != "delivered" and delivery.status == "delivered":
+            send_delivery_email(
+                delivery.customer.email,
+                delivery.id
+            )
+
         db.close()
 
         return {
-            "message": "Delivery updated by admin",
-            "delivery_id": delivery.id
+            "message": "Delivery updated successfully",
+            "delivery_id": delivery.id,
+            "status": delivery.status
         }, 200

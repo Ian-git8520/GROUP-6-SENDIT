@@ -6,10 +6,17 @@ from models import Base, User, UserRole, Delivery
 from pricing import calculate_price
 from models import Delivery, PriceIndex
 from resources.auth import LoginResource
+from flask_cors import CORS
+from delivery_admin import AdminDeliveryUpdate
+from driver_tasks import DriverTasks, DriverAcceptTask
 
 
 app = Flask(__name__)
 api = Api(app)
+CORS(app)
+api.add_resource(AdminDeliveryUpdate, "/admin/deliveries/<int:delivery_id>")
+api.add_resource(DriverTasks, "/driver/tasks")
+api.add_resource(DriverAcceptTask, "/driver/tasks/<int:delivery_id>/accept")
 
 
 DATABASE_URL = "sqlite:///sendit.db"  

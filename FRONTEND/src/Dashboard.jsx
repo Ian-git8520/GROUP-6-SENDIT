@@ -4,11 +4,20 @@ import "./Dashboard.css";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+
+  // Read user from localStorage
   const storedUser = JSON.parse(localStorage.getItem("currentUser"));
 
-  const [user, setUser] = useState(storedUser);
+  const [user, setUser] = useState({
+    name: storedUser?.name || "User",
+    email: storedUser?.email || "Not set",
+    phone: storedUser?.phone || "Not set",
+    role: storedUser?.role || "user",
+  });
+
   const [editing, setEditing] = useState(false);
 
+  // Redirect if not logged in
   if (!storedUser) {
     navigate("/login");
     return null;
@@ -24,12 +33,14 @@ const Dashboard = () => {
   };
 
   const saveProfile = () => {
-    localStorage.setItem("currentUser", JSON.stringify(user));
+    const updatedUser = { ...storedUser, ...user };
+    localStorage.setItem("currentUser", JSON.stringify(updatedUser));
     setEditing(false);
   };
 
   return (
     <div className="dashboard-container">
+      {/* NAVBAR */}
       <nav className="dashboard-navbar">
         <h3 className="logo">SendIT</h3>
 
@@ -44,9 +55,10 @@ const Dashboard = () => {
         </div>
       </nav>
 
+      {/* CONTENT */}
       <div className="dashboard-content">
         <h2 className="welcome-text">
-          Welcome, <span>{user.name || "User"}</span> 👋
+          Welcome, <span>{user.name}</span> 👋
         </h2>
 
         <div className="profile-wrapper">
@@ -56,33 +68,47 @@ const Dashboard = () => {
             <div className="profile-row">
               <label>Name</label>
               {editing ? (
-                <input name="name" value={user.name || ""} onChange={handleChange} />
+                <input
+                  name="name"
+                  value={user.name}
+                  onChange={handleChange}
+                />
               ) : (
-                <span>{user.name || "Not set"}</span>
+                <span>{user.name}</span>
               )}
             </div>
 
             <div className="profile-row">
               <label>Email</label>
               {editing ? (
-                <input name="email" value={user.email || ""} onChange={handleChange} />
+                <input
+                  name="email"
+                  value={user.email}
+                  onChange={handleChange}
+                />
               ) : (
-                <span>{user.email || "Not set"}</span>
+                <span>{user.email}</span>
               )}
             </div>
 
             <div className="profile-row">
               <label>Phone</label>
               {editing ? (
-                <input name="phone" value={user.phone || ""} onChange={handleChange} />
+                <input
+                  name="phone"
+                  value={user.phone}
+                  onChange={handleChange}
+                />
               ) : (
-                <span>{user.phone || "Not set"}</span>
+                <span>{user.phone}</span>
               )}
             </div>
 
             <div className="profile-row">
               <label>Role</label>
-              <span className="role-badge">{user.role.toUpperCase()}</span>
+              <span className="role-badge">
+                {user.role.toUpperCase()}
+              </span>
             </div>
 
             <div className="profile-actions">
@@ -91,7 +117,10 @@ const Dashboard = () => {
                   Save Changes
                 </button>
               ) : (
-                <button className="edit-btn" onClick={() => setEditing(true)}>
+                <button
+                  className="edit-btn"
+                  onClick={() => setEditing(true)}
+                >
                   Edit Profile
                 </button>
               )}

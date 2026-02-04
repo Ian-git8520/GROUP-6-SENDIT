@@ -1,96 +1,59 @@
-from sqlalchemy import ( Column,Integer, String, Float, ForeignKey, DateTime )
-
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, JSON
+from sqlalchemy.orm import relationship
+from database import Base
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
-Base = declarative_base()
-
-
-class UserRole(Base):
-    __tablename__ = "user_roles"
-
+class Role(Base):
+    __tablename__ = "roles"
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False, unique=True)  # admin | customer
-
-    users = relationship("User", back_populates="role")
-
-
+    name = Column(String, unique=True)
 
 class User(Base):
     __tablename__ = "users"
-
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    email = Column(String, nullable=False, unique=True)
-    phone_number = Column(String, nullable=True)
-    password = Column(String, nullable=False)
-    role_id = Column(Integer, ForeignKey("user_roles.id"), nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    password_hash = Column(String, nullable=False)
+    role_id = Column(Integer, ForeignKey("roles.id"))
 
-    role = relationship("UserRole", back_populates="users")
-    deliveries = relationship("Delivery", back_populates="user")
+    role = relationship("Role")
 
+    def __init__(self, email, password, role_id):
+        self.email = email
+        self.password_hash = generate_password_hash(password)
+        self.role_id = role_id
 
-
-class Rider(Base):
-    __tablename__ = "riders"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    phone_number = Column(String, nullable=True)
-
-    deliveries = relationship("Delivery", back_populates="rider")
-
-
-
-class PriceIndex(Base):
-    __tablename__ = "price_index"
-
-    id = Column(Integer, primary_key=True)
-    price_per_km = Column(Float, nullable=False)
-    price_per_kg = Column(Float, nullable=False)
-    price_per_cm = Column(Float, nullable=False)
-
-    deliveries = relationship("Delivery", back_populates="price_index")
-
-
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Delivery(Base):
     __tablename__ = "deliveries"
 
     id = Column(Integer, primary_key=True)
-
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    rider_id = Column(Integer, ForeignKey("riders.id"), nullable=True)
-    price_index_id = Column(Integer, ForeignKey("price_index.id"), nullable=False)
-
-   
-    distance = Column(Float, nullable=False)
-    weight = Column(Float, nullable=False)
-    size = Column(Float, nullable=False)
-
-    
-    pickup_location = Column(String, nullable=False)
-    drop_off_location = Column(String, nullable=False)
-
-    pickup_latitude = Column(Float, nullable=True)
-    pickup_longitude = Column(Float, nullable=True)
-    destination_latitude = Column(Float, nullable=True)
-    destination_longitude = Column(Float, nullable=True)
-
-    
-    total_price = Column(Float, nullable=False)
-
-  
-    status = Column(
-        String,
-        nullable=False,
-        default="pending"
-    )  # pending | accepted | in_transit | delivered | cancelled
-
-    canceled_by = Column(String, nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    distance = Column(Float)
+    weight = Column(Float)
+    size = Column(Float)
+    pickup_location = Column(JSON)
+    drop_off_location = Column(JSON)
+    item_type = Column(String, default="General")
+    total_price = Column(Float)
+    status = Column(String, default="Pending")
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # Relationships
-    user = relationship("User", back_populates="deliveries")
-    rider = relationship("Rider", back_populates="deliveries")
-    price_index = relationship("PriceIndex", back_populates="deliveries")
+    user = relationship("User")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "distance": self.distance,
+            "weight": self.weight,
+            "size": self.size,
+            "pickup_location": self.pickup_location,
+            "drop_off_location": self.drop_off_location,
+            "item_type": self.item_type,
+            "total_price": self.total_price,
+            "status": self.status,
+            "created_at": self.created_at.isoformat()
+        }

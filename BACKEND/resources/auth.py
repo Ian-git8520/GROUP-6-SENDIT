@@ -1,56 +1,50 @@
 from flask import request
 from flask_restful import Resource
-from database import SessionLocal
-from models import User
-from utils.auth import create_token
-from utils.security import hash_password, verify_password
+from database import db
+from models.user import User
+import jwt
+import datetime
+
+SECRET_KEY = "super-secret-key-change-this"
+
 
 class Register(Resource):
     def post(self):
-        session = SessionLocal()
-        data = request.json
+        data = request.get_json()
 
-        try:
-            
-            if session.query(User).filter_by(email=data["email"]).first():
-                return {"error": "Email already exists"}, 400
+        if User.query.filter_by(email=data["email"]).first():
+            return {"error": "Email already exists"}, 400
 
-            user = User(
-                name=data["name"],
-                email=data["email"],
-                phone_number=data.get("phone_number"),
-                password=hash_password(data["password"]),
-                role_id=data.get("role_id", 2)  
-            )
+        new_user = User(email=data["email"])
+        new_user.set_password(data["password"])
 
-            session.add(user)
-            session.commit()
-            session.refresh(user)
+        db.session.add(new_user)
+        db.session.commit()
 
-            return {
-                "message": "User registered successfully",
-                "user": {
-                    "id": user.id,
-                    "name": user.name,
-                    "email": user.email,
-                    "role_id": user.role_id
-                }
-            }, 201
-        finally:
-            session.close()
+        return {"message": "User registered successfully"}, 201
 
 
 class Login(Resource):
     def post(self):
-        session = SessionLocal()
-        data = request.json
+        data = request.get_json()
+        user = User.query.filter_by(email=data["email"]).first()
 
-        try:
-            user = session.query(User).filter_by(email=data["email"]).first()
-            if not user or not verify_password(data["password"], user.password):
-                return {"error": "Invalid credentials"}, 401
+        if not user or not user.check_password(data["password"]):
+            return {"error": "Invalid email or password"}, 401
 
-            token = create_token(user.id, user.role_id)
-            return {"token": token}, 200
-        finally:
-            session.close()
+        token = jwt.encode(
+            {
+                "user_id": user.id,
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+            },
+            SECRET_KEY,
+            algorithm="HS256"
+        )
+
+        return {
+            "token": token,
+            "user": {
+                "id": user.id,
+                "email": user.email
+            }
+        }, 200

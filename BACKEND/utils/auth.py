@@ -1,73 +1,35 @@
-from functools import wraps
-from flask import request
 import jwt
-import datetime
-from database import SessionLocal
-from models import User
-from config import SECRET_KEY
+from functools import wraps
+from flask import request, jsonify
+from database import db
+from models.user import User
 
-
-def create_token(user_id: int, role_id: int):
-    payload = {
-        "user_id": user_id,
-        "role_id": role_id,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=12)
-    }
-    return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
-
-
-def decode_token(token: str):
-    try:
-        return jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
-        return None
-
-
-def extract_token():
-    auth_header = request.headers.get("Authorization")
-    if not auth_header:
-        return None
-
-    if auth_header.startswith("Bearer "):
-        return auth_header.split(" ")[1]
-
-    return auth_header  # fallback
+SECRET_KEY = "super-secret-key-change-this"
 
 
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = extract_token()
+        token = None
+
+        if "Authorization" in request.headers:
+            parts = request.headers["Authorization"].split(" ")
+            if len(parts) == 2 and parts[0] == "Bearer":
+                token = parts[1]
+
         if not token:
-            return {"error": "Token missing"}, 401
+            return jsonify({"error": "Token is missing!"}), 401
 
-        payload = decode_token(token)
-        if not payload:
-            return {"error": "Invalid or expired token"}, 401
+        try:
+            data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            current_user = User.query.get(data["user_id"])
+            if not current_user:
+                return jsonify({"error": "User not found"}), 401
+        except jwt.ExpiredSignatureError:
+            return jsonify({"error": "Token has expired"}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"error": "Invalid token"}), 401
 
-        session = SessionLocal()
-        user = session.query(User).filter_by(id=payload["user_id"]).first()
-        session.close()
-
-        if not user:
-            return {"error": "User not found"}, 404
-
-        return f(current_user=user, *args, **kwargs)
-
-    return decorated
-
-
-def admin_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        current_user = kwargs.get("current_user")
-
-        if not current_user:
-            return {"error": "Authentication required"}, 401
-
-        if current_user.role_id != 1:
-            return {"error": "Admin access required"}, 403
-
-        return f(*args, **kwargs)
+        return f(current_user, *args, **kwargs)
 
     return decorated

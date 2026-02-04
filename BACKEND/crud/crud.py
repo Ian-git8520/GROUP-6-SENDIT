@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from models import UserRole, User, Rider, PriceIndex, Delivery
+import json
 
 
 
@@ -54,7 +55,7 @@ def create_user(
     user = User(
         name=name,
         email=email,
-        password=hash_password(data["password"]),
+        password=hash_password(password),
         phone_number=phone_number,
         role_id=role_id
     )
@@ -194,8 +195,8 @@ def create_delivery(
     distance: float,
     weight: float,
     size: float,
-    pickup_location: str,
-    drop_off_location: str,
+    pickup_location: dict,
+    drop_off_location: dict,
     total_price: float,        
     rider_id: int | None = None,
     status: str = "pending"
@@ -207,8 +208,8 @@ def create_delivery(
         distance=distance,
         weight=weight,
         size=size,
-        pickup_location=pickup_location,
-        drop_off_location=drop_off_location,
+        pickup_location=json.dumps(pickup_location),
+        drop_off_location=json.dumps(drop_off_location),
         total_price=total_price,   
         status=status
     )
@@ -239,9 +240,13 @@ def update_delivery(db: Session, delivery_id: int, **kwargs) -> Delivery | None:
     delivery = get_delivery(db, delivery_id)
     if not delivery:
         return None
+
     for field, value in kwargs.items():
         if value is not None:
+            if field in ["pickup_location", "drop_off_location"]:
+                value = json.dumps(value)
             setattr(delivery, field, value)
+
     db.commit()
     db.refresh(delivery)
     return delivery

@@ -9,6 +9,7 @@ from resources.profile import Profile
 from resources.auth import Register, Login
 from resources.admin_delivery import AdminDeliveryResource
 from resources.rider import RiderListResource
+from resources.track_delivery import TrackDeliveryResource
 
 
 
@@ -42,6 +43,11 @@ api.add_resource(
 )
 
 api.add_resource(RiderListResource, "/riders", strict_slashes=False)
+
+api.add_resource(
+    TrackDeliveryResource,
+    "/deliveries/<int:delivery_id>/track"
+)
 
 
 

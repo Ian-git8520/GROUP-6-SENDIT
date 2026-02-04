@@ -5,6 +5,7 @@ from crud.crud import create_delivery, get_all_deliveries, get_deliveries_by_use
 from models import PriceIndex
 from pricing import calculate_price
 from utils.auth import token_required, admin_required
+import json
 
 class DeliveryListResource(Resource):
 
@@ -21,13 +22,14 @@ class DeliveryListResource(Resource):
                 {
                     "id": d.id,
                     "user_id": d.user_id,
-                    "pickup_location": d.pickup_location,
-                    "drop_off_location": d.drop_off_location,
+                    "pickup_location": json.loads(d.pickup_location),
+                    "drop_off_location": json.loads(d.drop_off_location),
                     "distance": d.distance,
                     "weight": d.weight,
                     "size": d.size,
                     "total_price": d.total_price,
-                    "status": d.status
+                    "status": d.status,
+                    "rider_id": d.rider_id
                 } for d in deliveries
             ]
         finally:

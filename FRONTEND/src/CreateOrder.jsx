@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -119,28 +121,72 @@ const CreateOrder = () => {
     setShowConfirm(true);
   };
 
-  const confirmOrder = () => {
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    orders.push(pendingOrder);
-    localStorage.setItem("orders", JSON.stringify(orders));
-
-    setShowConfirm(false);
-    setPendingOrder(null);
-
-    alert("Order placed successfully!");
-
-    // Optional: Reset form
-    setItemType("");
-    setWeight("");
-    setHeight("");
-    setLength("");
-    setPickup(null);
-    setDestination(null);
-    setDistance(null);
-    setSearchPickup("");
-    setSearchDestination("");
+  const confirmOrder = async () => {
+    const storedUser = JSON.parse(localStorage.getItem("currentUser"));
+  
+    if (!storedUser?.token) {
+      alert("You must be logged in to place an order.");
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://127.0.0.1:5000/deliveries", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${storedUser.token}`
+        },
+        body: JSON.stringify({
+          distance: Number(distance),
+          weight: Number(weight),
+          size: Number(height) + Number(length),
+          pickup_location: JSON.stringify({
+            lat: pickup.lat,
+            lng: pickup.lng,
+            display_name: searchPickup
+          }),
+          drop_off_location: JSON.stringify({
+            lat: destination.lat,
+            lng: destination.lng,
+            display_name: searchDestination
+          })
+        })
+      });
+  
+      if (response.status === 401) {
+        alert("Invalid or expired token. Please log in again.");
+        return;
+      }
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert("Error placing order: " + (errorData.error || "Unknown error"));
+        return;
+      }
+  
+      const data = await response.json();
+  
+      setShowConfirm(false);
+      setPendingOrder(null);
+  
+      alert("Order placed successfully! Delivery ID: " + data.delivery_id);
+  
+      // Reset form
+      setItemType("");
+      setWeight("");
+      setHeight("");
+      setLength("");
+      setPickup(null);
+      setDestination(null);
+      setDistance(null);
+      setSearchPickup("");
+      setSearchDestination("");
+    } catch (error) {
+      console.error(error);
+      alert("Error placing order. Please try again.");
+    }
   };
-
+  
   const cancelOrder = () => {
     setShowConfirm(false);
     setPendingOrder(null);

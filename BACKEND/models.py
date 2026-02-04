@@ -35,9 +35,11 @@ class Rider(Base):
     __tablename__ = "riders"
 
     id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     name = Column(String, nullable=False)
     phone_number = Column(String, nullable=True)
 
+    user = relationship("User", foreign_keys=[user_id])
     deliveries = relationship("Delivery", back_populates="rider")
 
 

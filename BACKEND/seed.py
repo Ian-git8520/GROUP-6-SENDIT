@@ -13,7 +13,7 @@ def seed_data():
     session = SessionLocal()
 
     # the user role
-    roles = ["admin", "customer"]
+    roles = ["admin", "customer", "rider"]
     for role in roles:
         exists = session.query(UserRole).filter_by(name=role).first()
         if not exists:

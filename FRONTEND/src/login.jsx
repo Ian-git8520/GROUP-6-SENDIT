@@ -14,49 +14,25 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(roleFromLanding);
 
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
 
-    try {
-      const res = await fetch("http://127.0.0.1:5000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    // 🔐 Fake auth (NO backend yet)
+    const loggedInUser = {
+      name: email.split("@")[0], // helps profile/dashboard
+      email,
+      role,
+    };
 
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.error || "Login failed");
-        return;
-      }
+    localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
 
-      const data = await res.json(); 
-
-
-
-      let role = "user"; // default
-      if (data.role_id === 1) role = "admin";
-      else if (data.role_id === 2) role = "user";
-      else if (data.role_id === 3) role = "driver";
-
-  const userData = {
-    id: data.id,
-    name: data.name,
-    email: data.email,
-    role: role,
-    token: data.token,
- };
-
-localStorage.setItem("currentUser", JSON.stringify(userData));
-
-//  Role-based redirect
-if (role === "admin") navigate("/admin/dashboard");
-else if (role === "driver") navigate("/driver/dashboard");
-else navigate("/dashboard");
-
-    } catch (err) {
-      console.error(err);
-      alert("Error connecting to backend");
+    // 🔁 Role-based redirect
+    if (role === "admin") {
+      navigate("/admin/dashboard");
+    } else if (role === "driver") {
+      navigate("/driver/dashboard");
+    } else {
+      navigate("/dashboard");
     }
   };
 
@@ -99,3 +75,4 @@ else navigate("/dashboard");
 };
 
 export default Login;
+

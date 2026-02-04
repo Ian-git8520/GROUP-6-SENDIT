@@ -65,7 +65,8 @@ const Dashboard = () => {
 
       {/* CONTENT */}
       <div className="dashboard-content">
-        <h2>Welcome, {user.role.toUpperCase()}</h2>
+        {/* ✅ UPDATED WELCOME MESSAGE */}
+        <h2>Welcome, {user.name || "User"}</h2>
 
         {/* PROFILE CARD */}
         <div className="profile-summary">
@@ -135,5 +136,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-

@@ -83,3 +83,22 @@
   font-weight: bold;
   cursor: pointer;
 }
+
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.welcome-text {
+  color: #4cc9f0;
+  font-weight: 600;
+  font-size: 16px;
+}
+.admin-profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}

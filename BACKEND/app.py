@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from database import init_db
+from flask_cors import CORS
 
 from resources.user import UserListResource, UserResource
 from resources.delivery import DeliveryListResource
@@ -8,12 +9,14 @@ from resources.profile import Profile
 from resources.auth import Register, Login
 from resources.admin_delivery import AdminDeliveryResource
 from resources.rider import RiderListResource
+from resources.track_delivery import TrackDeliveryResource
 
 
 
 
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 
@@ -40,6 +43,11 @@ api.add_resource(
 )
 
 api.add_resource(RiderListResource, "/riders", strict_slashes=False)
+
+api.add_resource(
+    TrackDeliveryResource,
+    "/deliveries/<int:delivery_id>/track"
+)
 
 
 

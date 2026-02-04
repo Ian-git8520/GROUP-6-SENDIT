@@ -71,6 +71,42 @@
   cursor: pointer;
 }
 
+.auth-form label {
+  font-weight: 600;
+  color: #00e5ff;
+  font-size: 0.9rem;
+}
+
+.role-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.role-btn {
+  padding: 11px 24px;
+  border-radius: 8px;
+  border: 2px solid #00e5ff;
+  background-color: transparent;
+  color: #00e5ff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.role-btn:hover {
+  background-color: rgba(0, 229, 255, 0.1);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
+.role-btn.active {
+  background-color: #00e5ff;
+  color: #003344;
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.7);
+}
+
 .auth-btn {
   margin-top: 1rem;
   padding: 12px;
@@ -108,4 +144,20 @@
 
 .auth-footer a:hover {
   text-decoration: underline;
+}
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 2rem 1.5rem;
+    border-radius: 15px;
+  }
+
+  .auth-form input,
+  .auth-form select {
+    font-size: 0.9rem;
+  }
+
+  .role-btn {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
 }

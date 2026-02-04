@@ -11,10 +11,39 @@
   color: #fff;
 }
 
-.driver-title {
-  text-align: center;
-  color: #38bdf8;
+.driver-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 30px;
+  gap: 20px;
+}
+
+.driver-title {
+  color: #38bdf8;
+  font-size: 28px;
+  margin: 0;
+}
+
+.driver-profile-card {
+  background: rgba(15, 23, 42, 0.85);
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid #38bdf8;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.1);
+  min-width: 300px;
+}
+
+.profile-info h3 {
+  margin: 0 0 12px 0;
+  color: #38bdf8;
+  font-size: 18px;
+}
+
+.profile-info p {
+  margin: 8px 0;
+  color: #cbd5e1;
+  font-size: 14px;
 }
 
 .driver-layout {
@@ -30,16 +59,84 @@
   gap: 20px;
 }
 
+.driver-orders h3 {
+  margin: 0;
+  color: #38bdf8;
+  font-size: 18px;
+}
+
+.no-orders {
+  color: #94a3b8;
+  text-align: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.85);
+  border-radius: 12px;
+}
+
 .order-card {
   background: rgba(15, 23, 42, 0.85);
   padding: 16px;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(56, 189, 248, 0.2);
 }
 
 .order-card.active {
   border: 1px solid #38bdf8;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+}
+
+.order-card h3 {
+  margin: 0 0 12px 0;
+  color: #38bdf8;
+  font-size: 16px;
+}
+
+.order-card p {
+  margin: 8px 0;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.order-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.in-transit-btn {
+  background: #f59e0b;
+  color: white;
+}
+
+.in-transit-btn:hover {
+  background: #d97706;
+}
+
+.delivered-btn {
+  background: #10b981;
+  color: white;
+}
+
+.delivered-btn:hover {
+  background: #059669;
 }
 
 /* MAP AREA */
@@ -57,7 +154,6 @@
 .leaflet-container {
   height: 100%;
   width: 100%;
-
 }
 
 .map-placeholder {
@@ -68,9 +164,29 @@
 
 .pending {
   color: #facc15;
-
 }
 
+.accepted {
+  color: #38bdf8;
+}
 
+.in_transit {
+  color: #f59e0b;
+}
 
+.delivered {
+  color: #10b981;
+}
 
+.cancelled {
+  color: #ef4444;
+}
+
+.error-message {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}

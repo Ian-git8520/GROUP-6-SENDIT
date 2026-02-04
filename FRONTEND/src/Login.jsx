@@ -1,38 +1,88 @@
+'use client';
+
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./Auth.css";
 import "./Login.css";
 
 const Login = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const roleFromLanding =
-    new URLSearchParams(location.search).get("role") || "user";
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(roleFromLanding);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const roleIdMap = {
+    1: "admin",
+    2: "user",
+    3: "driver",
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    // 🔐 Fake auth (NO backend yet)
-    const loggedInUser = {
-      name: email.split("@")[0], // helps profile/dashboard
-      email,
-      role,
-    };
+    try {
+      const res = await fetch("http://127.0.0.1:5000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-    localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
+      const data = await res.json();
 
-    // 🔁 Role-based redirect
-    if (role === "admin") {
-      navigate("/admin/dashboard");
-    } else if (role === "driver") {
-      navigate("/driver/dashboard");
-    } else {
-      navigate("/dashboard");
+      if (!res.ok) {
+        setError(data.error || "Login failed");
+        return;
+      }
+
+      // Fetch user profile to get complete user data
+      const profileRes = await fetch("http://127.0.0.1:5000/profile", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${data.token}`,
+        },
+      });
+
+      if (!profileRes.ok) {
+        setError("Failed to fetch profile");
+        return;
+      }
+
+      const profileData = await profileRes.json();
+
+      // Store user with token
+      const loggedInUser = {
+        id: profileData.id,
+        name: profileData.name,
+        email: profileData.email,
+        phone_number: profileData.phone_number,
+        role_id: profileData.role_id,
+        role: roleIdMap[profileData.role_id],
+        token: data.token,
+      };
+
+      localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
+
+      // Role-based redirect
+      if (profileData.role_id === 1) {
+        navigate("/admin/dashboard");
+      } else if (profileData.role_id === 3) {
+        navigate("/driver/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Server error. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,6 +91,8 @@ const Login = () => {
       <div className="auth-card">
         <h2>Login</h2>
         <p className="auth-subtitle">Welcome back, please login</p>
+
+        {error && <p className="error-message">{error}</p>}
 
         <form className="auth-form" onSubmit={handleLogin}>
           <input
@@ -59,14 +111,8 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="user">User</option>
-            <option value="driver">Driver</option>
-            <option value="admin">Admin</option>
-          </select>
-
-          <button type="submit" className="auth-btn">
-            Login
+          <button type="submit" className="auth-btn" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
@@ -75,4 +121,3 @@ const Login = () => {
 };
 
 export default Login;
-

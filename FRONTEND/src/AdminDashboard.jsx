@@ -1,3 +1,5 @@
+'use client';
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
@@ -12,7 +14,7 @@ const AdminDashboard = () => {
     return null;
   }
 
-  if (admin.role !== "admin") {
+  if (admin.role_id !== 1) {
     navigate("/dashboard");
     return null;
   }

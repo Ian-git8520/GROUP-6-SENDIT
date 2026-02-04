@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Auth.css";
-import "./Login.css"
-
+import "./Login.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,16 +17,23 @@ const Login = () => {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // Fake auth (replace with API later)
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify({ email, role })
-    );
+    // 🔐 Fake auth (NO backend yet)
+    const loggedInUser = {
+      name: email.split("@")[0], // helps profile/dashboard
+      email,
+      role,
+    };
 
-    // Role-based navigation 
-    if (role === "admin") navigate("/admin/dashboard");
-    else if (role === "driver") navigate("/driver/dashboard");
-    else navigate("/dashboard");
+    localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
+
+    // 🔁 Role-based redirect
+    if (role === "admin") {
+      navigate("/admin/dashboard");
+    } else if (role === "driver") {
+      navigate("/driver/dashboard");
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   return (

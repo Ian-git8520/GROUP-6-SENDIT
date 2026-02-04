@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useState } from "react";
 import {
   MapContainer,
@@ -20,20 +22,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
-
-// Reverse geocode function
-const getAddressFromCoords = async (lat, lng) => {
-  try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-    );
-    const data = await res.json();
-    return data.display_name || "Unknown location";
-  } catch (error) {
-    console.error("Geocoding error:", error);
-    return "Unknown location";
-  }
-};
 
 const Route = ({ pickup, destination }) => {
   const map = useMap();
@@ -64,82 +52,216 @@ const Route = ({ pickup, destination }) => {
 };
 
 const Driver = () => {
+  const storedUser = JSON.parse(localStorage.getItem("currentUser"));
+  const [driverProfile, setDriverProfile] = useState(null);
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  // Fetch driver profile
   useEffect(() => {
-    const storedOrders = JSON.parse(localStorage.getItem("orders")) || [];
+    const fetchDriverProfile = async () => {
+      if (!storedUser?.token) {
+        setError("You must be logged in");
+        setLoading(false);
+        return;
+      }
 
-    const enrichOrders = async () => {
-      const updated = await Promise.all(
-        storedOrders.map(async (order) => {
-          const pickupAddress = await getAddressFromCoords(
-            order.pickup.lat,
-            order.pickup.lng
-          );
-          const destinationAddress = await getAddressFromCoords(
-            order.destination.lat,
-            order.destination.lng
-          );
+      try {
+        const res = await fetch("http://127.0.0.1:5000/driver/profile", {
+          headers: {
+            "Authorization": `Bearer ${storedUser.token}`,
+          },
+        });
 
-          return {
-            ...order,
-            pickup: { ...order.pickup, address: pickupAddress },
-            destination: {
-              ...order.destination,
-              address: destinationAddress,
-            },
-          };
-        })
-      );
+        if (!res.ok) {
+          throw new Error("Failed to fetch driver profile");
+        }
 
-      setOrders(updated);
-      localStorage.setItem("orders", JSON.stringify(updated));
+        const data = await res.json();
+        setDriverProfile(data.driver);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load driver profile");
+      }
     };
 
-    enrichOrders();
-  }, []);
+    fetchDriverProfile();
+  }, [storedUser?.token]);
+
+  // Fetch orders assigned to this driver
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (!storedUser?.token) {
+        setError("You must be logged in");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:5000/deliveries", {
+          headers: {
+            "Authorization": `Bearer ${storedUser.token}`,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch orders");
+        }
+
+        const data = await res.json();
+        setOrders(data);
+        if (data.length > 0) {
+          setSelectedOrder(data[0]);
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load orders");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [storedUser?.token]);
+
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/driver/deliveries/${orderId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${storedUser.token}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to update order status");
+      }
+
+      const data = await res.json();
+
+      // Update local state
+      const updatedOrders = orders.map((order) =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      );
+      setOrders(updatedOrders);
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder({ ...selectedOrder, status: newStatus });
+      }
+
+      alert("Order status updated successfully");
+    } catch (err) {
+      console.error(err);
+      alert(`Error updating order status: ${err.message}`);
+    }
+  };
 
   return (
     <div className="driver-container">
-      <h2 className="driver-title">Driver Dashboard</h2>
+      <div className="driver-header">
+        <h2 className="driver-title">Driver Dashboard</h2>
+        {driverProfile && (
+          <div className="driver-profile-card">
+            <div className="profile-info">
+              <h3>{driverProfile.name}</h3>
+              <p>
+                <strong>Phone:</strong> {driverProfile.phone_number}
+              </p>
+              <p>
+                <strong>Email:</strong> {driverProfile.email}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {loading && <p>Loading orders...</p>}
+      {error && <p className="error-message">{error}</p>}
 
       <div className="driver-layout">
         <div className="driver-orders">
-          {orders.map((order) => (
-            <div
-              key={order.id}
-              className={`order-card ${
-                selectedOrder?.id === order.id ? "active" : ""
-              }`}
-              onClick={() => setSelectedOrder(order)}
-            >
-              <h3>{order.itemType}</h3>
+          <h3>Assigned Orders</h3>
+          {orders.length === 0 ? (
+            <p className="no-orders">No orders assigned</p>
+          ) : (
+            orders.map((order) => {
+              const pickupData = typeof order.pickup_location === "string"
+                ? JSON.parse(order.pickup_location)
+                : order.pickup_location;
+              const destData = typeof order.drop_off_location === "string"
+                ? JSON.parse(order.drop_off_location)
+                : order.drop_off_location;
 
-              <p>
-                <strong>Status:</strong>{" "}
-                <span className="pending">{order.status}</span>
-              </p>
+              return (
+                <div
+                  key={order.id}
+                  className={`order-card ${
+                    selectedOrder?.id === order.id ? "active" : ""
+                  }`}
+                  onClick={() => setSelectedOrder(order)}
+                >
+                  <h3>Order #{order.id}</h3>
 
-              <p>
-                <strong>Pickup:</strong> {order.pickup.address}
-              </p>
+                  <p>
+                    <strong>Status:</strong>{" "}
+                    <span className={order.status}>
+                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    </span>
+                  </p>
 
-              <p>
-                <strong>Destination:</strong>{" "}
-                {order.destination.address}
-              </p>
+                  <p>
+                    <strong>Pickup:</strong> {pickupData?.display_name || "N/A"}
+                  </p>
 
-              <p>
-                <strong>Distance:</strong>{" "}
-                {order.distance?.toFixed(2)} km
-              </p>
+                  <p>
+                    <strong>Destination:</strong>{" "}
+                    {destData?.display_name || "N/A"}
+                  </p>
 
-              <p>
-                <strong>Price:</strong> KES {order.price}
-              </p>
-            </div>
-          ))}
+                  <p>
+                    <strong>Distance:</strong>{" "}
+                    {order.distance?.toFixed(2)} km
+                  </p>
+
+                  <p>
+                    <strong>Price:</strong> KES {order.total_price}
+                  </p>
+
+                  {order.status === "accepted" && (
+                    <div className="order-actions">
+                      <button 
+                        className="action-btn in-transit-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateOrderStatus(order.id, "in_transit");
+                        }}
+                      >
+                        Start Delivery
+                      </button>
+                    </div>
+                  )}
+
+                  {order.status === "in_transit" && (
+                    <div className="order-actions">
+                      <button 
+                        className="action-btn delivered-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateOrderStatus(order.id, "delivered");
+                        }}
+                      >
+                        Mark Delivered
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
         </div>
 
         <div className="driver-view">
@@ -154,37 +276,49 @@ const Driver = () => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
 
-              {selectedOrder && (
-                <>
-                  <Route
-                    pickup={selectedOrder.pickup}
-                    destination={selectedOrder.destination}
-                  />
+              {selectedOrder && (() => {
+                const pickupData = typeof selectedOrder.pickup_location === "string"
+                  ? JSON.parse(selectedOrder.pickup_location)
+                  : selectedOrder.pickup_location;
+                const destData = typeof selectedOrder.drop_off_location === "string"
+                  ? JSON.parse(selectedOrder.drop_off_location)
+                  : selectedOrder.drop_off_location;
 
-                  <Marker
-                    position={[
-                      selectedOrder.pickup.lat,
-                      selectedOrder.pickup.lng,
-                    ]}
-                  >
-                    <Popup>
-                      Pickup: {selectedOrder.pickup.address}
-                    </Popup>
-                  </Marker>
+                if (!pickupData?.lat || !destData?.lat) {
+                  return null;
+                }
 
-                  <Marker
-                    position={[
-                      selectedOrder.destination.lat,
-                      selectedOrder.destination.lng,
-                    ]}
-                  >
-                    <Popup>
-                      Destination:{" "}
-                      {selectedOrder.destination.address}
-                    </Popup>
-                  </Marker>
-                </>
-              )}
+                return (
+                  <>
+                    <Route
+                      pickup={{ lat: pickupData.lat, lng: pickupData.lng }}
+                      destination={{ lat: destData.lat, lng: destData.lng }}
+                    />
+
+                    <Marker
+                      position={[
+                        pickupData.lat,
+                        pickupData.lng,
+                      ]}
+                    >
+                      <Popup>
+                        Pickup: {pickupData.display_name}
+                      </Popup>
+                    </Marker>
+
+                    <Marker
+                      position={[
+                        destData.lat,
+                        destData.lng,
+                      ]}
+                    >
+                      <Popup>
+                        Destination: {destData.display_name}
+                      </Popup>
+                    </Marker>
+                  </>
+                );
+              })()}
             </MapContainer>
           </div>
 

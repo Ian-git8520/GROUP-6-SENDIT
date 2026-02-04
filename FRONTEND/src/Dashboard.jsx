@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+'use client';
+
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
@@ -8,6 +10,42 @@ const Dashboard = () => {
 
   const [user, setUser] = useState(storedUser);
   const [editing, setEditing] = useState(false);
+
+  // Fetch user profile on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!storedUser?.token) {
+        navigate("/login");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:5000/profile", {
+          headers: {
+            "Authorization": `Bearer ${storedUser.token}`,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch profile");
+        }
+
+        const profileData = await res.json();
+        const updatedUser = {
+          ...storedUser,
+          ...profileData,
+          role: storedUser.role,
+          token: storedUser.token,
+        };
+        setUser(updatedUser);
+        localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchProfile();
+  }, [storedUser, navigate]);
 
   if (!storedUser) {
     navigate("/login");
@@ -23,111 +61,101 @@ const Dashboard = () => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const saveProfile = () => {
-    localStorage.setItem("currentUser", JSON.stringify(user));
-    setEditing(false);
+  const saveProfile = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:5000/profile", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${storedUser.token}`,
+        },
+        body: JSON.stringify({
+          name: user.name,
+          phone_number: user.phone_number,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to update profile");
+      }
+
+      localStorage.setItem("currentUser", JSON.stringify(user));
+      setEditing(false);
+      alert("Profile updated successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Error updating profile");
+    }
   };
 
   return (
     <div className="dashboard-container">
-      {/* NAVBAR */}
       <nav className="dashboard-navbar">
         <h3 className="logo">SendIT</h3>
 
         <div className="nav-links">
-          {user.role === "user" && (
-            <>
-              <Link to="/dashboard/create-order">Create Order</Link>
-              <Link to="/dashboard/view-orders">View Orders</Link>
-              <Link to="/dashboard/track-order">Track Order</Link>
-            </>
-          )}
+          <Link to="/dashboard/create-order">Create Order</Link>
+          <Link to="/dashboard/view-orders">View Orders</Link>
+          <Link to="/dashboard/track-order">Track Order</Link>
 
-          {user.role === "driver" && (
-            <>
-              <Link to="/dashboard/view-orders">Assigned Orders</Link>
-              <Link to="/dashboard/track-order">Track Route</Link>
-            </>
-          )}
-
-          {user.role === "admin" && (
-            <>
-              <Link to="/dashboard/admin">Admin</Link>
-              <Link to="/dashboard/view-orders">All Orders</Link>
-            </>
-          )}
-
-          <button onClick={handleLogout} className="logout-btn">
+          <button className="logout-btn" onClick={handleLogout}>
             Logout
           </button>
         </div>
       </nav>
 
-      {/* CONTENT */}
       <div className="dashboard-content">
-        {/* ✅ UPDATED WELCOME MESSAGE */}
-        <h2>Welcome, {user.name || "User"}</h2>
+        <h2 className="welcome-text">
+          Welcome, <span>{user.name || "User"}</span> 👋
+        </h2>
 
-        {/* PROFILE CARD */}
-        <div className="profile-summary">
-          <h3>My Profile</h3>
+        <div className="profile-wrapper">
+          <div className="profile-summary">
+            <h3>My Profile</h3>
 
-          <div className="profile-row">
-            <strong>Name:</strong>
-            {editing ? (
-              <input
-                name="name"
-                value={user.name || ""}
-                onChange={handleChange}
-              />
-            ) : (
-              <span>{user.name || "Not set"}</span>
-            )}
-          </div>
+            <div className="profile-row">
+              <label>Name</label>
+              {editing ? (
+                <input name="name" value={user.name || ""} onChange={handleChange} />
+              ) : (
+                <span>{user.name || "Not set"}</span>
+              )}
+            </div>
 
-          <div className="profile-row">
-            <strong>Email:</strong>
-            {editing ? (
-              <input
-                name="email"
-                value={user.email || ""}
-                onChange={handleChange}
-              />
-            ) : (
-              <span>{user.email || "Not set"}</span>
-            )}
-          </div>
+            <div className="profile-row">
+              <label>Email</label>
+              {editing ? (
+                <input name="email" value={user.email || ""} onChange={handleChange} />
+              ) : (
+                <span>{user.email || "Not set"}</span>
+              )}
+            </div>
 
-          <div className="profile-row">
-            <strong>Phone:</strong>
-            {editing ? (
-              <input
-                name="phone"
-                value={user.phone || ""}
-                onChange={handleChange}
-              />
-            ) : (
-              <span>{user.phone || "Not set"}</span>
-            )}
-          </div>
+            <div className="profile-row">
+              <label>Phone</label>
+              {editing ? (
+                <input name="phone_number" value={user.phone_number || ""} onChange={handleChange} />
+              ) : (
+                <span>{user.phone_number || "Not set"}</span>
+              )}
+            </div>
 
-          <div className="profile-row">
-            <strong>Role:</strong>
-            <span className={`role-badge ${user.role}`}>
-              {user.role.toUpperCase()}
-            </span>
-          </div>
+            <div className="profile-row">
+              <label>Role</label>
+              <span className="role-badge">{user.role.toUpperCase()}</span>
+            </div>
 
-          <div className="profile-actions">
-            {editing ? (
-              <button className="save-btn" onClick={saveProfile}>
-                Save
-              </button>
-            ) : (
-              <button className="edit-btn" onClick={() => setEditing(true)}>
-                Edit Profile
-              </button>
-            )}
+            <div className="profile-actions">
+              {editing ? (
+                <button className="save-btn" onClick={saveProfile}>
+                  Save Changes
+                </button>
+              ) : (
+                <button className="edit-btn" onClick={() => setEditing(true)}>
+                  Edit Profile
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

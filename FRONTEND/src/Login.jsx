@@ -24,11 +24,12 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/auth/login", {
+      const res = await fetch("http://localhost:5000/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           email,
           password,
@@ -43,11 +44,9 @@ const Login = () => {
       }
 
       // Fetch user profile to get complete user data
-      const profileRes = await fetch("http://127.0.0.1:5000/profile", {
+      const profileRes = await fetch("http://localhost:5000/profile", {
         method: "GET",
-        headers: {
-          "Authorization": `Bearer ${data.token}`,
-        },
+        credentials: "include",
       });
 
       if (!profileRes.ok) {
@@ -57,7 +56,7 @@ const Login = () => {
 
       const profileData = await profileRes.json();
 
-      // Store user with token
+      // Store user for UI
       const loggedInUser = {
         id: profileData.id,
         name: profileData.name,
@@ -65,7 +64,6 @@ const Login = () => {
         phone_number: profileData.phone_number,
         role_id: profileData.role_id,
         role: roleIdMap[profileData.role_id],
-        token: data.token,
       };
 
       localStorage.setItem("currentUser", JSON.stringify(loggedInUser));

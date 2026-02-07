@@ -14,16 +14,14 @@ const Dashboard = () => {
   // Fetch user profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!storedUser?.token) {
+      if (!storedUser) {
         navigate("/login");
         return;
       }
 
       try {
-        const res = await fetch("http://127.0.0.1:5000/profile", {
-          headers: {
-            "Authorization": `Bearer ${storedUser.token}`,
-          },
+        const res = await fetch("http://localhost:5000/profile", {
+          credentials: "include",
         });
 
         if (!res.ok) {
@@ -35,7 +33,6 @@ const Dashboard = () => {
           ...storedUser,
           ...profileData,
           role: storedUser.role,
-          token: storedUser.token,
         };
         setUser(updatedUser);
         localStorage.setItem("currentUser", JSON.stringify(updatedUser));
@@ -63,12 +60,12 @@ const Dashboard = () => {
 
   const saveProfile = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:5000/profile", {
+      const res = await fetch("http://localhost:5000/profile", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${storedUser.token}`,
         },
+        credentials: "include",
         body: JSON.stringify({
           name: user.name,
           phone_number: user.phone_number,

@@ -89,9 +89,9 @@ const CreateOrder = () => {
 
     return Math.round(
       300 +
-        distance * 50 +
-        Number(weight) * 10 +
-        (Number(height) + Number(length)) * 2
+      distance * 50 +
+      Number(weight) * 10 +
+      (Number(height) + Number(length)) * 2
     );
   }, [distance, weight, height, length]);
 
@@ -123,19 +123,19 @@ const CreateOrder = () => {
 
   const confirmOrder = async () => {
     const storedUser = JSON.parse(localStorage.getItem("currentUser"));
-  
-    if (!storedUser?.token) {
+
+    if (!storedUser) {
       alert("You must be logged in to place an order.");
       return;
     }
-  
+
     try {
-      const response = await fetch("http://127.0.0.1:5000/deliveries", {
+      const response = await fetch("http://localhost:5000/deliveries", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${storedUser.token}`
+          "Content-Type": "application/json"
         },
+        credentials: "include",
         body: JSON.stringify({
           distance: Number(distance),
           weight: Number(weight),
@@ -152,25 +152,25 @@ const CreateOrder = () => {
           })
         })
       });
-  
+
       if (response.status === 401) {
-        alert("Invalid or expired token. Please log in again.");
+        alert("Session expired. Please log in again.");
         return;
       }
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         alert("Error placing order: " + (errorData.error || "Unknown error"));
         return;
       }
-  
+
       const data = await response.json();
-  
+
       setShowConfirm(false);
       setPendingOrder(null);
-  
+
       alert("Order placed successfully! Delivery ID: " + data.delivery_id);
-  
+
       // Reset form
       setItemType("");
       setWeight("");
@@ -186,7 +186,7 @@ const CreateOrder = () => {
       alert("Error placing order. Please try again.");
     }
   };
-  
+
   const cancelOrder = () => {
     setShowConfirm(false);
     setPendingOrder(null);

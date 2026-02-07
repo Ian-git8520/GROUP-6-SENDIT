@@ -44,17 +44,15 @@ const TrackOrder = () => {
   // Fetch orders from backend
   useEffect(() => {
     const fetchOrders = async () => {
-      if (!storedUser?.token) {
+      if (!storedUser) {
         setError("You must be logged in");
         setLoading(false);
         return;
       }
 
       try {
-        const res = await fetch("http://127.0.0.1:5000/deliveries", {
-          headers: {
-            "Authorization": `Bearer ${storedUser.token}`,
-          },
+        const res = await fetch("http://localhost:5000/deliveries", {
+          credentials: "include",
         });
 
         if (!res.ok) {
@@ -75,9 +73,9 @@ const TrackOrder = () => {
     };
 
     fetchOrders();
-  }, [storedUser?.token]);
+  }, [storedUser]);
 
-  if (!storedUser?.token) {
+  if (!storedUser) {
     return <div className="track-page"><p>Please log in to track orders</p></div>;
   }
 
@@ -89,25 +87,23 @@ const TrackOrder = () => {
         {error && <p className="error-message">{error}</p>}
 
         {orders.map((order) => {
-          const pickupData = typeof order.pickup_location === "string" 
-            ? JSON.parse(order.pickup_location) 
+          const pickupData = typeof order.pickup_location === "string"
+            ? JSON.parse(order.pickup_location)
             : order.pickup_location;
-          
+
           return (
             <div
               key={order.id}
-              className={`track-order-card ${
-                activeOrder?.id === order.id ? "active" : ""
-              }`}
+              className={`track-order-card ${activeOrder?.id === order.id ? "active" : ""
+                }`}
               onClick={() => setActiveOrder(order)}
             >
               <p><strong>Order ID:</strong> {order.id}</p>
               <p>
                 <strong>Status:</strong>{" "}
                 <span
-                  className={`status ${
-                    order.status === "delivered" ? "delivered" : "pending"
-                  }`}
+                  className={`status ${order.status === "delivered" ? "delivered" : "pending"
+                    }`}
                 >
                   {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                 </span>
@@ -120,11 +116,11 @@ const TrackOrder = () => {
 
       <div className="track-main">
         {activeOrder && (() => {
-          const pickupData = typeof activeOrder.pickup_location === "string" 
-            ? JSON.parse(activeOrder.pickup_location) 
+          const pickupData = typeof activeOrder.pickup_location === "string"
+            ? JSON.parse(activeOrder.pickup_location)
             : activeOrder.pickup_location;
-          const destData = typeof activeOrder.drop_off_location === "string" 
-            ? JSON.parse(activeOrder.drop_off_location) 
+          const destData = typeof activeOrder.drop_off_location === "string"
+            ? JSON.parse(activeOrder.drop_off_location)
             : activeOrder.drop_off_location;
 
           if (!pickupData?.lat || !destData?.lat) {
@@ -163,11 +159,10 @@ const TrackOrder = () => {
                 <p>
                   <strong>Status:</strong>{" "}
                   <span
-                    className={`status ${
-                      activeOrder.status === "delivered"
+                    className={`status ${activeOrder.status === "delivered"
                         ? "delivered"
                         : "pending"
-                    }`}
+                      }`}
                   >
                     {activeOrder.status.charAt(0).toUpperCase() + activeOrder.status.slice(1)}
                   </span>

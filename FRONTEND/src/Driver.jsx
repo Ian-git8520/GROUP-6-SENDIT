@@ -62,17 +62,15 @@ const Driver = () => {
   // Fetch driver profile
   useEffect(() => {
     const fetchDriverProfile = async () => {
-      if (!storedUser?.token) {
+      if (!storedUser) {
         setError("You must be logged in");
         setLoading(false);
         return;
       }
 
       try {
-        const res = await fetch("http://127.0.0.1:5000/driver/profile", {
-          headers: {
-            "Authorization": `Bearer ${storedUser.token}`,
-          },
+        const res = await fetch("http://localhost:5000/driver/profile", {
+          credentials: "include",
         });
 
         if (!res.ok) {
@@ -88,22 +86,20 @@ const Driver = () => {
     };
 
     fetchDriverProfile();
-  }, [storedUser?.token]);
+  }, [storedUser]);
 
   // Fetch orders assigned to this driver
   useEffect(() => {
     const fetchOrders = async () => {
-      if (!storedUser?.token) {
+      if (!storedUser) {
         setError("You must be logged in");
         setLoading(false);
         return;
       }
 
       try {
-        const res = await fetch("http://127.0.0.1:5000/deliveries", {
-          headers: {
-            "Authorization": `Bearer ${storedUser.token}`,
-          },
+        const res = await fetch("http://localhost:5000/deliveries", {
+          credentials: "include",
         });
 
         if (!res.ok) {
@@ -124,16 +120,16 @@ const Driver = () => {
     };
 
     fetchOrders();
-  }, [storedUser?.token]);
+  }, [storedUser]);
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const res = await fetch(`http://127.0.0.1:5000/driver/deliveries/${orderId}`, {
+      const res = await fetch(`http://localhost:5000/driver/deliveries/${orderId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${storedUser.token}`,
         },
+        credentials: "include",
         body: JSON.stringify({ status: newStatus }),
       });
 
@@ -199,9 +195,8 @@ const Driver = () => {
               return (
                 <div
                   key={order.id}
-                  className={`order-card ${
-                    selectedOrder?.id === order.id ? "active" : ""
-                  }`}
+                  className={`order-card ${selectedOrder?.id === order.id ? "active" : ""
+                    }`}
                   onClick={() => setSelectedOrder(order)}
                 >
                   <h3>Order #{order.id}</h3>
@@ -233,7 +228,7 @@ const Driver = () => {
 
                   {order.status === "accepted" && (
                     <div className="order-actions">
-                      <button 
+                      <button
                         className="action-btn in-transit-btn"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -247,7 +242,7 @@ const Driver = () => {
 
                   {order.status === "in_transit" && (
                     <div className="order-actions">
-                      <button 
+                      <button
                         className="action-btn delivered-btn"
                         onClick={(e) => {
                           e.stopPropagation();

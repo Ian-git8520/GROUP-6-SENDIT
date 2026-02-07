@@ -29,10 +29,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
@@ -42,11 +39,10 @@ const Login = () => {
         return;
       }
 
-      // Fetch user profile to get complete user data
       const profileRes = await fetch("http://127.0.0.1:5000/profile", {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${data.token}`,
+          Authorization: `Bearer ${data.token}`,
         },
       });
 
@@ -57,7 +53,6 @@ const Login = () => {
 
       const profileData = await profileRes.json();
 
-      // Store user with token
       const loggedInUser = {
         id: profileData.id,
         name: profileData.name,
@@ -70,7 +65,6 @@ const Login = () => {
 
       localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
 
-      // Role-based redirect
       if (profileData.role_id === 1) {
         navigate("/admin/dashboard");
       } else if (profileData.role_id === 3) {
@@ -78,6 +72,7 @@ const Login = () => {
       } else {
         navigate("/dashboard");
       }
+
     } catch (err) {
       console.error(err);
       setError("Server error. Please try again.");
@@ -101,6 +96,7 @@ const Login = () => {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
           />
 
           <input
@@ -109,10 +105,15 @@ const Login = () => {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
           />
 
-          <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+          <button
+            type="submit"
+            className={`auth-btn ${loading ? "loading" : ""}`}
+            disabled={loading}
+          >
+            <span>Login</span>
           </button>
         </form>
       </div>

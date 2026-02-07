@@ -19,8 +19,15 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .auth-card h2 {
@@ -65,12 +72,48 @@
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  min-height: 48px;
 }
 
 .auth-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 18px rgba(0,229,255,0.7);
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.7);
 }
+
+/* ===== Perfect Center Spinner ===== */
+
+.auth-btn.loading {
+  pointer-events: none;
+}
+
+/* Hide text but keep button size */
+.auth-btn.loading span {
+  visibility: hidden;
+}
+
+.auth-btn.loading::after {
+  content: "";
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(0, 51, 68, 0.3);
+  border-top: 3px solid #003344;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -11px;
+  margin-left: -11px;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ================================= */
 
 .auth-footer {
   text-align: center;

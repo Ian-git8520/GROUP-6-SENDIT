@@ -13,9 +13,11 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(roleFromLanding);
+  const [loading, setLoading] = useState(false); // 👈 NEW
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true); // 👈 start spinner
 
     try {
       const res = await fetch("http://127.0.0.1:5000/login", {
@@ -27,6 +29,7 @@ const Login = () => {
       if (!res.ok) {
         const err = await res.json();
         alert(err.error || "Login failed");
+        setLoading(false);
         return;
       }
 
@@ -34,20 +37,20 @@ const Login = () => {
 
       let role = "user";
       if (data.role_id === 1) role = "admin";
-      else if (data.role_id === 2) role = "user";
       else if (data.role_id === 3) role = "driver";
 
       const displayName = email.split("@")[0];
 
-      const userData = {
-        id: data.id,
-        name: displayName,
-        email: data.email,
-        role: role,
-        token: data.token,
-      };
-
-      localStorage.setItem("currentUser", JSON.stringify(userData));
+      localStorage.setItem(
+        "currentUser",
+        JSON.stringify({
+          id: data.id,
+          name: displayName,
+          email: data.email,
+          role,
+          token: data.token,
+        })
+      );
 
       if (role === "admin") navigate("/admin/dashboard");
       else if (role === "driver") navigate("/driver/dashboard");
@@ -56,6 +59,8 @@ const Login = () => {
     } catch (err) {
       console.error(err);
       alert("Error connecting to backend");
+    } finally {
+      setLoading(false); // 👈 stop spinner
     }
   };
 
@@ -88,8 +93,12 @@ const Login = () => {
             <option value="admin">Admin</option>
           </select>
 
-          <button type="submit" className="auth-btn">
-            Login
+          <button
+            type="submit"
+            className="auth-btn"
+            disabled={loading}
+          >
+            {loading ? <span className="btn-spinner"></span> : "Login"}
           </button>
         </form>
       </div>

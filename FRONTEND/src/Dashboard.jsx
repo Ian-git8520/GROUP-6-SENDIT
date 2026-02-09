@@ -40,7 +40,7 @@ const Dashboard = () => {
         <div className="holo-orb" />
 
         <h2 className="welcome-text">
-          Welcome, <span>{user?.name || "User"}</span> 👋
+          Welcome, <span>{user?.name || "User"}</span> 
         </h2>
 
         <div className="profile-wrapper">

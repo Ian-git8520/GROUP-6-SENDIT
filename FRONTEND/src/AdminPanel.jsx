@@ -154,15 +154,15 @@ const AdminPanel = () => {
 
   // Filter and search orders
   const filteredOrders = orders.filter((order) => {
-    const matchesSearch = searchTerm === "" || 
+    const matchesSearch = searchTerm === "" ||
       order.order_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.id.toString().includes(searchTerm) ||
       order.user_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.pickup_location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.drop_off_location?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = filterStatus === "all" || order.status === filterStatus;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -242,7 +242,6 @@ const AdminPanel = () => {
               <tr>
                 <th></th>
                 <th>Order ID</th>
-                <th>Owner</th>
                 <th>Pickup Location</th>
                 <th>Destination</th>
                 <th>Customer</th>
@@ -279,7 +278,6 @@ const AdminPanel = () => {
                         <span className="order-id-badge">{order.id}</span>
                         <span className="order-type">{order.order_name || "Standard"}</span>
                       </td>
-                      <td>{order.user_name || `User #${order.user_id}`}</td>
                       <td className="location-cell">{pickupData || "N/A"}</td>
                       <td className="location-cell">{destData || "N/A"}</td>
                       <td>{order.user_name || "—"}</td>
@@ -317,7 +315,7 @@ const AdminPanel = () => {
                     </tr>
                     {isExpanded && (
                       <tr className="expanded-row">
-                        <td colSpan="10">
+                        <td colSpan="9">
                           <div className="expanded-content">
                             <div className="expanded-grid">
                               <div className="expanded-item">

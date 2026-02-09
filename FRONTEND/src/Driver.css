@@ -1,22 +1,24 @@
 .driver-container {
-  min-height: 100vh;
-  background: radial-gradient(
-    circle at top,
-    #0e1629 0%,
-    #0c1426 35%,
-    #060b1c 70%,
-    #020617 100%
-  );
+  height: 100vh;
+  overflow: hidden;
+  background: radial-gradient(circle at top,
+      #0e1629 0%,
+      #0c1426 35%,
+      #060b1c 70%,
+      #020617 100%);
   padding: 20px;
   color: #fff;
+  display: flex;
+  flex-direction: column;
 }
 
 .driver-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   gap: 20px;
+  flex-shrink: 0;
 }
 
 .driver-title {
@@ -50,6 +52,9 @@
   display: grid;
   grid-template-columns: 320px 1fr;
   gap: 40px;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
 }
 
 /* LEFT FLOATING CARDS */
@@ -57,6 +62,9 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  overflow-y: auto;
+  max-height: 100%;
+  padding-right: 10px;
 }
 
 .driver-orders h3 {
@@ -141,14 +149,19 @@
 
 /* MAP AREA */
 .driver-view {
-  min-height: 420px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .map-card {
-  height: 420px;
+  height: 100%;
   border-radius: 16px;
   overflow: hidden;
   background: rgba(15, 23, 42, 0.85);
+}
+
+background: rgba(15, 23, 42, 0.85);
 }
 
 .leaflet-container {

@@ -148,6 +148,64 @@ class DriverProfileResource(Resource):
             db.close()
 
 
+class DriverDeliveryListResource(Resource):
+    """
+    Get all deliveries assigned to the current driver
+    """
+
+    @token_required
+    def get(self, current_user):
+        """
+        Get all deliveries assigned to the logged-in driver
+        """
+        if current_user.role_id != 3:
+            return {"error": "Only drivers can access this resource"}, 403
+
+        db = SessionLocal()
+        try:
+            # Get the rider record for this driver
+            rider = db.query(Rider).filter_by(user_id=current_user.id).first()
+            
+            if not rider:
+                # Create rider record if it doesn't exist
+                rider = Rider(
+                    user_id=current_user.id,
+                    name=current_user.name,
+                    phone_number=current_user.phone_number
+                )
+                db.add(rider)
+                db.commit()
+                db.refresh(rider)
+                return [], 200
+
+            # Get all deliveries assigned to this rider
+            deliveries = db.query(Delivery).filter_by(rider_id=rider.id).all()
+            
+            return [
+                {
+                    "id": d.id,
+                    "pickup_location": d.pickup_location,
+                    "destination": d.drop_off_location,
+                    "weight": d.weight,
+                    "status": d.status,
+                    "distance": d.distance,
+                    "size": d.size,
+                    "total_price": d.total_price,
+                    "order_name": d.order_name,
+                    "user_id": d.user_id,
+                    "rider_id": d.rider_id,
+                    "created_at": d.created_at.isoformat() if d.created_at else None
+                }
+                for d in deliveries
+            ], 200
+
+        except Exception as e:
+            print(f"[ERROR] Driver deliveries fetch error: {str(e)}")
+            return {"error": f"Failed to fetch deliveries: {str(e)}"}, 500
+        finally:
+            db.close()
+
+
 class DriverDeliveryResource(Resource):
     """
     Allow drivers to update the status of their assigned deliveries

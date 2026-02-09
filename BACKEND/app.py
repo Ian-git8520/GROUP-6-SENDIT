@@ -9,7 +9,7 @@ from resources.user_delivery import UserDeliveryResource
 from resources.profile import Profile
 from resources.auth import Register, Login, Logout
 from resources.admin_delivery import AdminDeliveryResource
-from resources.rider import RiderListResource, DriverProfileResource, DriverDeliveryResource
+from resources.rider import RiderListResource, DriverProfileResource, DriverDeliveryResource, DriverDeliveryListResource
 from resources.track_delivery import TrackDeliveryResource
 
 
@@ -47,6 +47,7 @@ api.add_resource(
 
 api.add_resource(RiderListResource, "/riders", strict_slashes=False)
 api.add_resource(DriverProfileResource, "/driver/profile", strict_slashes=False)
+api.add_resource(DriverDeliveryListResource, "/driver/deliveries", strict_slashes=False)
 api.add_resource(DriverDeliveryResource, "/driver/deliveries/<int:delivery_id>", strict_slashes=False)
 
 api.add_resource(

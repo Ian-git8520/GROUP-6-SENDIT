@@ -155,3 +155,24 @@ export const riderAPI = {
     return res;
   },
 };
+
+// Driver endpoints
+export const driverAPI = {
+  getAssignedOrders: async () => {
+    const res = await fetch(`${API_BASE_URL}/driver/deliveries`, {
+      headers: getAuthHeaders(),
+      credentials: "include",
+    });
+    return res;
+  },
+
+  updateOrderStatus: async (deliveryId, status) => {
+    const res = await fetch(`${API_BASE_URL}/driver/deliveries/${deliveryId}`, {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status }),
+      credentials: "include",
+    });
+    return res;
+  },
+};

@@ -33,18 +33,92 @@ const Routing = ({ pickup, destination }) => {
 };
 
 const TrackOrder = () => {
-  const [orders] = useState(() => JSON.parse(localStorage.getItem("orders")) || []);
-  const [activeOrder, setActiveOrder] = useState(() => {
-    const stored = JSON.parse(localStorage.getItem("orders")) || [];
-    return stored.length ? stored[0] : null;
-  });
+  const [orders, setOrders] = useState([]);
+  const [activeOrder, setActiveOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [pickupCoords, setPickupCoords] = useState(null);
+  const [destinationCoords, setDestinationCoords] = useState(null);
 
-  // Remove the useEffect since initialization is handled in useState
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/deliveries", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch orders");
+        }
+
+        const data = await res.json();
+        setOrders(data);
+        setActiveOrder(data.length ? data[0] : null);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load orders");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const geocodeLocation = async (query) => {
+      if (!query) return null;
+
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`
+      );
+      const data = await res.json();
+
+      if (!data || data.length === 0) return null;
+      return { lat: Number(data[0].lat), lng: Number(data[0].lon) };
+    };
+
+    const hydrateLocations = async () => {
+      if (!activeOrder) return;
+      setPickupCoords(null);
+      setDestinationCoords(null);
+
+      try {
+        const [pickup, destination] = await Promise.all([
+          geocodeLocation(activeOrder.pickup_location),
+          geocodeLocation(activeOrder.drop_off_location),
+        ]);
+
+        if (!isActive) return;
+        setPickupCoords(pickup);
+        setDestinationCoords(destination);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    hydrateLocations();
+
+    return () => {
+      isActive = false;
+    };
+  }, [activeOrder]);
+
+  const normalizedStatus = (status) => (status || "").toLowerCase();
 
   return (
     <div className="track-page">
       <div className="track-sidebar">
         <h2>My Orders</h2>
+
+        {loading && <p>Loading orders...</p>}
+        {error && <p>{error}</p>}
+        {!loading && orders.length === 0 && <p>No orders found.</p>}
 
         {orders.map((order) => (
           <div
@@ -53,17 +127,16 @@ const TrackOrder = () => {
               }`}
             onClick={() => setActiveOrder(order)}
           >
-            <p><strong>Item:</strong> {order.itemType}</p>
+            <p><strong>Item:</strong> {order.order_name || `Order #${order.id}`}</p>
             <p>
               <strong>Status:</strong>{" "}
               <span
-                className={`status ${order.status === "Delivered" ? "delivered" : "pending"
-                  }`}
+                className={`status ${normalizedStatus(order.status) === "delivered" ? "delivered" : "pending"}`}
               >
                 {order.status}
               </span>
             </p>
-            <p><strong>Price:</strong> KES {order.price}</p>
+            <p><strong>Price:</strong> KES {order.total_price?.toLocaleString()}</p>
           </div>
         ))}
       </div>
@@ -71,45 +144,48 @@ const TrackOrder = () => {
       <div className="track-main">
         {activeOrder && (
           <>
-            <div className="map-card">
-              <MapContainer
-                center={[activeOrder.pickup.lat, activeOrder.pickup.lng]}
-                zoom={12}
-                scrollWheelZoom={false}
-              >
-                <TileLayer
-                  attribution="&copy; OpenStreetMap contributors"
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-
-                <Marker position={[activeOrder.pickup.lat, activeOrder.pickup.lng]}>
-                  <Popup>Pickup</Popup>
-                </Marker>
-
-                <Marker
-                  position={[
-                    activeOrder.destination.lat,
-                    activeOrder.destination.lng,
-                  ]}
+            {pickupCoords && destinationCoords ? (
+              <div className="map-card">
+                <MapContainer
+                  center={[pickupCoords.lat, pickupCoords.lng]}
+                  zoom={12}
+                  scrollWheelZoom={false}
                 >
-                  <Popup>Destination</Popup>
-                </Marker>
+                  <TileLayer
+                    attribution="&copy; OpenStreetMap contributors"
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
 
-                <Routing
-                  pickup={activeOrder.pickup}
-                  destination={activeOrder.destination}
-                />
-              </MapContainer>
-            </div>
+                  <Marker position={[pickupCoords.lat, pickupCoords.lng]}>
+                    <Popup>Pickup</Popup>
+                  </Marker>
+
+                  <Marker
+                    position={[
+                      destinationCoords.lat,
+                      destinationCoords.lng,
+                    ]}
+                  >
+                    <Popup>Destination</Popup>
+                  </Marker>
+
+                  <Routing
+                    pickup={pickupCoords}
+                    destination={destinationCoords}
+                  />
+                </MapContainer>
+              </div>
+            ) : (
+              <div className="map-card">
+                <p>Loading map details...</p>
+              </div>
+            )}
 
             <div className="track-info">
               <p>
                 <strong>Status:</strong>{" "}
                 <span
-                  className={`status ${activeOrder.status === "Delivered"
-                      ? "delivered"
-                      : "pending"
-                    }`}
+                  className={`status ${normalizedStatus(activeOrder.status) === "delivered" ? "delivered" : "pending"}`}
                 >
                   {activeOrder.status}
                 </span>
@@ -119,7 +195,7 @@ const TrackOrder = () => {
                 {activeOrder.distance?.toFixed(2)} km
               </p>
               <p>
-                <strong>Price:</strong> KES {activeOrder.price}
+                <strong>Price:</strong> KES {activeOrder.total_price?.toLocaleString()}
               </p>
             </div>
           </>

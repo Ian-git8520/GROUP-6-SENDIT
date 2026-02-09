@@ -47,6 +47,7 @@ let searchTimeout;
 
 const CreateOrder = () => {
   const [itemType, setItemType] = useState("");
+  const [orderName, setOrderName] = useState("");
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
   const [length, setLength] = useState("");
@@ -141,16 +142,9 @@ const CreateOrder = () => {
           distance: Number(distance),
           weight: Number(weight),
           size: Number(height) + Number(length),
-          pickup_location: JSON.stringify({
-            lat: pickup.lat,
-            lng: pickup.lng,
-            display_name: searchPickup
-          }),
-          drop_off_location: JSON.stringify({
-            lat: destination.lat,
-            lng: destination.lng,
-            display_name: searchDestination
-          })
+          pickup_location: searchPickup,
+          drop_off_location: searchDestination,
+          order_name: orderName || undefined
         })
       });
 
@@ -176,6 +170,7 @@ const CreateOrder = () => {
 
       // Reset form
       setItemType("");
+      setOrderName("");
       setWeight("");
       setHeight("");
       setLength("");
@@ -204,6 +199,13 @@ const CreateOrder = () => {
           <div className="order-grid">
             {/* LEFT CARD */}
             <div className="card form-left">
+              <input
+                type="text"
+                placeholder="Order Name (optional)"
+                value={orderName}
+                onChange={(e) => setOrderName(e.target.value)}
+              />
+
               <input
                 type="text"
                 placeholder="Item Type"

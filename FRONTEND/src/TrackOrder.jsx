@@ -90,8 +90,9 @@ const TrackOrder = () => {
         {error && <p className="error-message">{error}</p>}
 
         {orders.map((order) => {
+          // pickup_location is stored as plain string (human-readable address)
           const pickupData = typeof order.pickup_location === "string"
-            ? JSON.parse(order.pickup_location)
+            ? order.pickup_location
             : order.pickup_location;
 
           return (
@@ -101,7 +102,7 @@ const TrackOrder = () => {
                 }`}
               onClick={() => setActiveOrder(order)}
             >
-              <p><strong>Order ID:</strong> {order.id}</p>
+              <p><strong>Order:</strong> {order.order_name ? order.order_name : `#${order.id}`}</p>
               <p>
                 <strong>Status:</strong>{" "}
                 <span
@@ -120,14 +121,35 @@ const TrackOrder = () => {
       <div className="track-main">
         {activeOrder && (() => {
           const pickupData = typeof activeOrder.pickup_location === "string"
-            ? JSON.parse(activeOrder.pickup_location)
+            ? activeOrder.pickup_location
             : activeOrder.pickup_location;
           const destData = typeof activeOrder.drop_off_location === "string"
-            ? JSON.parse(activeOrder.drop_off_location)
+            ? activeOrder.drop_off_location
             : activeOrder.drop_off_location;
 
-          if (!pickupData?.lat || !destData?.lat) {
-            return <p>Location data unavailable</p>;
+          // If lat/lng coordinates are not available, show textual locations instead of map
+          const hasCoords = pickupData && destData && typeof pickupData === 'object' && pickupData.lat && destData.lat;
+          if (!hasCoords) {
+            return (
+              <div className="track-info">
+                <p>
+                  <strong>Status:</strong>{" "}
+                  <span
+                    className={`status ${activeOrder.status === "delivered" ? "delivered" : "pending"}`}
+                  >
+                    {activeOrder.status.charAt(0).toUpperCase() + activeOrder.status.slice(1)}
+                  </span>
+                </p>
+                <p>
+                  <strong>Distance:</strong> {activeOrder.distance?.toFixed(2)} km
+                </p>
+                <p>
+                  <strong>Price:</strong> KES {activeOrder.total_price}
+                </p>
+                <p><strong>Pickup:</strong> {pickupData || 'N/A'}</p>
+                <p><strong>Destination:</strong> {destData || 'N/A'}</p>
+              </div>
+            );
           }
 
           return (
@@ -162,27 +184,23 @@ const TrackOrder = () => {
                 <p>
                   <strong>Status:</strong>{" "}
                   <span
-                    className={`status ${activeOrder.status === "delivered"
-                        ? "delivered"
-                        : "pending"
-                      }`}
+                    className={`status ${activeOrder.status === "delivered" ? "delivered" : "pending"}`}
                   >
                     {activeOrder.status.charAt(0).toUpperCase() + activeOrder.status.slice(1)}
                   </span>
                 </p>
                 <p>
-                  <strong>Distance:</strong>{" "}
-                  {activeOrder.distance?.toFixed(2)} km
+                  <strong>Distance:</strong> {activeOrder.distance?.toFixed(2)} km
                 </p>
                 <p>
                   <strong>Price:</strong> KES {activeOrder.total_price}
                 </p>
-                {pickupData.display_name && (
+                {typeof pickupData === 'object' && pickupData.display_name && (
                   <p>
                     <strong>Pickup:</strong> {pickupData.display_name}
                   </p>
                 )}
-                {destData.display_name && (
+                {typeof destData === 'object' && destData.display_name && (
                   <p>
                     <strong>Destination:</strong> {destData.display_name}
                   </p>

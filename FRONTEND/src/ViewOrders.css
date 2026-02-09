@@ -7,10 +7,16 @@
     #050b1c 45%,
     #020617 100%
   );
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   overflow-y: auto;
+}
+
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .orders-container h2 {
@@ -22,13 +28,12 @@
 
 
 .order-card {
-  width: 100%;
-  max-width: 600px;
   background: rgba(15, 23, 42, 0.85);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 14px;
   padding: 1.25rem 1.5rem;
-  margin-bottom: 1.25rem;
+  margin: 0;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -59,6 +64,51 @@
   font-weight: 600;
 }
 
+.cancelled {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.order-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.change-destination-btn,
+.cancel-btn {
+  flex: 1;
+  min-width: 150px;
+  padding: 0.65rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.change-destination-btn {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #020617;
+}
+
+.change-destination-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
+}
+
+.cancel-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.cancel-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
 .confirm-btn {
   margin-top: 1rem;
   width: 100%;
@@ -83,6 +133,135 @@
   color: #cbd5e1;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-content h3 {
+  color: #e5e7eb;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+}
+
+.modal-content p {
+  color: #cbd5f5;
+  margin-bottom: 1rem;
+}
+
+.warning-text {
+  color: #fca5a5;
+  font-weight: 600;
+}
+
+.modal-content textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #e5e7eb;
+  font-family: inherit;
+  margin-bottom: 1.5rem;
+  resize: vertical;
+}
+
+.modal-content textarea::placeholder {
+  color: #94a3b8;
+}
+
+.modal-content textarea:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.confirm-btn,
+.confirm-cancel-btn,
+.cancel-modal-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.confirm-btn {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #020617;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
+}
+
+.confirm-cancel-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.confirm-cancel-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+.cancel-modal-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5f5;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cancel-modal-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.confirm-btn:disabled,
+.confirm-cancel-btn:disabled,
+.cancel-modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .orders-container > p {

@@ -74,10 +74,7 @@ class Delivery(Base):
     pickup_location = Column(String, nullable=False)
     drop_off_location = Column(String, nullable=False)
 
-    pickup_latitude = Column(Float, nullable=True)
-    pickup_longitude = Column(Float, nullable=True)
-    destination_latitude = Column(Float, nullable=True)
-    destination_longitude = Column(Float, nullable=True)
+    # Store locations as plain text strings (human-readable addresses)
 
     
     total_price = Column(Float, nullable=False)
@@ -90,7 +87,18 @@ class Delivery(Base):
     )  # pending | accepted | in_transit | delivered | cancelled
 
     canceled_by = Column(String, nullable=True)
+    canceled_at = Column(DateTime, nullable=True)
+    cancellation_reason = Column(String, nullable=True)
+    
+    # Track destination changes
+    previous_drop_off_location = Column(String, nullable=True)
+    destination_changed_at = Column(DateTime, nullable=True)
+    
+    # Optional human-readable order name
+    order_name = Column(String, nullable=True)
+    
     created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
     user = relationship("User", back_populates="deliveries")

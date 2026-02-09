@@ -195,9 +195,10 @@ def create_delivery(
     distance: float,
     weight: float,
     size: float,
-    pickup_location: dict,
-    drop_off_location: dict,
-    total_price: float,        
+    pickup_location: str,
+    drop_off_location: str,
+    total_price: float,
+    order_name: str | None = None,
     rider_id: int | None = None,
     status: str = "pending"
 ) -> Delivery:
@@ -208,9 +209,10 @@ def create_delivery(
         distance=distance,
         weight=weight,
         size=size,
-        pickup_location=json.dumps(pickup_location),
-        drop_off_location=json.dumps(drop_off_location),
-        total_price=total_price,   
+        pickup_location=pickup_location,
+        drop_off_location=drop_off_location,
+        total_price=total_price,
+        order_name=order_name,
         status=status
     )
     db.add(delivery)
@@ -243,8 +245,6 @@ def update_delivery(db: Session, delivery_id: int, **kwargs) -> Delivery | None:
 
     for field, value in kwargs.items():
         if value is not None:
-            if field in ["pickup_location", "drop_off_location"]:
-                value = json.dumps(value)
             setattr(delivery, field, value)
 
     db.commit()

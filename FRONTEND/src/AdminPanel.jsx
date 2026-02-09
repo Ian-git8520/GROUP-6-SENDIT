@@ -13,6 +13,9 @@ const AdminPanel = () => {
   const [error, setError] = useState("");
   const [selectedOrderForAssign, setSelectedOrderForAssign] = useState(null);
   const [showDriverModal, setShowDriverModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [expandedRows, setExpandedRows] = useState({});
 
   // Fetch all orders from backend
   useEffect(() => {
@@ -149,6 +152,27 @@ const AdminPanel = () => {
     }
   };
 
+  // Filter and search orders
+  const filteredOrders = orders.filter((order) => {
+    const matchesSearch = searchTerm === "" || 
+      order.order_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.id.toString().includes(searchTerm) ||
+      order.user_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.pickup_location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.drop_off_location?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = filterStatus === "all" || order.status === filterStatus;
+    
+    return matchesSearch && matchesStatus;
+  });
+
+  const toggleRowExpand = (orderId) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [orderId]: !prev[orderId]
+    }));
+  };
+
   return (
     <div className="admin-container">
       {/* HEADER */}
@@ -156,97 +180,178 @@ const AdminPanel = () => {
         <h2>Admin Control Panel</h2>
       </div>
 
-      {loading && <p>Loading orders...</p>}
+      {/* SEARCH AND FILTERS */}
+      <div className="search-filter-section">
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search by Order ID, Customer, Location..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </div>
+
+        <div className="filter-buttons">
+          <button
+            className={`filter-btn ${filterStatus === "all" ? "active" : ""}`}
+            onClick={() => setFilterStatus("all")}
+          >
+            All Orders
+          </button>
+          <button
+            className={`filter-btn ${filterStatus === "pending" ? "active" : ""}`}
+            onClick={() => setFilterStatus("pending")}
+          >
+            Pending
+          </button>
+          <button
+            className={`filter-btn ${filterStatus === "accepted" ? "active" : ""}`}
+            onClick={() => setFilterStatus("accepted")}
+          >
+            Assigned
+          </button>
+          <button
+            className={`filter-btn ${filterStatus === "in_transit" ? "active" : ""}`}
+            onClick={() => setFilterStatus("in_transit")}
+          >
+            In Transit
+          </button>
+          <button
+            className={`filter-btn ${filterStatus === "delivered" ? "active" : ""}`}
+            onClick={() => setFilterStatus("delivered")}
+          >
+            Delivered
+          </button>
+        </div>
+      </div>
+
+      {loading && <p className="loading-message">Loading orders...</p>}
       {error && <p className="error-message">{error}</p>}
 
-      {orders.length === 0 && !loading ? (
+      {filteredOrders.length === 0 && !loading ? (
         <p className="no-orders">No orders found.</p>
       ) : (
-        <div className="admin-table-wrapper">
-          <table className="admin-table">
+        <div className="table-wrapper">
+          <table className="orders-table">
             <thead>
               <tr>
-                <th>#</th>
+                <th></th>
                 <th>Order ID</th>
-                <th>User</th>
+                <th>Owner</th>
                 <th>Pickup Location</th>
                 <th>Destination</th>
-                <th>Distance (km)</th>
-                <th>Price (KES)</th>
+                <th>Customer</th>
                 <th>Status</th>
-                <th>Assigned Driver</th>
-                <th>Created At</th>
+                <th>Quantity</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, index) => {
+              {filteredOrders.map((order) => {
                 const pickupData = typeof order.pickup_location === "string"
-                  ? JSON.parse(order.pickup_location)
-                  : order.pickup_location;
+                  ? order.pickup_location
+                  : JSON.stringify(order.pickup_location);
                 const destData = typeof order.drop_off_location === "string"
-                  ? JSON.parse(order.drop_off_location)
-                  : order.drop_off_location;
+                  ? order.drop_off_location
+                  : JSON.stringify(order.drop_off_location);
 
                 const assignedDriver = drivers.find(d => d.id === order.rider_id);
+                const isExpanded = expandedRows[order.id];
 
                 return (
-                  <tr key={order.id}>
-                    <td>{index + 1}</td>
-                    <td>{order.id}</td>
-                    <td>User #{order.user_id}</td>
-                    <td>{pickupData?.display_name || "N/A"}</td>
-                    <td>{destData?.display_name || "N/A"}</td>
-                    <td>{order.distance ? order.distance.toFixed(2) : "—"}</td>
-                    <td>{order.total_price ? `KES ${order.total_price}` : "—"}</td>
-                    <td>
-                      <span className={`status-badge ${order.status?.toLowerCase()}`}>
-                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                      </span>
-                    </td>
-                    <td>
-                      {assignedDriver ? (
-                        <div className="driver-info">
-                          <p>{assignedDriver.name}</p>
-                          <p className="phone">{assignedDriver.phone_number}</p>
-                        </div>
-                      ) : (
-                        <span className="no-driver">Unassigned</span>
-                      )}
-                    </td>
-                    <td>{new Date(order.created_at).toLocaleDateString()}</td>
-                    <td>
-                      <div className="action-btn-group">
-                        {order.status === "pending" && (
-                          <>
+                  <React.Fragment key={order.id}>
+                    <tr className="order-row">
+                      <td className="expand-cell">
+                        <button
+                          className={`expand-btn ${isExpanded ? "expanded" : ""}`}
+                          onClick={() => toggleRowExpand(order.id)}
+                          aria-label="Expand row"
+                        >
+                          ❯
+                        </button>
+                      </td>
+                      <td className="order-id-cell">
+                        <span className="order-id-badge">{order.id}</span>
+                        <span className="order-type">{order.order_name || "Standard"}</span>
+                      </td>
+                      <td>{order.user_name || `User #${order.user_id}`}</td>
+                      <td className="location-cell">{pickupData || "N/A"}</td>
+                      <td className="location-cell">{destData || "N/A"}</td>
+                      <td>{order.user_name || "—"}</td>
+                      <td>
+                        <span className={`status-badge ${order.status?.toLowerCase()}`}>
+                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="quantity-cell">{order.distance ? `${order.distance.toFixed(2)} km` : "—"}</td>
+                      <td>
+                        <div className="row-actions">
+                          {order.status === "pending" && (
                             <button
-                              className="assign-btn"
+                              className="action-btn assign-btn"
                               onClick={() => {
                                 setSelectedOrderForAssign(order.id);
                                 setShowDriverModal(true);
                               }}
+                              title="Assign Driver"
                             >
-                              Assign Driver
+                              Assign
                             </button>
+                          )}
+                          {order.status === "pending" && (
                             <button
-                              className="cancel-btn"
+                              className="action-btn cancel-btn"
                               onClick={() => updateStatus(order.id, "cancelled")}
+                              title="Cancel Order"
                             >
                               Cancel
                             </button>
-                          </>
-                        )}
-                        {order.status !== "pending" && order.status !== "cancelled" && (
-                          <button
-                            className="cancel-btn"
-                            onClick={() => updateStatus(order.id, "cancelled")}
-                          >
-                            Cancel
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                    {isExpanded && (
+                      <tr className="expanded-row">
+                        <td colSpan="10">
+                          <div className="expanded-content">
+                            <div className="expanded-grid">
+                              <div className="expanded-item">
+                                <label>Distance</label>
+                                <p>{order.distance ? `${order.distance.toFixed(2)} km` : "—"}</p>
+                              </div>
+                              <div className="expanded-item">
+                                <label>Price</label>
+                                <p>KES {order.total_price || "—"}</p>
+                              </div>
+                              <div className="expanded-item">
+                                <label>Created</label>
+                                <p>{new Date(order.created_at).toLocaleDateString()}</p>
+                              </div>
+                              <div className="expanded-item">
+                                <label>Driver</label>
+                                <p>
+                                  {assignedDriver ? (
+                                    <span>
+                                      {assignedDriver.name}
+                                      <br />
+                                      <span className="phone">{assignedDriver.phone_number}</span>
+                                    </span>
+                                  ) : (
+                                    "Unassigned"
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 );
               })}
             </tbody>

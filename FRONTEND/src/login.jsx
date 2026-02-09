@@ -1,38 +1,48 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { authAPI } from "./api";
 import "./Auth.css";
 import "./Login.css";
 
 const Login = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const roleFromLanding =
-    new URLSearchParams(location.search).get("role") || "user";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(roleFromLanding);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // 🔐 Fake auth (NO backend yet)
-    const loggedInUser = {
-      name: email.split("@")[0], // helps profile/dashboard
-      email,
-      role,
-    };
+    try {
+      const res = await authAPI.login(email, password);
+      const data = await res.json();
 
-    localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
+      if (!res.ok) {
+        alert(data.error || "Login failed");
+        return;
+      }
 
-    // 🔁 Role-based redirect
-    if (role === "admin") {
-      navigate("/admin/dashboard");
-    } else if (role === "driver") {
-      navigate("/driver/dashboard");
-    } else {
-      navigate("/dashboard");
+      // Store user info from backend response (token is in HTTP-only cookie)
+      const loggedInUser = {
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+        role_id: data.user.role_id,
+      };
+
+      localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
+
+      // Role-based redirect using backend-provided role
+      if (data.user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (data.user.role === "driver") {
+        navigate("/driver/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error. Please try again.");
     }
   };
 
@@ -58,12 +68,6 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="user">User</option>
-            <option value="driver">Driver</option>
-            <option value="admin">Admin</option>
-          </select>
 
           <button type="submit" className="auth-btn">
             Login

@@ -1,16 +1,9 @@
 // Centralized API configuration
-const API_BASE_URL = "http://127.0.0.1:5000";
-
-export const getToken = () => {
-  const user = JSON.parse(localStorage.getItem("currentUser"));
-  return user?.token;
-};
+const API_BASE_URL = "http://localhost:5000";
 
 export const getAuthHeaders = () => {
-  const token = getToken();
   return {
     "Content-Type": "application/json",
-    ...(token && { "Authorization": `Bearer ${token}` }),
   };
 };
 
@@ -21,6 +14,7 @@ export const authAPI = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      credentials: "include", // Important: include cookies
     });
     return res;
   },
@@ -30,6 +24,16 @@ export const authAPI = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password, role_id }),
+      credentials: "include",
+    });
+    return res;
+  },
+
+  logout: async () => {
+    const res = await fetch(`${API_BASE_URL}/auth/logout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
     });
     return res;
   },
@@ -40,6 +44,7 @@ export const profileAPI = {
   getProfile: async () => {
     const res = await fetch(`${API_BASE_URL}/profile`, {
       headers: getAuthHeaders(),
+      credentials: "include",
     });
     return res;
   },
@@ -49,6 +54,7 @@ export const profileAPI = {
       method: "PATCH",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
+      credentials: "include",
     });
     return res;
   },
@@ -59,6 +65,7 @@ export const deliveryAPI = {
   getDeliveries: async () => {
     const res = await fetch(`${API_BASE_URL}/deliveries`, {
       headers: getAuthHeaders(),
+      credentials: "include",
     });
     return res;
   },
@@ -68,6 +75,7 @@ export const deliveryAPI = {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(deliveryData),
+      credentials: "include",
     });
     return res;
   },
@@ -75,6 +83,7 @@ export const deliveryAPI = {
   trackDelivery: async (deliveryId) => {
     const res = await fetch(`${API_BASE_URL}/deliveries/${deliveryId}/track`, {
       headers: getAuthHeaders(),
+      credentials: "include",
     });
     return res;
   },
@@ -84,6 +93,7 @@ export const deliveryAPI = {
       method: "PATCH",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
+      credentials: "include",
     });
     return res;
   },
@@ -94,6 +104,7 @@ export const userAPI = {
   getUsers: async () => {
     const res = await fetch(`${API_BASE_URL}/users`, {
       headers: getAuthHeaders(),
+      credentials: "include",
     });
     return res;
   },
@@ -101,6 +112,7 @@ export const userAPI = {
   getUser: async (userId) => {
     const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
       headers: getAuthHeaders(),
+      credentials: "include",
     });
     return res;
   },
@@ -111,6 +123,7 @@ export const riderAPI = {
   getRiders: async () => {
     const res = await fetch(`${API_BASE_URL}/riders`, {
       headers: getAuthHeaders(),
+      credentials: "include",
     });
     return res;
   },

@@ -24,14 +24,21 @@ def decode_token(token: str):
 
 
 def extract_token():
-    auth_header = request.headers.get("Authorization")
-    if not auth_header:
-        return None
+    # First try to get token from cookie
+    token = request.cookies.get('jwt')
+    
+    # Fallback to Authorization header for backwards compatibility
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            return None
 
-    if auth_header.startswith("Bearer "):
-        return auth_header.split(" ")[1]
+        if auth_header.startswith("Bearer "):
+            return auth_header.split(" ")[1]
 
-    return auth_header  # fallback
+        return auth_header  # fallback
+    
+    return token
 
 
 def token_required(f):

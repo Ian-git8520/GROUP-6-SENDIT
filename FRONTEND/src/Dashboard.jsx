@@ -14,16 +14,17 @@ const Dashboard = () => {
   // Fetch user profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!storedUser?.token) {
+      if (!storedUser) {
         navigate("/login");
         return;
       }
 
       try {
-        const res = await fetch("http://127.0.0.1:5000/profile", {
+        const res = await fetch("http://localhost:5000/profile", {
           headers: {
-            "Authorization": `Bearer ${storedUser.token}`,
+            "Content-Type": "application/json",
           },
+          credentials: "include", // Important: include cookies
         });
 
         if (!res.ok) {
@@ -35,12 +36,12 @@ const Dashboard = () => {
           ...storedUser,
           ...profileData,
           role: storedUser.role,
-          token: storedUser.token,
         };
         setUser(updatedUser);
         localStorage.setItem("currentUser", JSON.stringify(updatedUser));
       } catch (err) {
         console.error(err);
+        navigate("/login");
       }
     };
 
@@ -52,7 +53,18 @@ const Dashboard = () => {
     return null;
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:5000/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
     localStorage.removeItem("currentUser");
     navigate("/");
   };
@@ -63,12 +75,12 @@ const Dashboard = () => {
 
   const saveProfile = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:5000/profile", {
+      const res = await fetch("http://localhost:5000/profile", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${storedUser.token}`,
         },
+        credentials: "include", // Important: include cookies
         body: JSON.stringify({
           name: user.name,
           phone_number: user.phone_number,

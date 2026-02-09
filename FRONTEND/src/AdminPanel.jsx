@@ -17,16 +17,17 @@ const AdminPanel = () => {
   // Fetch all orders from backend
   useEffect(() => {
     const fetchOrders = async () => {
-      if (!user?.token) {
+      if (!user) {
         navigate("/login");
         return;
       }
 
       try {
-        const res = await fetch("http://127.0.0.1:5000/deliveries", {
+        const res = await fetch("http://localhost:5000/deliveries", {
           headers: {
-            "Authorization": `Bearer ${user.token}`,
+            "Content-Type": "application/json",
           },
+          credentials: "include",
         });
 
         if (!res.ok) {
@@ -44,18 +45,19 @@ const AdminPanel = () => {
     };
 
     fetchOrders();
-  }, [user?.token, navigate]);
+  }, [user, navigate]);
 
   // Fetch available drivers
   useEffect(() => {
     const fetchDrivers = async () => {
-      if (!user?.token) return;
+      if (!user) return;
 
       try {
-        const res = await fetch("http://127.0.0.1:5000/riders", {
+        const res = await fetch("http://localhost:5000/riders", {
           headers: {
-            "Authorization": `Bearer ${user.token}`,
+            "Content-Type": "application/json",
           },
+          credentials: "include",
         });
 
         if (!res.ok) {
@@ -70,7 +72,7 @@ const AdminPanel = () => {
     };
 
     fetchDrivers();
-  }, [user?.token]);
+  }, [user]);
 
   // 🔐 Route protection
   if (!user || user.role_id !== 1) {
@@ -84,12 +86,12 @@ const AdminPanel = () => {
 
   const updateStatus = async (deliveryId, newStatus) => {
     try {
-      const res = await fetch(`http://127.0.0.1:5000/admin/deliveries/${deliveryId}`, {
+      const res = await fetch(`http://localhost:5000/admin/deliveries/${deliveryId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${user.token}`,
         },
+        credentials: "include",
         body: JSON.stringify({ status: newStatus }),
       });
 
@@ -110,13 +112,13 @@ const AdminPanel = () => {
 
   const assignDriverToOrder = async (orderId, riderId) => {
     try {
-      const res = await fetch(`http://127.0.0.1:5000/admin/deliveries/${orderId}`, {
+      const res = await fetch(`http://localhost:5000/admin/deliveries/${orderId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${user.token}`,
         },
-        body: JSON.stringify({ 
+        credentials: "include",
+        body: JSON.stringify({
           rider_id: riderId,
           status: "accepted"
         }),
@@ -258,7 +260,7 @@ const AdminPanel = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h3>Assign Driver to Order #{selectedOrderForAssign}</h3>
-              <button 
+              <button
                 className="modal-close"
                 onClick={() => {
                   setShowDriverModal(false);

@@ -14,16 +14,17 @@ const ViewOrders = () => {
   // Fetch orders from backend
   useEffect(() => {
     const fetchOrders = async () => {
-      if (!storedUser?.token) {
+      if (!storedUser) {
         navigate("/login");
         return;
       }
 
       try {
-        const res = await fetch("http://127.0.0.1:5000/deliveries", {
+        const res = await fetch("http://localhost:5000/deliveries", {
           headers: {
-            "Authorization": `Bearer ${storedUser.token}`,
+            "Content-Type": "application/json",
           },
+          credentials: "include",
         });
 
         if (!res.ok) {

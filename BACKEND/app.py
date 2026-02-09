@@ -6,7 +6,7 @@ from flask_cors import CORS
 from resources.user import UserListResource, UserResource
 from resources.delivery import DeliveryListResource
 from resources.profile import Profile
-from resources.auth import Register, Login
+from resources.auth import Register, Login, Logout
 from resources.admin_delivery import AdminDeliveryResource
 from resources.rider import RiderListResource, DriverProfileResource, DriverDeliveryResource
 from resources.track_delivery import TrackDeliveryResource
@@ -16,7 +16,7 @@ from resources.track_delivery import TrackDeliveryResource
 
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174", "http://127.0.0.1:5174"])
 api = Api(app)
 
 
@@ -26,6 +26,7 @@ init_db()
 
 api.add_resource(Register, "/auth/register", strict_slashes=False)
 api.add_resource(Login, "/auth/login", strict_slashes=False)
+api.add_resource(Logout, "/auth/logout", strict_slashes=False)
 
 
 api.add_resource(UserListResource, "/users", strict_slashes=False)

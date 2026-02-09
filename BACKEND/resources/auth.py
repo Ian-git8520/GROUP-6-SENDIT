@@ -1,9 +1,10 @@
-from flask import request
+from flask import request, make_response
 from flask_restful import Resource
 from database import SessionLocal
-from models import User
+from models import User, Rider
 from utils.auth import create_token
 from utils.security import hash_password, verify_password
+from datetime import timedelta
 
 class Register(Resource):
     def post(self):
@@ -27,6 +28,20 @@ class Register(Resource):
             session.commit()
             session.refresh(user)
 
+            # If driver (role_id=3), create rider record automatically
+            if user.role_id == 3:
+                try:
+                    rider = Rider(
+                        user_id=user.id,
+                        name=user.name,
+                        phone_number=user.phone_number
+                    )
+                    session.add(rider)
+                    session.commit()
+                except Exception as rider_error:
+                    print(f"[ERROR] Failed to create rider: {str(rider_error)}")
+                    session.rollback()
+
             return {
                 "message": "User registered successfully",
                 "user": {
@@ -36,6 +51,10 @@ class Register(Resource):
                     "role_id": user.role_id
                 }
             }, 201
+        except Exception as e:
+            print(f"[ERROR] Registration failed: {str(e)}")
+            session.rollback()
+            return {"error": f"Registration failed: {str(e)}"}, 500
         finally:
             session.close()
 
@@ -51,6 +70,38 @@ class Login(Resource):
                 return {"error": "Invalid credentials"}, 401
 
             token = create_token(user.id, user.role_id)
-            return {"token": token}, 200
+            
+            # Map role_id to role name
+            role_map = {1: "admin", 2: "user", 3: "driver"}
+            
+            response = make_response({
+                "message": "Login successful",
+                "user": {
+                    "id": user.id,
+                    "name": user.name,
+                    "email": user.email,
+                    "role": role_map.get(user.role_id, "user"),
+                    "role_id": user.role_id
+                }
+            }, 200)
+            
+            # Set HTTP-only cookie with the token (max_age in seconds: 7 days = 604800 seconds)
+            response.set_cookie(
+                'jwt',
+                value=token,
+                httponly=True,
+                secure=False,  # Set to True in production with HTTPS
+                samesite='Lax',
+                max_age=604800  # 7 days in seconds
+            )
+            
+            return response
         finally:
             session.close()
+
+
+class Logout(Resource):
+    def post(self):
+        response = make_response({"message": "Logged out successfully"}, 200)
+        response.set_cookie('jwt', '', expires=0, httponly=True, samesite='Lax')
+        return response

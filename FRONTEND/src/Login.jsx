@@ -24,12 +24,13 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/auth/login", {
+      const res = await fetch("http://localhost:5000/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
+        credentials: "include", // Important: include cookies
       });
 
       const data = await res.json();
@@ -39,11 +40,12 @@ const Login = () => {
         return;
       }
 
-      const profileRes = await fetch("http://127.0.0.1:5000/profile", {
+      const profileRes = await fetch("http://localhost:5000/profile", {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${data.token}`,
+          "Content-Type": "application/json",
         },
+        credentials: "include", // Important: include cookies
       });
 
       if (!profileRes.ok) {
@@ -60,7 +62,6 @@ const Login = () => {
         phone_number: profileData.phone_number,
         role_id: profileData.role_id,
         role: roleIdMap[profileData.role_id],
-        token: data.token,
       };
 
       localStorage.setItem("currentUser", JSON.stringify(loggedInUser));

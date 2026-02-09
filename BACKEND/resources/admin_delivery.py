@@ -3,6 +3,8 @@ from flask import request
 from database import SessionLocal
 from models import Delivery, Rider, User
 from utils.auth import token_required, admin_required
+from email_service import send_delivery_status_email
+from datetime import datetime
 
 
 class AdminDeliveryResource(Resource):
@@ -24,12 +26,17 @@ class AdminDeliveryResource(Resource):
             if not delivery:
                 return {"error": "Delivery not found"}, 404
 
+            old_status = delivery.status
+            new_status = None
+
             # Update status
             if "status" in data:
-                delivery.status = data["status"]
+                new_status = data["status"]
+                delivery.status = new_status
+                delivery.updated_at = datetime.now()
                 
                 # If status is approved/accepted, ensure rider is assigned
-                if data["status"] == "accepted" and not delivery.rider_id:
+                if new_status == "accepted" and not delivery.rider_id:
                     # Try to assign an available driver if not specified
                     if "rider_id" not in data:
                         # Auto-assign if rider_id is provided
@@ -47,6 +54,10 @@ class AdminDeliveryResource(Resource):
 
             db.commit()
 
+            # Send email notification to user if status changed
+            if new_status and old_status != new_status:
+                self._send_status_notification(db, delivery, old_status, new_status)
+
             # Get rider info for response
             rider_info = None
             if delivery.rider_id:
@@ -59,19 +70,45 @@ class AdminDeliveryResource(Resource):
                         "user_id": rider.user_id
                     }
 
+            user = db.query(User).filter_by(id=delivery.user_id).first()
+            user_name = user.name if user else None
+
             return {
                 "message": "Delivery updated successfully",
                 "delivery": {
                     "id": delivery.id,
+                    "order_name": delivery.order_name,
                     "status": delivery.status,
                     "rider_id": delivery.rider_id,
                     "rider": rider_info,
-                    "user_id": delivery.user_id
+                    "user_id": delivery.user_id,
+                    "user_name": user_name
                 }
             }, 200
 
         finally:
             db.close()
+
+    def _send_status_notification(self, db, delivery, old_status, new_status):
+        """Send real-time email notification when admin changes delivery status"""
+        try:
+            user = db.query(User).filter_by(id=delivery.user_id).first()
+            if not user:
+                return
+
+            status_messages = {
+                "pending": "Your order is pending",
+                "accepted": "Your order has been accepted and assigned to a driver",
+                "in_transit": "Your order is on the way",
+                "delivered": "Your order has been delivered",
+                "cancelled": "Your order has been cancelled"
+            }
+
+            # use the shared email helper for consistent HTML emails and real-world timestamp
+            send_delivery_status_email(user.email, delivery.id, old_status, new_status, customer_name=user.name)
+            print(f"[EMAIL] Status notification sent to {user.email} for delivery {delivery.id}: {old_status} → {new_status}")
+        except Exception as e:
+            print(f"[ERROR] Failed to send status notification email: {str(e)}")
 
     @token_required
     @admin_required
@@ -96,10 +133,15 @@ class AdminDeliveryResource(Resource):
                         "user_id": rider.user_id
                     }
 
+            user = db.query(User).filter_by(id=delivery.user_id).first()
+            user_name = user.name if user else None
+
             return {
                 "delivery": {
                     "id": delivery.id,
+                    "order_name": delivery.order_name,
                     "user_id": delivery.user_id,
+                    "user_name": user_name,
                     "status": delivery.status,
                     "distance": delivery.distance,
                     "weight": delivery.weight,

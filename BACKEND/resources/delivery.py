@@ -25,12 +25,14 @@ class DeliveryListResource(Resource):
             else:  # Regular user
                 deliveries = get_deliveries_by_user(db, current_user.id)
 
-            return [
-                {
+            results = []
+            for d in deliveries:
+                item = {
                     "id": d.id,
                     "user_id": d.user_id,
-                    "pickup_location": d.pickup_location if isinstance(d.pickup_location, dict) else json.loads(d.pickup_location),
-                    "drop_off_location": d.drop_off_location if isinstance(d.drop_off_location, dict) else json.loads(d.drop_off_location),
+                    "order_name": d.order_name,
+                    "pickup_location": d.pickup_location,
+                    "drop_off_location": d.drop_off_location,
                     "distance": d.distance,
                     "weight": d.weight,
                     "size": d.size,
@@ -38,8 +40,15 @@ class DeliveryListResource(Resource):
                     "status": d.status,
                     "rider_id": d.rider_id,
                     "created_at": d.created_at.isoformat()
-                } for d in deliveries
-            ], 200
+                }
+                # If admin, include the user's name for easier display
+                if current_user.role_id == 1:
+                    from models import User
+                    user = db.query(User).filter_by(id=d.user_id).first()
+                    item["user_name"] = user.name if user else None
+                results.append(item)
+
+            return results, 200
         except Exception as e:
             print(f"[ERROR] Error fetching deliveries: {str(e)}")
             return {"error": "Failed to fetch deliveries"}, 500
@@ -79,14 +88,21 @@ class DeliveryListResource(Resource):
                     price_index=price_index
                 )
 
-                # Parse pickup/drop-off locations if they're strings
-                pickup_location = data["pickup_location"]
-                if isinstance(pickup_location, str):
-                    pickup_location = json.loads(pickup_location)
-                
-                drop_off_location = data["drop_off_location"]
-                if isinstance(drop_off_location, str):
-                    drop_off_location = json.loads(drop_off_location)
+                # Accept free-form location strings. If a dict is provided, convert to a readable string.
+                def _loc_to_string(loc):
+                    if isinstance(loc, str):
+                        return loc
+                    if isinstance(loc, dict):
+                        # Prefer common address keys
+                        for key in ("address", "formatted_address", "name", "label"):
+                            if key in loc:
+                                return str(loc[key])
+                        return json.dumps(loc)
+                    return str(loc)
+
+                pickup_location = _loc_to_string(data["pickup_location"])
+                drop_off_location = _loc_to_string(data["drop_off_location"])
+                order_name = data.get("order_name")
 
                 # Create delivery
                 delivery = create_delivery(
@@ -98,7 +114,8 @@ class DeliveryListResource(Resource):
                     size=float(data["size"]),
                     pickup_location=pickup_location,
                     drop_off_location=drop_off_location,
-                    total_price=total_price
+                    total_price=total_price,
+                    order_name=order_name
                 )
 
                 return {

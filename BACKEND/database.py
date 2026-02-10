@@ -8,7 +8,7 @@ DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'sendit.db')}"
 
 engine = create_engine(
     DATABASE_URL,
-    echo=True,
+    echo=False,
     connect_args={"check_same_thread": False}
 )
 

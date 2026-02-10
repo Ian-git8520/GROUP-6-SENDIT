@@ -2,9 +2,19 @@
 const API_BASE_URL = "http://localhost:5000";
 
 export const getAuthHeaders = () => {
-  return {
+  const headers = {
     "Content-Type": "application/json",
   };
+  
+  // Add JWT token from localStorage if it exists
+  const currentUser = localStorage.getItem("currentUser");
+  const token = localStorage.getItem("jwtToken");
+  
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  
+  return headers;
 };
 
 // Auth endpoints

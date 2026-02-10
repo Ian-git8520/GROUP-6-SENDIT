@@ -26,6 +26,15 @@ class DeliveryListResource(Resource):
                 deliveries = get_deliveries_by_user(db, current_user.id)
 
             results = []
+            # Pre-fetch all users if admin to avoid N+1 queries
+            user_cache = {}
+            if current_user.role_id == 1:
+                from models import User
+                user_ids = [d.user_id for d in deliveries]
+                if user_ids:
+                    users = db.query(User).filter(User.id.in_(user_ids)).all()
+                    user_cache = {u.id: u.name for u in users}
+            
             for d in deliveries:
                 item = {
                     "id": d.id,
@@ -43,9 +52,7 @@ class DeliveryListResource(Resource):
                 }
                 # If admin, include the user's name for easier display
                 if current_user.role_id == 1:
-                    from models import User
-                    user = db.query(User).filter_by(id=d.user_id).first()
-                    item["user_name"] = user.name if user else None
+                    item["user_name"] = user_cache.get(d.user_id)
                 results.append(item)
 
             return results, 200

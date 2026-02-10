@@ -128,6 +128,25 @@ npm run dev
 ### Project Structure
 - `BACKEND/` - Flask REST API with SQLAlchemy ORM
 - `FRONTEND/` - React + Vite frontend application
-- `app/` - Next.js full-stack application
-- `components/` - Reusable UI components
-- `alembic/` - Database migrations
+- `app/` - Next.js full-stack application with TypeScript
+- `components/` - Reusable UI components (Radix UI, Shadcn/ui)
+- `hooks/` - Custom React hooks
+- `lib/` - Utility functions and helpers
+- `public/` - Static assets
+- `styles/` - Global stylesheets
+- `alembic/` - Database migrations and version control
+
+---
+
+## Support & Resources
+
+For issues, feature requests, or documentation help:
+- Check existing documentation in `BACKEND/` and `FRONTEND/` folders
+- Review API endpoints in BACKEND resources
+- Consult component library in `components/ui/`
+
+---
+
+## License
+
+SENDIT is provided as-is for deployment purposes.

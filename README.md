@@ -1,24 +1,24 @@
-# SENDIT 🚚📦
+# SENDIT
 
 SENDIT is a courier service web application that enables users to send parcels to different destinations. The platform allows users to create delivery orders, track parcel status, and receive real-time updates, while administrators manage parcel movements and delivery statuses.
 
 ---
 
-## 🧭 Project Overview
+## Project Overview
 
 SENDIT helps individuals and businesses deliver parcels efficiently by providing courier services with pricing based on parcel weight categories. The application supports real-time notifications, delivery tracking using Google Maps, and role-based access for users and administrators.
 
 ---
 
-## 👥 Team
+## Team
 
 - **Full Stack Application**
-  - Frontend: React.js + Redux Toolkit
-  - Backend: Ruby on Rails (API)
+  - Frontend: Next.js + React + TypeScript (Primary), React + Vite (Secondary)
+  - Backend: Flask + Flask-RESTful (Python API)
 
 ---
 
-## ✨ MVP Features
+## MVP Features
 
 ### User Features
 - User registration and authentication
@@ -39,7 +39,7 @@ SENDIT helps individuals and businesses deliver parcels efficiently by providing
 
 ---
 
-## 🌍 Optional Features
+## Optional Features
 
 - Display a Google Map with:
   - A route line connecting pickup and destination points
@@ -50,7 +50,7 @@ SENDIT helps individuals and businesses deliver parcels efficiently by providing
 
 ---
 
-## ⚠️ Business Rules
+## Business Rules
 
 - A parcel delivery order **can only be canceled or updated** if its status is **not marked as delivered**
 - Only the **user who created the delivery order** can cancel or modify it
@@ -58,39 +58,76 @@ SENDIT helps individuals and businesses deliver parcels efficiently by providing
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
-- Ruby on Rails (API)
-- PostgreSQL (Database)
-- Minitest (Testing)
+- Flask 2.3.0 (Web framework)
+- Flask-RESTful (API endpoints)
+- SQLAlchemy 2.0.0 (ORM)
+- Alembic (Database migrations)
+- bcrypt (Password hashing)
+- PyJWT (JWT authentication)
 
-### Frontend
-- React.js
-- Redux Toolkit (State Management)
-- Jest (Testing)
-- Google Maps API
+### Frontend (Next.js)
+- Next.js 16.0.10 (Full-stack framework)
+- React 19 (UI library)
+- TypeScript (Type safety)
+- Tailwind CSS (Styling)
+- Shadcn/ui (Component library)
+- Radix UI (Accessible components)
 
----
+### Frontend (React + Vite)
+- React 19.2.0 (UI library)
+- Vite (Build tool)
+- React Router (Navigation)
+- Leaflet (Map library)
+- React Google Maps API
 
 All major features are covered with unit and integration tests to ensure application reliability.
 
 ---
 
-## 🎨 Design & Wireframes
+## Design & Wireframes
 
 - Wireframes designed using **Figma**
 - Fully responsive and mobile-friendly UI
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-- Ruby
-- Rails
+- Python 3.8+
+- Node.js 16+ & npm
 - PostgreSQL
-- Node.js & npm
 - Google Maps API Key
+- pip (Python package manager)
 
----
+### Installation
+
+#### Backend Setup
+```bash
+cd BACKEND
+pip install -r requirements.txt
+python app.py
+```
+
+#### Frontend Setup (Next.js)
+```bash
+npm install
+npm run dev
+```
+
+#### Frontend Setup (React + Vite)
+```bash
+cd FRONTEND
+npm install
+npm run dev
+```
+
+### Project Structure
+- `BACKEND/` - Flask REST API with SQLAlchemy ORM
+- `FRONTEND/` - React + Vite frontend application
+- `app/` - Next.js full-stack application
+- `components/` - Reusable UI components
+- `alembic/` - Database migrations

@@ -384,11 +384,18 @@
   color: #fff;
 }
 
-.welcome-text span {
-  color: transparent;
-  background: linear-gradient(135deg, var(--accent), var(--accent2), rgba(255, 255, 255, 0.92));
-  -webkit-background-clip: text;
-  background-clip: text;
+.welcome-name {
+  color: var(--accent);
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .welcome-name {
+    color: transparent;
+    background: linear-gradient(135deg, var(--accent), var(--accent2), rgba(255, 255, 255, 0.92));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 .welcome-subtitle {

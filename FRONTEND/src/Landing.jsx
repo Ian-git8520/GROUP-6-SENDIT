@@ -16,7 +16,7 @@ const Landing = () => {
           </p>
           <div className="hero-buttons">
             <Link to="/login" className="btn-primary">Login</Link>
-            <Link to="/signup" className="btn-secondary">Get Started</Link>
+            <Link to="/signup" className="btn-primary">Get Started</Link>
           </div>
         </div>
       </section>
@@ -151,7 +151,7 @@ const Landing = () => {
         </p>
         <div className="cta-buttons">
           <Link to="/signup" className="btn-primary">Create Account</Link>
-          <Link to="/login" className="btn-secondary">Login</Link>
+          <Link to="/login" className="btn-primary">Login</Link>
         </div>
       </section>
 

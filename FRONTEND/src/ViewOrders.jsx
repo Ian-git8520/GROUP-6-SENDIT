@@ -183,7 +183,7 @@ const ViewOrders = () => {
                 className="change-destination-btn"
                 onClick={() => openDestinationModal(order)}
               >
-                Change Destination
+                Update
               </button>
               <button
                 className="cancel-btn"

@@ -22,15 +22,15 @@ export default function Page() {
             </p>
             <div className="grid md:grid-cols-3 gap-6 mt-8">
               <div className="bg-slate-700 rounded p-4">
-                <h3 className="font-bold text-white mb-2">📦 For Customers</h3>
+                <h3 className="font-bold text-white mb-2">For Customers</h3>
                 <p className="text-slate-300 text-sm">Create and track deliveries in real-time</p>
               </div>
               <div className="bg-slate-700 rounded p-4">
-                <h3 className="font-bold text-white mb-2">🚗 For Drivers</h3>
+                <h3 className="font-bold text-white mb-2">For Drivers</h3>
                 <p className="text-slate-300 text-sm">Accept orders and manage deliveries</p>
               </div>
               <div className="bg-slate-700 rounded p-4">
-                <h3 className="font-bold text-white mb-2">⚙️ For Admins</h3>
+                <h3 className="font-bold text-white mb-2">For Admins</h3>
                 <p className="text-slate-300 text-sm">Manage all orders and system operations</p>
               </div>
             </div>
@@ -76,7 +76,7 @@ export default function Page() {
 
             <div className="mt-6 p-4 bg-blue-900 border border-blue-700 rounded">
               <p className="text-blue-200">
-                <strong>📚 Documentation:</strong> Check the documentation files for detailed API integration and system architecture.
+                <strong>Documentation:</strong> Check the documentation files for detailed API integration and system architecture.
               </p>
             </div>
           </div>

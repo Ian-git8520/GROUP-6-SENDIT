@@ -77,7 +77,7 @@ const AdminPanel = () => {
     fetchDrivers();
   }, [user]);
 
-  // 🔐 Route protection
+  // Route protection
   if (!user || user.role_id !== 1) {
     return (
       <div className="admin-container">

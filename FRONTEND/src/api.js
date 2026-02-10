@@ -107,6 +107,25 @@ export const deliveryAPI = {
     });
     return res;
   },
+  changeDestination: async (deliveryId, newDestination) => {
+    const res = await fetch(`${API_BASE_URL}/user/deliveries/${deliveryId}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ action: "change_destination", new_destination: newDestination }),
+      credentials: "include",
+    });
+    return res;
+  },
+
+  cancelDelivery: async (deliveryId, cancellationReason) => {
+    const res = await fetch(`${API_BASE_URL}/user/deliveries/${deliveryId}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ action: "cancel", cancellation_reason: cancellationReason }),
+      credentials: "include",
+    });
+    return res;
+  },
 };
 
 // User endpoints

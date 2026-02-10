@@ -72,14 +72,16 @@ class Login(Resource):
             token = create_token(user.id, user.role_id)
             
             # Map role_id to role name
-            role_map = {1: "admin", 2: "user", 3: "driver"}
+            role_map = {1: "admin", 2: "customer", 3: "rider"}
             
             response = make_response({
                 "message": "Login successful",
+                "token": token,
                 "user": {
                     "id": user.id,
                     "name": user.name,
                     "email": user.email,
+                    "phone_number": user.phone_number,
                     "role": role_map.get(user.role_id, "user"),
                     "role_id": user.role_id
                 }

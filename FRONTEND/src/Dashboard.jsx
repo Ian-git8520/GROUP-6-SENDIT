@@ -63,7 +63,7 @@ const Dashboard = () => {
     const fetchRecentOrders = async () => {
       if (!storedUser || Object.keys(storedUser).length === 0) return;
       try {
-        const res = await fetch("http://localhost:5000/deliveries", {
+        const res = await fetch("http://localhost:5001/deliveries", {
           headers: {
             "Content-Type": "application/json",
           },

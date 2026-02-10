@@ -6,8 +6,10 @@ from utils.auth import create_token
 from utils.security import hash_password, verify_password
 from datetime import timedelta
 
+
+
 class Register(Resource):
-    def post(self):
+   def post(self):
         session = SessionLocal()
         data = request.json
 
@@ -60,7 +62,7 @@ class Register(Resource):
 
 
 class Login(Resource):
-    def post(self):
+   def post(self):
         session = SessionLocal()
         data = request.json
 

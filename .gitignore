@@ -66,3 +66,7 @@ ENV/
 Thumbs.db
 .vscode/
 .idea/
+
+node_modules/
+node_modules/.vite/
+.vite/

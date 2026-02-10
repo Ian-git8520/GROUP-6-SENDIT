@@ -1,12 +1,28 @@
 'use client';
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import AdminSidebar from "./components/AdminSidebar";
+import OverviewTab from "./components/OverviewTab";
+import DeliveriesTab from "./components/DeliveriesTab";
+import UsersTab from "./components/UsersTab";
+import RidersTab from "./components/RidersTab";
+import AdminProfileTab from "./components/AdminProfileTab";
+import SettingsTab from "./components/SettingsTab";
+import { deliveryAPI, userAPI, riderAPI } from "./api";
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const admin = JSON.parse(localStorage.getItem("currentUser"));
+  const [activeTab, setActiveTab] = useState('overview');
+  const [stats, setStats] = useState({
+    totalDeliveries: 0,
+    totalUsers: 0,
+    totalRiders: 0,
+    totalRevenue: 0,
+  });
+  const [loading, setLoading] = useState(true);
 
   // Route protection
   if (!admin) {
@@ -18,6 +34,41 @@ const AdminDashboard = () => {
     navigate("/dashboard");
     return null;
   }
+
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
+
+  const fetchDashboardStats = async () => {
+    try {
+      setLoading(true);
+      const [deliveriesRes, usersRes, ridersRes] = await Promise.all([
+        deliveryAPI.getDeliveries(),
+        userAPI.getUsers(),
+        riderAPI.getRiders(),
+      ]);
+
+      const deliveries = await deliveriesRes.json();
+      const users = await usersRes.json();
+      const riders = await ridersRes.json();
+
+      const totalRevenue = (Array.isArray(deliveries) ? deliveries : []).reduce(
+        (sum, d) => sum + (d.total_price || 0),
+        0
+      );
+
+      setStats({
+        totalDeliveries: Array.isArray(deliveries) ? deliveries.length : 0,
+        totalUsers: Array.isArray(users) ? users.length : 0,
+        totalRiders: Array.isArray(riders) ? riders.length : 0,
+        totalRevenue,
+      });
+    } catch (err) {
+      console.error("Error fetching dashboard stats:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -35,44 +86,84 @@ const AdminDashboard = () => {
     navigate("/login");
   };
 
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return <OverviewTab stats={stats} loading={loading} />;
+      case 'deliveries':
+        return <DeliveriesTab />;
+      case 'users':
+        return <UsersTab />;
+      case 'riders':
+        return <RidersTab />;
+      case 'profile':
+        return <AdminProfileTab admin={admin} />;
+      case 'settings':
+        return <SettingsTab admin={admin} />;
+      default:
+        return <OverviewTab stats={stats} loading={loading} />;
+    }
+  };
+
+  const formatKES = (amount) => {
+    const numericAmount = Number(amount || 0);
+    return `KES ${numericAmount.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
+
+  const overviewCards = [
+    { name: "Total Deliveries", count: stats.totalDeliveries },
+    { name: "Total Users", count: stats.totalUsers },
+    { name: "Active Riders", count: stats.totalRiders },
+    { name: "Total Revenue", count: formatKES(stats.totalRevenue) },
+  ];
+
+  const adminDisplayName =
+    admin?.name ||
+    admin?.username ||
+    admin?.email?.split("@")[0] ||
+    "Admin";
+
   return (
     <div className="admin-dashboard-container">
-      {/* NAVBAR */}
-      <nav className="admin-dashboard-navbar">
-        <h3 className="logo">SendIT — Admin</h3>
-
-        <div className="nav-right">
-          <span className="welcome-text">
-            Welcome, {admin.name || "Admin"}
-          </span>
-          <button onClick={handleLogout} className="logout-btn">
-            Logout
-          </button>
+      <AdminSidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onLogout={handleLogout}
+        adminName={admin.name}
+      />
+      <div className="admin-main-content">
+        <div className="admin-header">
+          <div className="welcome-section">
+            <h2 className="welcome-text">
+              Welcome Back, <span>{adminDisplayName}</span>
+            </h2>
+            <p className="welcome-subtitle">Track and manage your deliveries with ease</p>
+          </div>
         </div>
-      </nav>
 
-      {/* CENTER CONTENT */}
-      <div className="admin-dashboard-content">
-        <div className="admin-profile-card">
-          <h3>My Profile</h3>
+        {activeTab === 'overview' && !loading && (
+          <div className="folders-grid">
+            {overviewCards.map((card) => (
+              <div
+                key={card.name}
+                className="folder-card"
+                style={{ "--folder-color": "#38bdf8" }}
+              >
+                <div className="folder-header"></div>
+                <h4 className="folder-name">{card.name}</h4>
+                <div className="folder-count">
+                  {card.count} {typeof card.count === "number" ? "items" : ""}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
-          <p>
-            <strong>Name:</strong> {admin.name || "Admin"}
-          </p>
-          <p>
-            <strong>Email:</strong> {admin.email}
-          </p>
-          <p>
-            <strong>Role:</strong>{" "}
-            <span className="role-badge admin">ADMIN</span>
-          </p>
-
-          <button
-            className="admin-panel-btn"
-            onClick={() => navigate("/dashboard/admin")}
-          >
-            Go to Admin Panel
-          </button>
+        <div className="tab-content">
+          {renderTabContent()}
         </div>
       </div>
     </div>

@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { profileAPI } from "./api";
 import "./Dashboard.css";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const storedUser = JSON.parse(localStorage.getItem("currentUser"));
+  const storedUser = JSON.parse(localStorage.getItem("currentUser")) || {};
+  const resolvedUser = storedUser.user || storedUser;
 
-  const [user, setUser] = useState(storedUser);
+  const [user, setUser] = useState(resolvedUser);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [recentOrders, setRecentOrders] = useState([]);
   const [allOrders, setAllOrders] = useState([]);
@@ -20,13 +22,46 @@ const Dashboard = () => {
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
 
   useEffect(() => {
-    if (!storedUser) navigate("/login");
+    if (!storedUser || Object.keys(storedUser).length === 0) {
+      navigate("/login");
+    }
   }, [storedUser, navigate]);
+
+  useEffect(() => {
+    const hasDisplayName = Boolean(
+      user?.name ||
+      user?.full_name ||
+      user?.username ||
+      user?.user_name ||
+      user?.first_name ||
+      user?.last_name
+    );
+
+    if (!hasDisplayName) {
+      profileAPI
+        .getProfile()
+        .then(async (res) => {
+          if (!res.ok) return null;
+          return res.json();
+        })
+        .then((profile) => {
+          if (!profile) return;
+          setUser((prev) => {
+            const merged = { ...prev, ...profile };
+            localStorage.setItem("currentUser", JSON.stringify(merged));
+            return merged;
+          });
+        })
+        .catch((err) => {
+          console.error("Failed to load profile:", err);
+        });
+    }
+  }, [user]);
 
   // Fetch recent orders from backend for current user
   useEffect(() => {
     const fetchRecentOrders = async () => {
-      if (!storedUser) return;
+      if (!storedUser || Object.keys(storedUser).length === 0) return;
       try {
         const res = await fetch("http://localhost:5000/deliveries", {
           headers: {
@@ -39,7 +74,14 @@ const Dashboard = () => {
         }
         const data = await res.json();
         // Filter for current user's orders and get the 5 most recent
-        const userOrders = data.filter(order => order.user_id === storedUser.id);
+        const userId =
+          storedUser.id ??
+          storedUser.user_id ??
+          storedUser.userId ??
+          storedUser.user?.id ??
+          storedUser.user?.user_id ??
+          storedUser.user?.userId;
+        const userOrders = data.filter(order => order.user_id === userId);
         const activeOrders = userOrders.filter((order) => {
           const status = (order.status || "").toLowerCase();
           return status !== "delivered" && status !== "cancelled";
@@ -107,6 +149,16 @@ const Dashboard = () => {
   }, [allOrders, searchTerm, statusFilter]);
 
   const displayedOrders = filteredOrders.slice(0, 5);
+
+  const displayName = (
+    user?.name ||
+    user?.full_name ||
+    user?.username ||
+    user?.user_name ||
+    [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
+    user?.email?.split("@")[0] ||
+    "User"
+  ).trim() || "User";
 
   const quickActions = [
     { name: 'Create Order', color: '#38bdf8', count: 'New', path: '/dashboard/create-order' },
@@ -208,7 +260,7 @@ const Dashboard = () => {
           </div>
           <div className="header-right">
             <button className="icon-btn"><i className="bx bx-bell"></i></button>
-            <div className="user-avatar">{user?.name?.[0] || 'U'}</div>
+            <div className="user-avatar">{displayName?.[0] || 'U'}</div>
           </div>
         </header>
 
@@ -216,7 +268,7 @@ const Dashboard = () => {
           <div className="dashboard-content">
             <div className="welcome-section">
               <h2 className="welcome-text">
-                Welcome Back, <span>{user?.name || "User"}</span>
+                Welcome Back, <span className="welcome-name">{displayName}</span>
               </h2>
               <p className="welcome-subtitle">Track and manage your deliveries with ease</p>
             </div>

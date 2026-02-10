@@ -72,7 +72,7 @@ const AdminDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5000/auth/logout", {
+      await fetch("http://localhost:5001/auth/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

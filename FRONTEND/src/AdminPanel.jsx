@@ -26,7 +26,7 @@ const AdminPanel = () => {
       }
 
       try {
-        const res = await fetch("http://localhost:5000/deliveries", {
+        const res = await fetch("http://localhost:5001/deliveries", {
           headers: {
             "Content-Type": "application/json",
           },
@@ -56,7 +56,7 @@ const AdminPanel = () => {
       if (!user) return;
 
       try {
-        const res = await fetch("http://localhost:5000/riders", {
+        const res = await fetch("http://localhost:5001/riders", {
           headers: {
             "Content-Type": "application/json",
           },
@@ -89,7 +89,7 @@ const AdminPanel = () => {
 
   const updateStatus = async (deliveryId, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:5000/admin/deliveries/${deliveryId}`, {
+      const res = await fetch(`http://localhost:5001/admin/deliveries/${deliveryId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -115,7 +115,7 @@ const AdminPanel = () => {
 
   const assignDriverToOrder = async (orderId, riderId) => {
     try {
-      const res = await fetch(`http://localhost:5000/admin/deliveries/${orderId}`, {
+      const res = await fetch(`http://localhost:5001/admin/deliveries/${orderId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -388,7 +388,7 @@ const AdminPanel = () => {
                         <h4>{driver.name}</h4>
                         <p>{driver.phone_number}</p>
                       </div>
-                      <span className="select-btn">Select</span>
+                      <span className="select-btn">Assign</span>
                     </button>
                   ))}
                 </div>

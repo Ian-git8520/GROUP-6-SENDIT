@@ -18,7 +18,9 @@ from resources.track_delivery import TrackDeliveryResource
 
 app = Flask(__name__)
 # Allow all origins in dev to avoid CORS blocking during local testing
-CORS(app, supports_credentials=True)
+CORS( app,supports_credentials=True)
+
+
 api = Api(app)
 
 
@@ -59,4 +61,5 @@ api.add_resource(
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port= 5001)
+   

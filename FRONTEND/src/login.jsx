@@ -24,8 +24,10 @@ const Login = () => {
 
       // Store user info from backend response (token is in HTTP-only cookie)
       const loggedInUser = {
+        id: data.user.id,
         name: data.user.name,
         email: data.user.email,
+        phone_number: data.user.phone_number,
         role: data.user.role,
         role_id: data.user.role_id,
       };

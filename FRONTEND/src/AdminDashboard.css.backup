@@ -1,0 +1,408 @@
+/* ==============================
+   MODERN ADMIN DASHBOARD
+   Dark theme with gradient accents
+================================ */
+
+.admin-dashboard-container {
+  --bg-primary: #0a0e27;
+  --bg-secondary: #10141f;
+  --bg-card: #1a1f35;
+  --bg-hover: #252b45;
+  
+  --text-primary: #e5e7eb;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --accent-blue: #38bdf8;
+  --accent-purple: #a78bfa;
+  --accent-pink: #f472b6;
+  --accent-green: #34d399;
+  --accent-yellow: #fbbf24;
+  --accent-red: #f87171;
+  
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  color: var(--text-primary);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Layer 1: cyber haze */
+.admin-dashboard-container::before{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background:
+    radial-gradient(closest-side at 18% 20%, rgba(56,189,248, calc(0.55 * var(--glowStrong))), transparent 62%),
+    radial-gradient(closest-side at 75% 25%, rgba(14,165,233, calc(0.45 * var(--glowStrong))), transparent 64%),
+    radial-gradient(closest-side at 55% 80%, rgba(56,189,248, calc(0.35 * var(--glowStrong))), transparent 66%),
+    conic-gradient(from 190deg at 50% 50%,
+      rgba(56,189,248, calc(0.34 * var(--glowStrong))),
+      rgba(14,165,233, calc(0.18 * var(--glowStrong))),
+      rgba(255,255,255, calc(0.10 * var(--glowStrong))),
+      rgba(56,189,248, calc(0.34 * var(--glowStrong)))
+    );
+  filter: blur(54px) saturate(160%) contrast(110%);
+  opacity: 1;
+  mix-blend-mode: screen;
+  animation: admin-aurora 10.5s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+
+@keyframes admin-aurora{
+  0%   { transform: translate3d(-2%, -1%, 0) rotate(-8deg) scale(1.04); }
+  50%  { transform: translate3d( 3%,  1%, 0) rotate( 6deg) scale(1.10); }
+  100% { transform: translate3d(-1%,  2%, 0) rotate(-4deg) scale(1.06); }
+}
+
+/* Layer 2: grid + scanlines + tiny noise */
+.admin-dashboard-container::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(to right, rgba(56,189,248,0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56,189,248,0.06) 1px, transparent 1px),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.00) 0px,
+      rgba(0,0,0,0.00) 8px,
+      rgba(0,0,0,0.18) 9px
+    ),
+    repeating-radial-gradient(
+      circle at 10% 20%,
+      rgba(255,255,255,0.020) 0 1px,
+      transparent 1px 6px
+    );
+  background-size: 56px 56px, 56px 56px, auto, auto;
+  opacity: 0.25;
+  pointer-events:none;
+}
+
+/* NAVBAR */
+.admin-dashboard-navbar{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding: 0.95rem 2rem;
+
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  background: rgba(2,6,23,0.55);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.admin-dashboard-navbar::after{
+  content:"";
+  position:absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(56,189,248,0.65),
+    rgba(14,165,233,0.35),
+    rgba(56,189,248,0.65),
+    transparent
+  );
+  opacity: 0.75;
+  filter: blur(0.2px);
+  pointer-events:none;
+}
+
+/* Scoped logo styling (won’t affect user dashboard unexpectedly) */
+.admin-dashboard-navbar .logo{
+  font-size: 1.5rem;
+  font-weight: 950;
+  letter-spacing: 1px;
+  margin: 0;
+
+  color: transparent;
+  background: linear-gradient(90deg, var(--accent), rgba(255,255,255,0.92), var(--accent2));
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  text-shadow:
+    1px 0 18px rgba(56,189,248,0.16),
+    -1px 0 18px rgba(14,165,233,0.12);
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap: 14px;
+}
+
+/* Scoped welcome text (your JSX uses className="welcome-text") */
+.admin-dashboard-navbar .welcome-text{
+  color: rgba(229,231,235,0.90);
+  font-weight: 800;
+  font-size: 0.95rem;
+
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* Scoped logout button */
+.admin-dashboard-navbar .logout-btn{
+  background: rgba(248,113,113,0.12);
+  color: #fecaca;
+  border: 1px solid rgba(248,113,113,0.30);
+
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-weight: 950;
+  cursor: pointer;
+
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.admin-dashboard-navbar .logout-btn:hover{
+  transform: translateY(-1px);
+  background: rgba(248,113,113,0.18);
+  box-shadow: 0 0 0 6px rgba(248,113,113,0.09);
+}
+
+/* CONTENT */
+.admin-dashboard-content{
+  display:flex;
+  justify-content:center;
+  padding: 3.2rem 1rem 4.2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* PROFILE CARD — same “HUD glass + neon ring” */
+.admin-profile-card{
+  width: min(600px, 92vw);
+  padding: 2.25rem 2.25rem 2.05rem;
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+
+  background:
+    radial-gradient(900px 260px at 25% 0%, rgba(56,189,248,0.16), transparent 58%),
+    radial-gradient(900px 260px at 75% 115%, rgba(56,189,248,0.10), transparent 55%),
+    linear-gradient(180deg, rgba(15,23,42,0.80), rgba(2,6,23,0.72));
+  border: 1px solid rgba(255,255,255,0.10);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 80px 260px rgba(0,0,0,0.78),
+    0 0 55px rgba(56,189,248,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+
+  animation: admin-rise .55s ease both;
+}
+
+@keyframes admin-rise{
+  from { opacity:0; transform: translateY(18px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* Animated neon ring */
+.admin-profile-card::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius: 30px;
+  background: conic-gradient(from 180deg,
+    rgba(56,189,248,0.95),
+    rgba(14,165,233,0.25),
+    rgba(255,255,255,0.20),
+    rgba(56,189,248,0.95)
+  );
+  opacity: var(--ringOpacity);
+  filter: drop-shadow(0 0 14px rgba(56,189,248,0.35));
+  animation: admin-spin 3.2s linear infinite;
+  pointer-events:none;
+}
+
+@supports (-webkit-mask: linear-gradient(#000 0 0)) {
+  .admin-profile-card::before{
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    padding: 2px;
+  }
+}
+
+@keyframes admin-spin{ to { transform: rotate(360deg); } }
+
+/* Subtle shine sweep */
+.admin-profile-card::after{
+  content:"";
+  position:absolute;
+  inset:-45%;
+  background: linear-gradient(115deg,
+    transparent 35%,
+    rgba(56,189,248,0.18) 45%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(14,165,233,0.14) 55%,
+    transparent 65%
+  );
+  transform: translateX(-22%);
+  opacity: 0;
+  transition: opacity .18s ease, transform .55s ease;
+  pointer-events:none;
+}
+
+.admin-profile-card:hover::after{
+  opacity: 1;
+  transform: translateX(22%);
+}
+
+.admin-profile-card > *{
+  position: relative;
+  z-index: 1;
+}
+
+.admin-profile-card h3{
+  text-align:center;
+  margin: 0 0 1.35rem;
+  font-size: 1.55rem;
+  letter-spacing: -0.4px;
+  color: rgba(255,255,255,0.93);
+}
+
+.admin-profile-card h3::after{
+  content:"";
+  display:block;
+  width: 92px;
+  height: 3px;
+  margin: 10px auto 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(56,189,248,0.95), transparent);
+  box-shadow: 0 0 18px rgba(56,189,248,0.30);
+}
+
+/* Make the <p><strong>Label</strong> Value</p> read like “rows” */
+.admin-profile-card p{
+  margin: 0;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 16px;
+
+  color: rgba(255,255,255,0.92);
+  font-weight: 800;
+}
+
+.admin-profile-card p strong{
+  color: rgba(148,163,184,0.98);
+  font-size: 0.9rem;
+  font-weight: 850;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+/* ADMIN role badge stays “danger/red” but polished */
+.admin-profile-card .role-badge.admin{
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-weight: 1000;
+  letter-spacing: 1.2px;
+  font-size: 0.82rem;
+
+  color: #020617;
+  background: linear-gradient(135deg, #fb7185, #f87171);
+  box-shadow:
+    0 22px 90px rgba(248,113,113,0.20),
+    0 0 0 1px rgba(248,113,113,0.18);
+}
+
+/* Admin panel button (same cyber button vibe) */
+.admin-panel-btn{
+  width: 100%;
+  margin-top: 1.85rem;
+  padding: 12px 34px;
+  border-radius: 999px;
+
+  border: 1px solid rgba(255,255,255,0.10);
+  font-weight: 1000;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  color: var(--bg0);
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 26px 110px rgba(56,189,248,0.22);
+
+  position: relative;
+  overflow: hidden;
+  transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+
+/* button neon sweep */
+.admin-panel-btn::after{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background: linear-gradient(115deg,
+    transparent 38%,
+    rgba(255,255,255,0.16) 48%,
+    transparent 60%
+  );
+  transform: translateX(-24%);
+  opacity: 0;
+  transition: opacity .18s ease, transform .55s ease;
+  pointer-events:none;
+}
+
+.admin-panel-btn:hover{
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow:
+    0 0 0 7px rgba(56,189,248,0.13),
+    0 40px 140px rgba(0,0,0,0.50);
+}
+
+.admin-panel-btn:hover::after{
+  opacity: 1;
+  transform: translateX(24%);
+}
+
+.admin-panel-btn:focus-visible{
+  outline: 2px solid rgba(56,189,248,0.70);
+  outline-offset: 3px;
+}
+
+/* MOBILE */
+@media (max-width: 520px){
+  .admin-dashboard-navbar{ padding: 0.9rem 1rem; }
+  .nav-right{ gap: 10px; }
+  .admin-dashboard-navbar .welcome-text{
+    display:none; /* optional: cleaner on very small screens */
+  }
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce){
+  .admin-dashboard-container::before,
+  .admin-profile-card::before{
+    animation: none;
+  }
+  .admin-panel-btn,
+  .admin-dashboard-navbar .logout-btn{
+    transition: none;
+  }
+}

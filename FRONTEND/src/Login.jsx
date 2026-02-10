@@ -14,8 +14,8 @@ const Login = () => {
 
   const roleIdMap = {
     1: "admin",
-    2: "user",
-    3: "driver",
+    2: "customer",
+    3: "rider",
   };
 
   const handleLogin = async (e) => {
@@ -30,45 +30,38 @@ const Login = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
-        credentials: "include", // Important: include cookies
+        credentials: "include",
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Login failed");
+        setError(data.error || "Invalid credentials");
+        setLoading(false);
         return;
       }
 
-      const profileRes = await fetch("http://localhost:5000/profile", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // Important: include cookies
-      });
-
-      if (!profileRes.ok) {
-        setError("Failed to fetch profile");
-        return;
+      // Store the JWT token
+      if (data.token) {
+        localStorage.setItem("jwtToken", data.token);
       }
 
-      const profileData = await profileRes.json();
-
+      // Use user data from login response
       const loggedInUser = {
-        id: profileData.id,
-        name: profileData.name,
-        email: profileData.email,
-        phone_number: profileData.phone_number,
-        role_id: profileData.role_id,
-        role: roleIdMap[profileData.role_id],
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        phone_number: data.user.phone_number,
+        role_id: data.user.role_id,
+        role: roleIdMap[data.user.role_id],
       };
 
       localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
 
-      if (profileData.role_id === 1) {
+      // Navigate based on role
+      if (data.user.role_id === 1) {
         navigate("/admin/dashboard");
-      } else if (profileData.role_id === 3) {
+      } else if (data.user.role_id === 3) {
         navigate("/driver/dashboard");
       } else {
         navigate("/dashboard");
@@ -77,7 +70,6 @@ const Login = () => {
     } catch (err) {
       console.error(err);
       setError("Server error. Please try again.");
-    } finally {
       setLoading(false);
     }
   };

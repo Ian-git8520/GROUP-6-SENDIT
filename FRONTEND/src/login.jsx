@@ -1,50 +1,76 @@
+'use client';
+
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { authAPI } from "./api";
+import { useNavigate } from "react-router-dom";
 import "./Auth.css";
 import "./Login.css";
 
 const Login = () => {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const roleIdMap = {
+    1: "admin",
+    2: "customer",
+    3: "rider",
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
-      const res = await authAPI.login(email, password);
+      const res = await fetch("http://localhost:5000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: "include",
+      });
+
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "Login failed");
+        setError(data.error || "Invalid credentials");
+        setLoading(false);
         return;
       }
 
-      // Store user info from backend response (token is in HTTP-only cookie)
+      // Store the JWT token
+      if (data.token) {
+        localStorage.setItem("jwtToken", data.token);
+      }
+
+      // Use user data from login response
       const loggedInUser = {
         id: data.user.id,
         name: data.user.name,
         email: data.user.email,
         phone_number: data.user.phone_number,
-        role: data.user.role,
         role_id: data.user.role_id,
+        role: roleIdMap[data.user.role_id],
       };
 
       localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
 
-      // Role-based redirect using backend-provided role
-      if (data.user.role === "admin") {
+      // Navigate based on role
+      if (data.user.role_id === 1) {
         navigate("/admin/dashboard");
-      } else if (data.user.role === "driver") {
+      } else if (data.user.role_id === 3) {
         navigate("/driver/dashboard");
       } else {
         navigate("/dashboard");
       }
+
     } catch (err) {
       console.error(err);
-      alert("Server error. Please try again.");
+      setError("Server error. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -54,6 +80,8 @@ const Login = () => {
         <h2>Login</h2>
         <p className="auth-subtitle">Welcome back, please login</p>
 
+        {error && <p className="error-message">{error}</p>}
+
         <form className="auth-form" onSubmit={handleLogin}>
           <input
             type="email"
@@ -61,6 +89,7 @@ const Login = () => {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
           />
 
           <input
@@ -69,10 +98,15 @@ const Login = () => {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
           />
 
-          <button type="submit" className="auth-btn">
-            Login
+          <button
+            type="submit"
+            className={`auth-btn ${loading ? "loading" : ""}`}
+            disabled={loading}
+          >
+            <span>Login</span>
           </button>
         </form>
       </div>

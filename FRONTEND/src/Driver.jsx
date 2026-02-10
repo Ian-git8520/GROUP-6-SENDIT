@@ -66,15 +66,12 @@ const Route = ({ pickup, destination }) => {
 const Driver = () => {
     const [orders, setOrders] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [driver, setDriver] = useState(null);
+    const [driver] = useState(() => {
+        const storedUser = JSON.parse(localStorage.getItem("currentUser"));
+        return storedUser || null;
+    });
 
     useEffect(() => {
-        // Get driver info from localStorage
-        const storedUser = JSON.parse(localStorage.getItem("currentUser"));
-        if (storedUser) {
-            setDriver(storedUser);
-        }
-
         const storedOrders = JSON.parse(localStorage.getItem("orders")) || [];
 
         const enrichOrders = async () => {

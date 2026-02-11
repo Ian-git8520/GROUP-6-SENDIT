@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
-    LineChart,
-    Line,
     AreaChart,
     Area,
     BarChart,
@@ -13,35 +11,35 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend,
     ResponsiveContainer,
 } from 'recharts';
 import { Package, Clock, CheckCircle, XCircle } from 'lucide-react';
 
-const OverviewTab = ({ stats, loading }) => {
+const OverviewTab = ({ loading }) => {
     const [deliveries, setDeliveries] = useState([]);
-    const [chartData, setChartData] = useState([]);
-    const [statusData, setStatusData] = useState([]);
 
     useEffect(() => {
-        fetchDeliveries();
+        const controller = new AbortController();
+
+        fetch('http://localhost:5001/deliveries', {
+            credentials: 'include',
+            signal: controller.signal,
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                setDeliveries(Array.isArray(data) ? data : []);
+            })
+            .catch((err) => {
+                if (err?.name !== 'AbortError') {
+                    console.error('Error fetching deliveries:', err);
+                }
+            });
+
+        return () => controller.abort();
     }, []);
 
-    const fetchDeliveries = async () => {
-        try {
-            const res = await fetch("http://localhost:5000/deliveries", {
-                credentials: "include",
-            });
-            const data = await res.json();
-            setDeliveries(data);
-            processChartData(data);
-        } catch (err) {
-            console.error("Error fetching deliveries:", err);
-        }
-    };
-
-    const processChartData = (deliveries) => {
-        // Process data for line chart (last 7 days)
+    const chartData = useMemo(() => {
+        // Process data for charts (last 7 days)
         const last7Days = {};
         const today = new Date();
 
@@ -57,12 +55,14 @@ const OverviewTab = ({ stats, loading }) => {
             const dateStr = deliveryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             if (last7Days[dateStr]) {
                 last7Days[dateStr].deliveries += 1;
-                last7Days[dateStr].revenue += delivery.total_price || 0;
+                last7Days[dateStr].revenue += Number(delivery.total_price) || 0;
             }
         });
 
-        setChartData(Object.values(last7Days));
+        return Object.values(last7Days);
+    }, [deliveries]);
 
+    const statusData = useMemo(() => {
         // Status distribution
         const statusCounts = {};
         deliveries.forEach((d) => {
@@ -77,14 +77,12 @@ const OverviewTab = ({ stats, loading }) => {
             cancelled: '#f87171',
         };
 
-        setStatusData(
-            Object.entries(statusCounts).map(([name, value]) => ({
-                name: name.replace('_', ' ').toUpperCase(),
-                value,
-                color: statusColors[name] || '#94a3b8',
-            }))
-        );
-    };
+        return Object.entries(statusCounts).map(([name, value]) => ({
+            name: name.replace('_', ' ').toUpperCase(),
+            value,
+            color: statusColors[name] || '#94a3b8',
+        }));
+    }, [deliveries]);
 
     const recentDeliveries = deliveries.slice(0, 5);
 

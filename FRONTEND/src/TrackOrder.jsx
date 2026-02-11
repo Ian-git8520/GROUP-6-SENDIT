@@ -43,7 +43,7 @@ const TrackOrder = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await fetch("http://localhost:5000/deliveries", {
+        const res = await fetch("http://localhost:5001/deliveries", {
           headers: {
             "Content-Type": "application/json",
           },

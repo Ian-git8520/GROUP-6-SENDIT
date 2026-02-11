@@ -53,3 +53,5 @@ node_modules/.vite/
 FRONTEND/node_modules/
 
 
+node_modules/
+.vite/

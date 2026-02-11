@@ -75,11 +75,8 @@ class Delivery(Base):
     drop_off_location = Column(String, nullable=False)
 
     # Store locations as plain text strings (human-readable addresses)
-
-    
     total_price = Column(Float, nullable=False)
 
-  
     status = Column(
         String,
         nullable=False,

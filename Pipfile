@@ -12,6 +12,7 @@ flask-login = "*"
 flask-cors = "*"
 python-dotenv = "*"
 flask-restful = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 

@@ -54,7 +54,8 @@ class RiderListResource(Resource):
                     "id": r.id,
                     "name": r.name,
                     "phone_number": r.phone_number,
-                    "user_id": r.user_id
+                    "user_id": r.user_id,
+                    "email": r.user.email if r.user else None
                 } for r in riders
             ], 200
         finally:

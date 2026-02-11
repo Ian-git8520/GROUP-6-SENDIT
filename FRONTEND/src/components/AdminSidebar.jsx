@@ -1,22 +1,13 @@
 import React from 'react';
-import {
-    LayoutDashboard,
-    Package,
-    Users,
-    Bike,
-    Settings,
-    User,
-    LogOut
-} from 'lucide-react';
+import { LogOut } from 'lucide-react';
 
 const AdminSidebar = ({ activeTab, setActiveTab, onLogout, adminName }) => {
     const menuItems = [
-        { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-        { id: 'deliveries', label: 'Deliveries', icon: Package },
-        { id: 'users', label: 'Users', icon: Users },
-        { id: 'riders', label: 'Riders', icon: Bike },
-        { id: 'profile', label: 'Admin Profile', icon: User },
-        { id: 'settings', label: 'Settings', icon: Settings },
+        { id: 'overview', label: 'Overview' },
+        { id: 'deliveries', label: 'Deliveries' },
+        { id: 'users', label: 'Users' },
+        { id: 'riders', label: 'Riders' },
+        { id: 'profile', label: 'Admin Profile' },
     ];
 
     return (
@@ -27,19 +18,15 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, adminName }) => {
             </div>
 
             <nav className="sidebar-nav">
-                {menuItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                        <button
-                            key={item.id}
-                            className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
-                            onClick={() => setActiveTab(item.id)}
-                        >
-                            <Icon size={20} />
-                            <span>{item.label}</span>
-                        </button>
-                    );
-                })}
+                {menuItems.map((item) => (
+                    <button
+                        key={item.id}
+                        className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
+                        onClick={() => setActiveTab(item.id)}
+                    >
+                        <span>{item.label}</span>
+                    </button>
+                ))}
             </nav>
 
             <div className="sidebar-footer">

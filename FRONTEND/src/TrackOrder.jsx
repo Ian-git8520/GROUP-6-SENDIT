@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "./TrackOrder.css";
+import { deliveryAPI } from "./api";
 
 const Routing = ({ pickup, destination }) => {
   const map = useMap();
@@ -33,6 +35,7 @@ const Routing = ({ pickup, destination }) => {
 };
 
 const TrackOrder = () => {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [activeOrder, setActiveOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -42,21 +45,29 @@ const TrackOrder = () => {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      try {
-        const res = await fetch("http://localhost:5001/deliveries", {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
+      const storedUser = JSON.parse(localStorage.getItem("currentUser"));
+      const token = localStorage.getItem("jwtToken");
+      if (!storedUser && !token) {
+        navigate("/login");
+        return;
+      }
 
-        if (!res.ok) {
-          throw new Error("Failed to fetch orders");
+      try {
+        const res = await deliveryAPI.getDeliveries();
+
+        if (res.status === 401) {
+          localStorage.removeItem("currentUser");
+          localStorage.removeItem("jwtToken");
+          navigate("/login");
+          return;
         }
 
+        if (!res.ok) throw new Error("Failed to fetch orders");
+
         const data = await res.json();
-        setOrders(data);
-        setActiveOrder(data.length ? data[0] : null);
+        const list = Array.isArray(data) ? data : [];
+        setOrders(list);
+        setActiveOrder(list.length ? list[0] : null);
       } catch (err) {
         console.error(err);
         setError("Failed to load orders");
@@ -66,7 +77,7 @@ const TrackOrder = () => {
     };
 
     fetchOrders();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     let isActive = true;

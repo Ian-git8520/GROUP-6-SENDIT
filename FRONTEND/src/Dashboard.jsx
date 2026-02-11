@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { profileAPI } from "./api";
+import { deliveryAPI, profileAPI } from "./api";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -49,12 +49,12 @@ const Dashboard = () => {
   useEffect(() => {
     const hasDisplayName = Boolean(
       user?.name ||
-        user?.full_name ||
-        user?.username ||
-        user?.user_name ||
-        user?.first_name ||
-        user?.last_name ||
-        user?.email
+      user?.full_name ||
+      user?.username ||
+      user?.user_name ||
+      user?.first_name ||
+      user?.last_name ||
+      user?.email
     );
 
     if (hasDisplayName) return;
@@ -93,10 +93,7 @@ const Dashboard = () => {
       if (!userId) return;
 
       try {
-        const res = await fetch("http://localhost:5001/deliveries", {
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        });
+        const res = await deliveryAPI.getDeliveries();
 
         if (!res.ok) throw new Error("Failed to fetch orders");
 
@@ -125,6 +122,7 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
+    localStorage.removeItem("jwtToken");
     navigate("/");
   };
 

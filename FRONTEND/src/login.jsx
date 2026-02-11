@@ -33,6 +33,9 @@ const Login = () => {
       };
 
       localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
+      if (data.token) {
+        localStorage.setItem("jwtToken", data.token);
+      }
 
       // Role-based redirect using backend-provided role
       if (data.user.role === "admin") {

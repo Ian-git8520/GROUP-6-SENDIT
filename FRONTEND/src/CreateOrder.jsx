@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet-routing-machine";
 import "leaflet/dist/leaflet.css";
 import "./CreateOrder.css";
+import { deliveryAPI } from "./api";
 
 /* Fix leaflet marker icons */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -46,6 +48,7 @@ const Routing = ({ from, to, setDistance }) => {
 let searchTimeout;
 
 const CreateOrder = () => {
+  const navigate = useNavigate();
   const [itemType, setItemType] = useState("");
   const [orderName, setOrderName] = useState("");
   const [weight, setWeight] = useState("");
@@ -124,28 +127,22 @@ const CreateOrder = () => {
 
   const confirmOrder = async () => {
     const storedUser = JSON.parse(localStorage.getItem("currentUser"));
+    const token = localStorage.getItem("jwtToken");
 
-    if (!storedUser) {
+    if (!storedUser && !token) {
       alert("You must be logged in to place an order.");
       navigate("/login");
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:5001/deliveries", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // Important: include cookies
-        body: JSON.stringify({
-          distance: Number(distance),
-          weight: Number(weight),
-          size: Number(height) + Number(length),
-          pickup_location: searchPickup,
-          drop_off_location: searchDestination,
-          order_name: orderName || undefined
-        })
+      const response = await deliveryAPI.createDelivery({
+        distance: Number(distance),
+        weight: Number(weight),
+        size: Number(height) + Number(length),
+        pickup_location: searchPickup,
+        drop_off_location: searchDestination,
+        order_name: orderName || undefined,
       });
 
       if (response.status === 401) {

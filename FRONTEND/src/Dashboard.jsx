@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   const [user, setUser] = useState(resolvedUser);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [recentOrders, setRecentOrders] = useState([]);
+  const [ setRecentOrders] = useState([]);
   const [allOrders, setAllOrders] = useState([]);
   const [totalOrdersCount, setTotalOrdersCount] = useState(0);
   const [activeOrdersCount, setActiveOrdersCount] = useState(0);

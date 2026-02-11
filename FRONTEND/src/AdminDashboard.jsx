@@ -24,6 +24,10 @@ const AdminDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
+
   // Route protection
   if (!admin) {
     navigate("/login");
@@ -34,10 +38,6 @@ const AdminDashboard = () => {
     navigate("/dashboard");
     return null;
   }
-
-  useEffect(() => {
-    fetchDashboardStats();
-  }, []);
 
   const fetchDashboardStats = async () => {
     try {

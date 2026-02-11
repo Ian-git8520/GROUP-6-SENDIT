@@ -1,4 +1,4 @@
-'use client';
+
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -24,7 +24,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/auth/login", {
+      const res = await fetch("http://localhost:5001/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,8 +68,8 @@ const Login = () => {
       }
 
     } catch (err) {
-      console.error(err);
-      setError("Server error. Please try again.");
+      console.error("Login error:", err);
+      setError(err.message || "Server error. Please try again.");
       setLoading(false);
     }
   };
@@ -84,21 +84,27 @@ const Login = () => {
 
         <form className="auth-form" onSubmit={handleLogin}>
           <input
+            id="email"
+            name="email"
             type="email"
             placeholder="Email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
+            autoComplete="email"
           />
 
           <input
+            id="password"
+            name="password"
             type="password"
             placeholder="Password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
+            autoComplete="current-password"
           />
 
           <button

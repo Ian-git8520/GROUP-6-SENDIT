@@ -1,3 +1,9 @@
+/* Dashboard.css */
+
+/* If you have Stylelint and it marks backdrop-filter as an error, keep this line.
+   It does NOT affect the browser; it only silences the linter. */
+ /* stylelint-disable property-no-unknown */
+
 .dashboard-container {
   --bg0: #020617;
   --bg1: #070d1f;
@@ -68,6 +74,7 @@
 .dashboard-sidebar {
   width: 260px;
   background: rgba(7, 13, 31, 0.85);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
@@ -192,7 +199,6 @@
   color: rgba(248, 113, 113, 1);
 }
 
-
 .dashboard-main {
   flex: 1;
   display: flex;
@@ -206,6 +212,7 @@
   padding: 1.5rem 2rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(2, 6, 23, 0.5);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   display: flex;
   justify-content: space-between;
@@ -384,18 +391,12 @@
   color: #fff;
 }
 
+/* === FIX: Always show the user's name (no transparent text) === */
 .welcome-name {
   color: var(--accent);
-}
-
-@supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  .welcome-name {
-    color: transparent;
-    background: linear-gradient(135deg, var(--accent), var(--accent2), rgba(255, 255, 255, 0.92));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+  font-weight: 800;
+  /* If some other rule sets transparent text-fill, this forces visibility */
+  -webkit-text-fill-color: currentColor;
 }
 
 .welcome-subtitle {
@@ -937,6 +938,7 @@
   background: rgba(7, 13, 31, 0.6);
   border-radius: 12px;
   border: 1px solid rgba(56, 189, 248, 0.2);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
@@ -1019,3 +1021,5 @@
   color: var(--muted);
   font-size: 1rem;
 }
+
+/* stylelint-enable property-no-unknown */

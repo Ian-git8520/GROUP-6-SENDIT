@@ -21,9 +21,7 @@ api = Api(app)
 
 
 init_db()
-
-
-
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql+psycopg2://abdi:12345@localhost/sendit_db"
 api.add_resource(Register, "/auth/register", strict_slashes=False)
 api.add_resource(Login, "/auth/login", strict_slashes=False)
 

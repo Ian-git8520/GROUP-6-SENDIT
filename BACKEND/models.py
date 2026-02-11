@@ -96,3 +96,8 @@ class Delivery(Base):
     user = relationship("User", back_populates="deliveries")
     rider = relationship("Rider", back_populates="deliveries")
     price_index = relationship("PriceIndex", back_populates="deliveries")
+
+
+
+    
+    

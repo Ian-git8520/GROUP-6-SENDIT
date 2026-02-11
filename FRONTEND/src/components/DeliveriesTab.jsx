@@ -199,8 +199,6 @@ const DeliveriesTab = () => {
                             <th>Status</th>
                             <th>Distance</th>
                             <th>Price</th>
-                            <th>Weight</th>
-                            <th>Size</th>
                             <th>Destination</th>
                             <th>Rider</th>
                             <th>Actions</th>
@@ -213,12 +211,10 @@ const DeliveriesTab = () => {
                                 <td>{getStatusBadge(delivery.status)}</td>
                                 <td>{delivery.distance ? `${Number(delivery.distance).toFixed(2)} km` : 'N/A'}</td>
                                 <td>KES {delivery.total_price ? Number(delivery.total_price).toLocaleString() : '0.00'}</td>
-                                <td>{delivery.weight ? `${delivery.weight} kg` : 'N/A'}</td>
-                                <td>{delivery.size ? `${delivery.size} cm` : 'N/A'}</td>
                                 <td>{delivery.drop_off_location || 'N/A'}</td>
                                 <td>{delivery.rider_id ? getRiderLabel(delivery.rider_id) : 'Unassigned'}</td>
                                 <td>
-                                    <div className="action-buttons">
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
                                         <button
                                             className="action-btn view"
                                             onClick={() => setSelectedDelivery(delivery)}
@@ -236,33 +232,6 @@ const DeliveriesTab = () => {
                                                 title="Assign Rider"
                                             >
                                                 Assign
-                                            </button>
-                                        )}
-                                        {delivery.status === 'pending' && (
-                                            <button
-                                                className="action-btn approve"
-                                                onClick={() => updateDeliveryStatus(delivery.id, 'accepted')}
-                                                title="Accept"
-                                            >
-                                                Accept
-                                            </button>
-                                        )}
-                                        {delivery.status === 'accepted' && (
-                                            <button
-                                                className="action-btn transit"
-                                                onClick={() => updateDeliveryStatus(delivery.id, 'in_transit')}
-                                                title="Mark In Transit"
-                                            >
-                                                In Transit
-                                            </button>
-                                        )}
-                                        {delivery.status === 'in_transit' && (
-                                            <button
-                                                className="action-btn complete"
-                                                onClick={() => updateDeliveryStatus(delivery.id, 'delivered')}
-                                                title="Mark Delivered"
-                                            >
-                                                Delivered
                                             </button>
                                         )}
                                     </div>

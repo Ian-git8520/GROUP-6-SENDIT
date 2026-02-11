@@ -1,16 +1,17 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'sendit.db')}"
+
+DATABASE_URL = "postgresql+psycopg2://abdrahan:abdi12345@localhost:5432/sendit_db"
+
+
 
 engine = create_engine(
     DATABASE_URL,
-    echo=False,
-    connect_args={"check_same_thread": False}
+    echo=False  
 )
+
 
 SessionLocal = sessionmaker(bind=engine)
 

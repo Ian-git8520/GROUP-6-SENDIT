@@ -576,9 +576,8 @@
 }
 
 .table-wrapper {
-  overflow-x: auto;
-  overflow-y: auto;
-  max-height: 500px;
+  overflow-x: hidden;
+  overflow-y: hidden;
   background: rgba(7, 13, 31, 0.6);
   border-radius: 12px;
   border: 1px solid rgba(56, 189, 248, 0.2);
@@ -619,6 +618,17 @@
 .orders-table td {
   padding: 1rem 1.25rem;
   color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.orders-table td:last-child {
+  overflow: visible;
+  white-space: normal;
+  text-overflow: clip;
+  max-width: none;
 }
 
 .orders-table td:first-child {
@@ -848,10 +858,8 @@
 .modal-content h3 {
   margin: 0 0 1.5rem 0;
   font-size: 1.5rem;
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #fff;
+  font-weight: 700;
 }
 
 .modal-body {
@@ -860,12 +868,12 @@
 
 .modal-body p {
   margin: 0.75rem 0;
-  color: var(--text-secondary);
+  color: #e5e7eb;
   font-size: 0.9375rem;
 }
 
 .modal-body p strong {
-  color: var(--text-primary);
+  color: #fff;
   font-weight: 600;
   margin-right: 0.5rem;
 }
@@ -1439,6 +1447,14 @@ input:checked+.slider:before {
   gap: 0.5rem;
 }
 
+.assign-form label {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
 .assign-select {
   width: 100%;
   padding: 0.6rem 0.75rem;
@@ -1446,6 +1462,17 @@ input:checked+.slider:before {
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.assign-select option {
+  background-color: #1e293b;
+  color: #e5e7eb;
+  padding: 0.5rem;
+}
+
+.assign-select option:hover {
+  background-color: #334155;
 }
 
 .assign-select:focus {

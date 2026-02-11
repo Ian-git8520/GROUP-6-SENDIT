@@ -51,6 +51,7 @@ Thumbs.db
 node_modules/.vite/
 .vite/
 FRONTEND/node_modules/
+FRONTEND/package-lock.json/
 
 
 node_modules/

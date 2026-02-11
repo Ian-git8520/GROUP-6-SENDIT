@@ -8,9 +8,9 @@ import DeliveriesTab from "./components/DeliveriesTab";
 import UsersTab from "./components/UsersTab";
 import RidersTab from "./components/RidersTab";
 import AdminProfileTab from "./components/AdminProfileTab";
-import SettingsTab from "./components/SettingsTab";
 import { deliveryAPI, userAPI, riderAPI } from "./api";
 import "./AdminDashboard.css";
+import "./Dashboard.css";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -89,7 +89,7 @@ const AdminDashboard = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
-        return <OverviewTab stats={stats} loading={loading} />;
+        return <OverviewTab loading={loading} />;
       case 'deliveries':
         return <DeliveriesTab />;
       case 'users':
@@ -98,26 +98,15 @@ const AdminDashboard = () => {
         return <RidersTab />;
       case 'profile':
         return <AdminProfileTab admin={admin} />;
-      case 'settings':
-        return <SettingsTab admin={admin} />;
       default:
-        return <OverviewTab stats={stats} loading={loading} />;
+        return <OverviewTab loading={loading} />;
     }
   };
 
-  const formatKES = (amount) => {
-    const numericAmount = Number(amount || 0);
-    return `KES ${numericAmount.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
-  };
-
   const overviewCards = [
-    { name: "Total Deliveries", count: stats.totalDeliveries },
-    { name: "Total Users", count: stats.totalUsers },
-    { name: "Active Riders", count: stats.totalRiders },
-    { name: "Total Revenue", count: formatKES(stats.totalRevenue) },
+    { name: "Total Deliveries", count: stats.totalDeliveries, target: "deliveries" },
+    { name: "Total Users", count: stats.totalUsers, target: "users" },
+    { name: "Active Riders", count: stats.totalRiders, target: "riders" },
   ];
 
   const adminDisplayName =
@@ -151,6 +140,15 @@ const AdminDashboard = () => {
                 key={card.name}
                 className="folder-card"
                 style={{ "--folder-color": "#38bdf8" }}
+                role="button"
+                tabIndex={0}
+                onClick={() => setActiveTab(card.target)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setActiveTab(card.target);
+                  }
+                }}
               >
                 <div className="folder-header"></div>
                 <h4 className="folder-name">{card.name}</h4>

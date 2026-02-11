@@ -13,11 +13,7 @@ from resources.rider import RiderListResource, DriverProfileResource, DriverDeli
 from resources.track_delivery import TrackDeliveryResource
 
 
-
-
-
 app = Flask(__name__)
-# Allow all origins in dev to avoid CORS blocking during local testing
 CORS( app,supports_credentials=True)
 
 
@@ -40,7 +36,6 @@ api.add_resource(UserResource, "/users/<int:user_id>", strict_slashes=False)
 api.add_resource(DeliveryListResource, "/deliveries", strict_slashes=False)
 api.add_resource(UserDeliveryResource, "/user/deliveries/<int:delivery_id>", strict_slashes=False)
 
-# for the current logged-in user
 api.add_resource(Profile, "/profile", strict_slashes=False)
 
 api.add_resource(

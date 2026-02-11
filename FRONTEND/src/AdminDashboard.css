@@ -143,8 +143,8 @@
 }
 
 .sidebar-nav {
-  flex: 1;
-  padding: 1rem 0.75rem;
+  flex: 0;
+  padding: 1rem 0.75rem 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -193,7 +193,7 @@
 }
 
 .sidebar-footer {
-  padding: 1rem;
+  padding: 0.75rem 1rem 1rem;
   border-top: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -300,6 +300,15 @@
 
 .admin-main-content .folders-grid {
   padding: 2rem 2rem 0 2rem;
+}
+
+.folder-card {
+  cursor: pointer;
+}
+
+.folder-card:focus-visible {
+  outline: 2px solid rgba(56, 189, 248, 0.65);
+  outline-offset: 3px;
 }
 
 .admin-main-content .tab-content {
@@ -566,6 +575,64 @@
   backdrop-filter: blur(10px);
 }
 
+.table-wrapper {
+  overflow-x: auto;
+  background: rgba(7, 13, 31, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.orders-table thead {
+  background: rgba(56, 189, 248, 0.15);
+  border-bottom: 2px solid rgba(56, 189, 248, 0.3);
+}
+
+.orders-table th {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.orders-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background-color 0.2s ease;
+}
+
+.orders-table tbody tr:hover {
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.orders-table td {
+  padding: 1rem 1.25rem;
+  color: var(--text-primary);
+}
+
+.orders-table td:first-child {
+  font-weight: 600;
+  color: var(--accent-blue);
+}
+
+.orders-table .status-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -617,6 +684,13 @@
   padding: 3rem 1rem !important;
 }
 
+.no-orders {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
 /* ===== STATUS BADGES ===== */
 .status-badge {
   display: inline-block;
@@ -642,6 +716,12 @@
 
 /* Support both in-transit class spellings (in-transit / in_transit) */
 .status-badge.in-transit,
+.status-badge.in_transit {
+  background: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
 .status-badge.in_transit {
   background: rgba(14, 165, 233, 0.2);
   color: #38bdf8;
@@ -1291,4 +1371,97 @@ input:checked + .slider:before {
   .settings-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ===== TABLE PAGINATION ===== */
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0.5rem 0.25rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.pagination-info {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pagination-btn,
+.pagination-page {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:disabled,
+.pagination-page:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-btn:hover:not(:disabled),
+.pagination-page:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pagination-page.active {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.4), rgba(14, 165, 233, 0.25));
+  border-color: rgba(56, 189, 248, 0.45);
+  color: #ffffff;
+}
+
+/* ===== ASSIGN RIDER MODAL ===== */
+.assign-form {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.assign-select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+}
+
+.assign-select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.assign-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.action-btn.assign {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 8px;
 }

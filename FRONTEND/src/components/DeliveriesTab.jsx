@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Eye, CheckCircle, XCircle, Truck } from 'lucide-react';
-import { deliveryAPI } from '../api';
+import { Search } from 'lucide-react';
+import { deliveryAPI, riderAPI } from '../api';
 
 const DeliveriesTab = () => {
     const [deliveries, setDeliveries] = useState([]);
+    const [riders, setRiders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedDelivery, setSelectedDelivery] = useState(null);
+    const [assigningDelivery, setAssigningDelivery] = useState(null);
+    const [selectedRiderId, setSelectedRiderId] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 8;
 
     useEffect(() => {
         fetchDeliveries();
+    }, []);
+
+    useEffect(() => {
+        fetchRiders();
     }, []);
 
     const fetchDeliveries = async () => {
@@ -19,12 +28,12 @@ const DeliveriesTab = () => {
             setLoading(true);
             setError(null);
             const res = await deliveryAPI.getDeliveries();
-            
+
             if (!res.ok) {
                 const errorData = await res.json();
                 throw new Error(errorData.error || 'Failed to fetch deliveries');
             }
-            
+
             const data = await res.json();
             setDeliveries(Array.isArray(data) ? data : []);
         } catch (err) {
@@ -33,6 +42,23 @@ const DeliveriesTab = () => {
             setDeliveries([]);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchRiders = async () => {
+        try {
+            const res = await riderAPI.getRiders();
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Failed to fetch riders');
+            }
+
+            const data = await res.json();
+            setRiders(Array.isArray(data) ? data : []);
+        } catch (err) {
+            console.error('Error fetching riders:', err);
+            setRiders([]);
         }
     };
 
@@ -50,6 +76,33 @@ const DeliveriesTab = () => {
         }
     };
 
+    const handleAssignRider = async () => {
+        if (!assigningDelivery || !selectedRiderId) {
+            alert('Please select a rider first');
+            return;
+        }
+
+        try {
+            const payload = {
+                rider_id: Number(selectedRiderId),
+                status: assigningDelivery.status === 'pending' ? 'accepted' : assigningDelivery.status,
+            };
+            const res = await deliveryAPI.updateDelivery(assigningDelivery.id, payload);
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Failed to assign rider');
+            }
+
+            await fetchDeliveries();
+            setAssigningDelivery(null);
+            setSelectedRiderId('');
+        } catch (err) {
+            console.error('Error assigning rider:', err);
+            alert(err.message || 'Failed to assign rider');
+        }
+    };
+
     const filteredDeliveries = deliveries.filter((delivery) => {
         const matchesSearch =
             delivery.id.toString().includes(searchTerm) ||
@@ -61,17 +114,43 @@ const DeliveriesTab = () => {
         return matchesSearch && matchesStatus;
     });
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, statusFilter]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredDeliveries.length / pageSize));
+
+    useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(totalPages);
+        }
+    }, [currentPage, totalPages]);
+
+    const paginatedDeliveries = filteredDeliveries.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize
+    );
+
+    const riderLookup = riders.reduce((acc, rider) => {
+        acc[rider.id] = rider;
+        return acc;
+    }, {});
+
+    const getRiderLabel = (riderId) => {
+        const rider = riderLookup[riderId];
+        if (!rider) {
+            return `Rider #${riderId}`;
+        }
+        return rider.name ? `${rider.name} (Rider #${riderId})` : `Rider #${riderId}`;
+    };
+
     const getStatusBadge = (status) => {
-        const statusClasses = {
-            pending: 'status-badge pending',
-            accepted: 'status-badge accepted',
-            in_transit: 'status-badge in-transit',
-            delivered: 'status-badge delivered',
-            cancelled: 'status-badge cancelled',
-        };
+        const statusKey = (status || 'pending').toLowerCase().replace(' ', '-');
+        const label = statusKey.replace(/[_-]/g, ' ');
+        const formattedLabel = label.charAt(0).toUpperCase() + label.slice(1);
         return (
-            <span className={statusClasses[status] || 'status-badge'}>
-                {status.replace('_', ' ').toUpperCase()}
+            <span className={`status-badge ${statusKey}`}>
+                {formattedLabel}
             </span>
         );
     };
@@ -101,7 +180,6 @@ const DeliveriesTab = () => {
                     />
                 </div>
                 <div className="filter-box">
-                    <Filter size={20} />
                     <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
@@ -113,80 +191,125 @@ const DeliveriesTab = () => {
                 </div>
             </div>
 
-            <div className="table-container">
-                <table className="data-table">
+            <div className="table-wrapper">
+                <table className="orders-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>From</th>
-                            <th>To</th>
+                            <th>Order</th>
+                            <th>Status</th>
                             <th>Distance</th>
                             <th>Price</th>
-                            <th>Status</th>
-                            <th>Customer</th>
+                            <th>Weight</th>
+                            <th>Size</th>
+                            <th>Destination</th>
                             <th>Rider</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredDeliveries.length === 0 ? (
-                            <tr>
-                                <td colSpan="9" className="no-data">No deliveries found</td>
-                            </tr>
-                        ) : (
-                            filteredDeliveries.map((delivery) => (
-                                <tr key={delivery.id}>
-                                    <td>#{delivery.id}</td>
-                                    <td>{delivery.pickup_location}</td>
-                                    <td>{delivery.drop_off_location}</td>
-                                    <td>{delivery.distance} km</td>
-                                    <td>${delivery.total_price}</td>
-                                    <td>{getStatusBadge(delivery.status)}</td>
-                                    <td>User #{delivery.user_id}</td>
-                                    <td>{delivery.rider_id ? `Rider #${delivery.rider_id}` : 'Unassigned'}</td>
-                                    <td>
-                                        <div className="action-buttons">
+                        {paginatedDeliveries.map((delivery) => (
+                            <tr key={delivery.id}>
+                                <td>{delivery.order_name ? delivery.order_name : `#${delivery.id}`}</td>
+                                <td>{getStatusBadge(delivery.status)}</td>
+                                <td>{delivery.distance ? `${Number(delivery.distance).toFixed(2)} km` : 'N/A'}</td>
+                                <td>KES {delivery.total_price ? Number(delivery.total_price).toLocaleString() : '0.00'}</td>
+                                <td>{delivery.weight ? `${delivery.weight} kg` : 'N/A'}</td>
+                                <td>{delivery.size ? `${delivery.size} cm` : 'N/A'}</td>
+                                <td>{delivery.drop_off_location || 'N/A'}</td>
+                                <td>{delivery.rider_id ? getRiderLabel(delivery.rider_id) : 'Unassigned'}</td>
+                                <td>
+                                    <div className="action-buttons">
+                                        <button
+                                            className="action-btn view"
+                                            onClick={() => setSelectedDelivery(delivery)}
+                                            title="View Details"
+                                        >
+                                            View
+                                        </button>
+                                        {!delivery.rider_id && (
                                             <button
-                                                className="action-btn view"
-                                                onClick={() => setSelectedDelivery(delivery)}
-                                                title="View Details"
+                                                className="action-btn assign"
+                                                onClick={() => {
+                                                    setAssigningDelivery(delivery);
+                                                    setSelectedRiderId('');
+                                                }}
+                                                title="Assign Rider"
                                             >
-                                                <Eye size={16} />
+                                                Assign
                                             </button>
-                                            {delivery.status === 'pending' && (
-                                                <button
-                                                    className="action-btn approve"
-                                                    onClick={() => updateDeliveryStatus(delivery.id, 'accepted')}
-                                                    title="Accept"
-                                                >
-                                                    <CheckCircle size={16} />
-                                                </button>
-                                            )}
-                                            {delivery.status === 'accepted' && (
-                                                <button
-                                                    className="action-btn transit"
-                                                    onClick={() => updateDeliveryStatus(delivery.id, 'in_transit')}
-                                                    title="Mark In Transit"
-                                                >
-                                                    <Truck size={16} />
-                                                </button>
-                                            )}
-                                            {delivery.status === 'in_transit' && (
-                                                <button
-                                                    className="action-btn complete"
-                                                    onClick={() => updateDeliveryStatus(delivery.id, 'delivered')}
-                                                    title="Mark Delivered"
-                                                >
-                                                    <CheckCircle size={16} />
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
+                                        )}
+                                        {delivery.status === 'pending' && (
+                                            <button
+                                                className="action-btn approve"
+                                                onClick={() => updateDeliveryStatus(delivery.id, 'accepted')}
+                                                title="Accept"
+                                            >
+                                                Accept
+                                            </button>
+                                        )}
+                                        {delivery.status === 'accepted' && (
+                                            <button
+                                                className="action-btn transit"
+                                                onClick={() => updateDeliveryStatus(delivery.id, 'in_transit')}
+                                                title="Mark In Transit"
+                                            >
+                                                In Transit
+                                            </button>
+                                        )}
+                                        {delivery.status === 'in_transit' && (
+                                            <button
+                                                className="action-btn complete"
+                                                onClick={() => updateDeliveryStatus(delivery.id, 'delivered')}
+                                                title="Mark Delivered"
+                                            >
+                                                Delivered
+                                            </button>
+                                        )}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
+                {paginatedDeliveries.length === 0 && (
+                    <p className="no-orders">No deliveries found.</p>
+                )}
+            </div>
+
+            <div className="table-pagination">
+                <div className="pagination-info">
+                    Page {currentPage} of {totalPages}
+                </div>
+                <div className="pagination-controls">
+                    <button
+                        className="pagination-btn"
+                        onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </button>
+                    <div className="pagination-pages">
+                        {Array.from({ length: totalPages }, (_, index) => {
+                            const page = index + 1;
+                            return (
+                                <button
+                                    key={page}
+                                    className={`pagination-page ${page === currentPage ? 'active' : ''}`}
+                                    onClick={() => setCurrentPage(page)}
+                                >
+                                    {page}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <button
+                        className="pagination-btn"
+                        onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
 
             {selectedDelivery && (
@@ -201,7 +324,7 @@ const DeliveriesTab = () => {
                             <p><strong>Distance:</strong> {selectedDelivery.distance} km</p>
                             <p><strong>Weight:</strong> {selectedDelivery.weight} kg</p>
                             <p><strong>Size:</strong> {selectedDelivery.size} cm³</p>
-                            <p><strong>Total Price:</strong> ${selectedDelivery.total_price}</p>
+                            <p><strong>Total Price:</strong> KES {Number(selectedDelivery.total_price || 0).toLocaleString()}</p>
                             <p><strong>Customer ID:</strong> {selectedDelivery.user_id}</p>
                             <p><strong>Rider ID:</strong> {selectedDelivery.rider_id || 'Not assigned'}</p>
                             <p><strong>Created:</strong> {new Date(selectedDelivery.created_at).toLocaleString()}</p>
@@ -209,6 +332,38 @@ const DeliveriesTab = () => {
                         <button className="modal-close" onClick={() => setSelectedDelivery(null)}>
                             Close
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {assigningDelivery && (
+                <div className="modal-overlay" onClick={() => setAssigningDelivery(null)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h3>Assign Rider</h3>
+                        <div className="modal-body assign-form">
+                            <label htmlFor="assign-rider">Rider</label>
+                            <select
+                                id="assign-rider"
+                                className="assign-select"
+                                value={selectedRiderId}
+                                onChange={(e) => setSelectedRiderId(e.target.value)}
+                            >
+                                <option value="">Select a rider</option>
+                                {riders.map((rider) => (
+                                    <option key={rider.id} value={rider.id}>
+                                        {rider.name || `Rider #${rider.id}`}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="assign-actions">
+                            <button className="btn-secondary" onClick={() => setAssigningDelivery(null)}>
+                                Cancel
+                            </button>
+                            <button className="btn-primary" onClick={handleAssignRider}>
+                                Assign
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

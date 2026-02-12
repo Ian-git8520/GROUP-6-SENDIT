@@ -1,15 +1,10 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base
 
 
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///sendit.db")
-
-# Some hosts provide postgres:// URLs; SQLAlchemy expects postgresql+psycopg2://
-if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+DATABASE_URL = "postgresql+psycopg2://ian:ian123@localhost:5432/sendit_db"
 
 
 

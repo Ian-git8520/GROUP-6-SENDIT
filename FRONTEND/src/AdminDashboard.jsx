@@ -8,7 +8,7 @@ import DeliveriesTab from "./components/DeliveriesTab";
 import UsersTab from "./components/UsersTab";
 import RidersTab from "./components/RidersTab";
 import AdminProfileTab from "./components/AdminProfileTab";
-import { deliveryAPI, userAPI, riderAPI, API_BASE_URL } from "./api";
+import { deliveryAPI, userAPI, riderAPI } from "./api";
 import "./AdminDashboard.css";
 import "./Dashboard.css";
 
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${API_BASE_URL}/auth/logout`, {
+      await fetch("http://localhost:5001/auth/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -18,8 +18,6 @@ from resources.track_delivery import TrackDeliveryResource
 from resources.user_delivery import UserDeliveryResource
 
 
-cors_origins_env = os.getenv("CORS_ORIGINS", "http://localhost:5173")
-cors_origins = [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
 
 
 
@@ -27,7 +25,7 @@ app = Flask(__name__)
 CORS(
     app,
     supports_credentials=True,
-    origins=cors_origins,
+    origins=["http://localhost:5173"],
     allow_headers=["Content-Type", "Authorization"],
     methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 )
@@ -66,4 +64,4 @@ api.add_resource(DriverDeliveryResource, "/driver/deliveries/<int:delivery_id>",
 
 
 if __name__ == "__main__":
-    app.run(debug=os.getenv("FLASK_DEBUG", "false").lower() == "true", port=int(os.getenv("PORT", 5001)))
+    app.run(debug=True, port=int(os.getenv("PORT", 5001)))

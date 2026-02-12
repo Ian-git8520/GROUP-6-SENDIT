@@ -91,7 +91,6 @@
 }
 
 .order-card:hover {
-  transform: translateY(-2px);
   box-shadow: 0 15px 40px rgba(56, 189, 248, 0.2);
 }
 
@@ -120,13 +119,20 @@
 
 .action-btn {
   flex: 1;
+  min-height: 36px;
+  min-width: 120px;
   padding: 8px 12px;
   border: none;
   border-radius: 8px;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
   font-weight: 500;
+}
+
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .in-transit-btn {
@@ -161,11 +167,35 @@
   background: rgba(15, 23, 42, 0.85);
 }
 
-
+.driver-map {
+  height: 100%;
+  min-height: 500px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.85);
+}
 
 .leaflet-container {
   height: 100%;
   width: 100%;
+}
+
+/* Keep routing instruction text readable inside the light itinerary card */
+.driver-map .leaflet-routing-container,
+.driver-map .leaflet-routing-container * {
+  color: #111827;
+}
+
+.driver-map .leaflet-routing-container {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+}
+
+.driver-map .leaflet-routing-alt h2,
+.driver-map .leaflet-routing-alt h3,
+.driver-map .leaflet-routing-alt td,
+.driver-map .leaflet-routing-alt-minimized {
+  color: #111827;
 }
 
 .map-placeholder {

@@ -14,6 +14,7 @@ python-dotenv = "*"
 flask-restful = "*"
 psycopg2-binary = "*"
 
+
 [dev-packages]
 
 [requires]

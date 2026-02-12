@@ -3,7 +3,8 @@ from sqlalchemy.orm import sessionmaker
 
 from models import Base, UserRole, PriceIndex
 
-DATABASE_URL = "sqlite:///sendit.db"
+DATABASE_URL = "postgresql+psycopg2://abdrahan:abdi12345@localhost:5432/sendit_db"
+
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)

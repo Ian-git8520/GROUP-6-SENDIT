@@ -59,3 +59,5 @@ node_modules/
 node_modules/
 .vite/
 node_modules/
+FRONTEND/node_modules/
+BACKEND/node_modules/

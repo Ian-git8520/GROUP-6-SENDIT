@@ -25,3 +25,25 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Python
+**/__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Node / Frontend
+**/node_modules/
+**/dist/
+.bundle/
+
+# IDEs and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Vite/Build tools
+FRONTEND/node_modules/.vite/

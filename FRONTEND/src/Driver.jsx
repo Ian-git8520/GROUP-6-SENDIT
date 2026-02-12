@@ -136,12 +136,16 @@ const normalizeStatus = (value) =>
 const Driver = () => {
   const driver = JSON.parse(localStorage.getItem("currentUser"));
   const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
   const [selected, setSelected] = useState(null);
   const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
   useEffect(() => {
     const loadOrders = async () => {
-      if (!driver) return;
+      if (!driver) {
+        setLoadingOrders(false);
+        return;
+      }
 
       try {
         const res = await driverAPI.getAssignedOrders();
@@ -191,6 +195,8 @@ const Driver = () => {
         setOrders(enriched);
       } catch (e) {
         console.error("Error fetching assigned orders:", e);
+      } finally {
+        setLoadingOrders(false);
       }
     };
 
@@ -237,9 +243,17 @@ const Driver = () => {
 
       <div className="driver-layout">
         <div className="driver-orders">
-          {orders.length === 0 && <p>No assigned orders yet.</p>}
+          {loadingOrders && (
+            <div className="orders-loader" aria-label="Loading assigned orders">
+              <span className="spinner" aria-hidden="true" />
+            </div>
+          )}
+          {!loadingOrders && orders.length === 0 && (
+            <p className="no-orders">No assigned orders yet.</p>
+          )}
 
-          {orders.map((o) => (
+          {!loadingOrders &&
+            orders.map((o) => (
             (() => {
               const status = normalizeStatus(o.status);
               const canStartTrip =

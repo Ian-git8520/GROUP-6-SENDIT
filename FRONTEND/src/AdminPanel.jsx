@@ -16,7 +16,7 @@ const AdminPanel = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("http://localhost:5001/deliveries", {
+      const res = await fetch("http://localhost:5000/deliveries", {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
@@ -38,7 +38,7 @@ const AdminPanel = () => {
 
   const fetchDrivers = async () => {
     try {
-      const res = await fetch("http://localhost:5001/riders", {
+      const res = await fetch("http://localhost:5000/riders", {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
@@ -60,7 +60,7 @@ const AdminPanel = () => {
     try {
       const body = { rider_id: Number(riderId), status: "accepted" };
       const res = await fetch(
-        `http://localhost:5001/admin/deliveries/${orderId}`,
+        `http://localhost:5000/admin/deliveries/${orderId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
